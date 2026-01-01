@@ -1,4 +1,4 @@
-<x-filament::card class="bg-gray-900 border border-gray-700 rounded-xl p-4">
+<x-filament::card class="bg-gray-900 border border-gray-700 rounded-xl p-4 hover:border-primary-500 hover:shadow-lg transition-all duration-300">
     <h4 class="font-bold text-cyan-400 mb-3 text-lg">🚀 Accesos Rápidos</h4>
     <ul class="space-y-2">
         <li>
