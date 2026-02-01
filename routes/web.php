@@ -6,7 +6,7 @@ use App\Models\Programas;
 Route::get('/admin/download-local/{id}', function ($id) {
     // 1. Definir la ruta del USB
     $rutaUSB = "/Volumes/SIBI";
-
+    
     echo "<h1>🕵️‍♂️ REPORTE DE DETECTIVE</h1>";
 
     // PRUEBA A: ¿Existe el USB?
@@ -17,13 +17,13 @@ Route::get('/admin/download-local/{id}', function ($id) {
 
     // PRUEBA B: ¿Qué carpetas hay dentro?
     $carpetas = scandir($rutaUSB);
-
+    
     echo "<h3>📂 Contenido del USB SIBI:</h3>";
     echo "<ul>";
     foreach ($carpetas as $item) {
         if ($item == '.' || $item == '..') continue;
         echo "<li>Checking: <strong>[" . $item . "]</strong></li>";
-
+        
         // Si encontramos la carpeta "AA PROGRAMAS", miramos dentro
         if (str_contains($item, "PROGRAMAS")) {
             echo "<ul><span style='color:blue'>found! Mirando dentro de [$item]...</span>";
@@ -41,9 +41,9 @@ Route::get('/admin/download-local/{id}', function ($id) {
     $programa = Programas::find($id);
     echo "<hr><h3>🎯 Buscando archivo específico:</h3>";
     echo "Base de datos dice: <strong>" . $programa->file_path . "</strong><br>";
-
+    
     $rutaCompleta = $rutaUSB . "/" . $programa->file_path;
-
+    
     if (file_exists($rutaCompleta)) {
         echo "<h1 style='color:green'>🎉 ¡BINGO! El archivo EXISTE FÍSICAMENTE.</h1>";
         echo "Si ves esto, el problema de permisos ESTÁ RESUELTO.";
