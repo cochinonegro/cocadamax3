@@ -3,52 +3,66 @@
 use Illuminate\Support\Facades\Route;
 use App\Models\Programas;
 
+Route::get('/', function () {
+    return view('welcome');
+});
+
 Route::get('/admin/download-local/{id}', function ($id) {
-    // 1. Definir la ruta del USB
-    $rutaUSB = "/Volumes/SIBI";
+    // 1. Configuración
+    $rutaUSB = "/Volumes/SIBI"; // <--- Asegúrate que este es el nombre correcto
     
-    echo "<h1>🕵️‍♂️ REPORTE DE DETECTIVE</h1>";
+    echo "<h1>🕵️‍♂️ REPORTE DE PERMISOS</h1>";
 
-    // PRUEBA A: ¿Existe el USB?
-    if (!is_dir($rutaUSB)) {
-        die("<h2 style='color:red'>❌ FALLO: PHP no encuentra la carpeta /Volumes/SIBI. <br>¿Está el USB conectado? ¿Se llama SIBI (todo mayúsculas)?</h2>");
+    // PRUEBA A: ¿Existe la carpeta Volumes?
+    if (!is_dir('/Volumes')) {
+        die("<h2 style='color:red'>❌ ERROR CRÍTICO: PHP no puede ver ni siquiera /Volumes.</h2>");
     }
-    echo "<h3 style='color:green'>✅ El USB existe y PHP puede tocarlo.</h3>";
 
-    // PRUEBA B: ¿Qué carpetas hay dentro?
-    $carpetas = scandir($rutaUSB);
+    // PRUEBA B: Intentar leer el USB de forma segura
+    // El @ evita que PHP explote si no tiene permiso
+    $carpetas = @scandir($rutaUSB);
     
-    echo "<h3>📂 Contenido del USB SIBI:</h3>";
-    echo "<ul>";
+    if ($carpetas === false) {
+        // AQUÍ ES DONDE DABA EL ERROR 500 ANTES
+        die("
+            <div style='background-color:#ffebee; padding:20px; border: 2px solid red;'>
+                <h2 style='color:red; margin-top:0;'>⛔ ACCESO DENEGADO (PERMISOS)</h2>
+                <p>El servidor PHP intenta leer <strong>$rutaUSB</strong>, pero MacOS lo bloquea.</p>
+                <hr>
+                <h3>SOLUCIÓN OBLIGATORIA:</h3>
+                <ol>
+                    <li>Ve a <strong>Ajustes del Sistema</strong> > <strong>Privacidad y Seguridad</strong>.</li>
+                    <li>Entra en <strong>Acceso total al disco</strong>.</li>
+                    <li>Busca en la lista <strong>Visual Studio Code</strong> (o la app que uses).</li>
+                    <li><strong>¡ACTÍVALO!</strong> (Interruptor azul).</li>
+                    <li><strong>IMPORTANTE:</strong> Reinicia Visual Studio Code totalmente (CMD + Q).</li>
+                </ol>
+            </div>
+        ");
+    }
+
+    echo "<h3 style='color:green'>✅ ¡Acceso conseguido! PHP puede leer el USB.</h3>";
+    echo "<h3>📂 Contenido encontrado en SIBI:</h3><ul>";
+    
     foreach ($carpetas as $item) {
         if ($item == '.' || $item == '..') continue;
-        echo "<li>Checking: <strong>[" . $item . "]</strong></li>";
-        
-        // Si encontramos la carpeta "AA PROGRAMAS", miramos dentro
-        if (str_contains($item, "PROGRAMAS")) {
-            echo "<ul><span style='color:blue'>found! Mirando dentro de [$item]...</span>";
-            $subarchivos = scandir($rutaUSB . "/" . $item);
-            foreach ($subarchivos as $sub) {
-                 if ($sub == '.' || $sub == '..') continue;
-                 echo "<li>📄 Archivo: $sub</li>";
-            }
-            echo "</ul>";
-        }
+        echo "<li>" . $item . "</li>";
     }
     echo "</ul>";
 
-    // PRUEBA C: El archivo que buscamos
+    // PRUEBA C: Buscar el archivo del programa
     $programa = Programas::find($id);
-    echo "<hr><h3>🎯 Buscando archivo específico:</h3>";
-    echo "Base de datos dice: <strong>" . $programa->file_path . "</strong><br>";
-    
-    $rutaCompleta = $rutaUSB . "/" . $programa->file_path;
-    
-    if (file_exists($rutaCompleta)) {
-        echo "<h1 style='color:green'>🎉 ¡BINGO! El archivo EXISTE FÍSICAMENTE.</h1>";
-        echo "Si ves esto, el problema de permisos ESTÁ RESUELTO.";
-    } else {
-        echo "<h1 style='color:red'>❌ EL ARCHIVO NO ESTÁ.</h1>";
-        echo "Compara letra por letra el nombre del archivo de arriba con el de la lista.";
+    if ($programa) {
+        echo "<hr><h3>Buscando archivo de base de datos:</h3>";
+        echo "Ruta: " . $programa->file_path . "<br>";
+        
+        if (file_exists($rutaUSB . "/" . $programa->file_path)) {
+            echo "<h2 style='color:green'>🎉 EL ARCHIVO EXISTE Y ES ACCESIBLE.</h2>";
+            echo "<p>Ya puedes volver a poner el código de descarga original.</p>";
+        } else {
+            echo "<h2 style='color:orange'>⚠️ Permisos OK, pero archivo no encontrado.</h2>";
+            echo "<p>Revisa si el nombre de la carpeta 'AA PROGRAMAS' está bien escrito.</p>";
+        }
     }
+
 });
