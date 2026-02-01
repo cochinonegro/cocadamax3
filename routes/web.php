@@ -1,54 +1,51 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Models\Programas;
 
 Route::get('/admin/download-local/{id}', function ($id) {
-    // 1. Definir la ruta del USB
-    $rutaUSB = "/Volumes/SIBI";
+    echo "<style>body{font-family:sans-serif; padding:20px; background:#f0f0f0;}</style>";
+    echo "<div style='background:white; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);'>";
 
-    echo "<h1>🕵️‍♂️ REPORTE DE DETECTIVE</h1>";
+    // 1. ¿QUIÉN ESTÁ EJECUTANDO LA WEB?
+    $usuario = exec('whoami');
+    echo "<h2>👤 IDENTIDAD</h2>";
+    echo "Soy el usuario: <strong style='font-size:1.2em; color:blue'>" . $usuario . "</strong><br>";
 
-    // PRUEBA A: ¿Existe el USB?
-    if (!is_dir($rutaUSB)) {
-        die("<h2 style='color:red'>❌ FALLO: PHP no encuentra la carpeta /Volumes/SIBI. <br>¿Está el USB conectado? ¿Se llama SIBI (todo mayúsculas)?</h2>");
+    if ($usuario == 'daemon' || $usuario == '_www') {
+        echo "<p style='color:red'>❌ MAL: Sigo siendo el usuario fantasma de XAMPP. El reinicio no funcionó.</p>";
+    } elseif ($usuario == 'rafaelperezoctavio') {
+        echo "<p style='color:green'>✅ BIEN: Soy Rafa. Tengo permisos.</p>";
     }
-    echo "<h3 style='color:green'>✅ El USB existe y PHP puede tocarlo.</h3>";
 
-    // PRUEBA B: ¿Qué carpetas hay dentro?
+    echo "<hr>";
+
+    // 2. ¿QUÉ VEO EN EL USB?
+    $rutaUSB = "/Volumes/SIBI";
+    echo "<h2>📂 CONTENIDO DEL USB</h2>";
+
+    if (!is_dir($rutaUSB)) {
+        die("<h3 style='color:red'>⛔ ERROR: No veo el USB en /Volumes/SIBI</h3></div>");
+    }
+
     $carpetas = scandir($rutaUSB);
-
-    echo "<h3>📂 Contenido del USB SIBI:</h3>";
     echo "<ul>";
     foreach ($carpetas as $item) {
-        if ($item == '.' || $item == '..') continue;
-        echo "<li>Checking: <strong>[" . $item . "]</strong></li>";
+        if ($item[0] == '.') continue; // Saltar ocultos
 
-        // Si encontramos la carpeta "AA PROGRAMAS", miramos dentro
+        // Truco: Ponemos corchetes para ver espacios invisibles
+        echo "<li>Carpeta detectada: <strong>[" . $item . "]</strong></li>";
+
+        // Si vemos la carpeta programas, entramos a mirar
         if (str_contains($item, "PROGRAMAS")) {
-            echo "<ul><span style='color:blue'>found! Mirando dentro de [$item]...</span>";
-            $subarchivos = scandir($rutaUSB . "/" . $item);
-            foreach ($subarchivos as $sub) {
-                 if ($sub == '.' || $sub == '..') continue;
-                 echo "<li>📄 Archivo: $sub</li>";
+            echo "<ul><span style='color:purple'>↳ Mirando dentro de esta carpeta...</span>";
+            $archivos = scandir($rutaUSB . "/" . $item);
+            foreach ($archivos as $arch) {
+                if ($arch[0] == '.') continue;
+                echo "<li>📄 Archivo: <strong>[" . $arch . "]</strong></li>";
             }
             echo "</ul>";
         }
     }
     echo "</ul>";
-
-    // PRUEBA C: El archivo que buscamos
-    $programa = Programas::find($id);
-    echo "<hr><h3>🎯 Buscando archivo específico:</h3>";
-    echo "Base de datos dice: <strong>" . $programa->file_path . "</strong><br>";
-
-    $rutaCompleta = $rutaUSB . "/" . $programa->file_path;
-
-    if (file_exists($rutaCompleta)) {
-        echo "<h1 style='color:green'>🎉 ¡BINGO! El archivo EXISTE FÍSICAMENTE.</h1>";
-        echo "Si ves esto, el problema de permisos ESTÁ RESUELTO.";
-    } else {
-        echo "<h1 style='color:red'>❌ EL ARCHIVO NO ESTÁ.</h1>";
-        echo "Compara letra por letra el nombre del archivo de arriba con el de la lista.";
-    }
+    echo "</div>";
 });
