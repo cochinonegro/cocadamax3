@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@import "../../../../vendor/filament/filament/resources/css/theme.css";
+
+/* 1. CONFIGURACIÓN DE COLORES (TUYO) */
+@theme {
+    --color-fondo-claro: #e4e4f6;
+    --color-fondo-oscuro: #09090b;
+}
+/*  .fi-ta :where([role="rowgroup"] [role="row"], tbody > tr) { background: #7e8397ff !important; } */
+/*. DESPUES DE ESTA LINEA */
+
+@layer utilities {
+  /* 1) Compactar el TD */
+  .fi-ta tbody td.fi-ta-cell {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+  }
+
+  /* 2) El culpable: el wrapper clickable dentro de la celda */
+  .fi-ta tbody td.fi-ta-cell > a.fi-ta-col {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+
+    /* ALTURA DE LAS FILAS EN LA TABLA: */
+          /* ALTURA DE LAS FILAS EN LA TABLA: */
+    height: 34px !important;          /* 👈 aquí bajas la fila */
+    align-items: center !important;    /* centra sin inflar */
+  }
+
+  /* 3) Para columnas que no sean <a> sino <div> */
+  .fi-ta tbody td.fi-ta-cell > div.fi-ta-col {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    min-height: 0 !important;
+
+    /* ALTURA DE LAS FILAS EN LA TABLA: */
+      /* ALTURA DE LAS FILAS EN LA TABLA: */
+        /* ALTURA DE LAS FILAS EN LA TABLA: */
+          /* ALTURA DE LAS FILAS EN LA TABLA: */
+
+    height: 20px !important;
+    display: flex !important;
+    align-items: center !important;
+  }
+
+  /* 4) Si algún badge/toggle mete min-height */
+  .fi-ta tbody td.fi-ta-cell :where([class*="min-h-"], [class*="!min-h-"]) {
+    min-height: 0 !important;
+  }
+}

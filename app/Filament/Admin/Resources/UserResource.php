@@ -65,7 +65,8 @@ public static function table(Table $table): Table
             TextColumn::make('email')
                 ->label('Email')
                 ->searchable()
-                ->sortable(),
+
+->badge()                ->sortable(),
 
             TextColumn::make('created_at')
                 ->label('Creado')
