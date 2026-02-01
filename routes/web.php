@@ -1,62 +1,73 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Storage;
 use App\Models\Programas;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-// RUTA DE DIAGNÓSTICO
 Route::get('/admin/download-local/{id}', function ($id) {
-    try {
-        // 1. Prueba básica de vida
-        if (!class_exists('App\Models\Programas')) {
-            throw new Exception("El modelo Programas no se encuentra.");
-        }
+    // 1. Buscamos el programa
+    $programa = Programas::findOrFail($id);
 
-        // 2. Buscar programa
-        $programa = Programas::find($id);
+    // Ruta base esperada
+    $rutaBase = "/Volumes/SIBI";
 
-        if (!$programa) {
-            dd("ERROR: No se encontró el programa con ID: " . $id);
-        }
+    // Ajuste según el disco seleccionado en BD
+    if ($programa->disk_name == 'disco_hdd') $rutaBase = "/Volumes/HDD";
+    if ($programa->disk_name == 'disco_laila') $rutaBase = "/Volumes/LAILA";
 
-        // 3. Imprimir datos en pantalla (Debug)
-        // Si ves esto, la base de datos funciona
-        if (!$programa->disk_name) {
-            dd("ERROR: Este programa no tiene 'disk_name' en la base de datos.", $programa->toArray());
-        }
+    $debug = [];
+    $debug[] = "--- INICIO DEL DIAGNÓSTICO ---";
+    $debug[] = "Buscando archivo: " . $programa->file_path;
+    $debug[] = "En el disco montado en: " . $rutaBase;
 
-        // 4. Construcción de ruta MANUAL (Sin depender de config/filesystems)
-        // Esto confirma si el problema es el archivo config
-        $rutaManual = "/Volumes/SIBI/" . $programa->file_path;
-
-        // CORRECCIÓN PARA OTROS DISCOS
-        if ($programa->disk_name == 'disco_hdd') $rutaManual = "/Volumes/HDD/" . $programa->file_path;
-        if ($programa->disk_name == 'disco_laila') $rutaManual = "/Volumes/LAILA/" . $programa->file_path;
-
-        // 5. Verificación física
-        if (!file_exists($rutaManual)) {
-            dd(
-                "ERROR: El archivo no existe físicamente.",
-                "Buscando en: " . $rutaManual,
-                "¿Está el USB conectado y montado con ese nombre?"
-            );
-        }
-
-        // 6. Intento de descarga directo
-        return response()->download($rutaManual);
-
-    } catch (\Throwable $e) {
-        // AQUÍ ESTÁ LA MAGIA:
-        // En lugar de dar Error 500, te mostrará el texto del error real.
-        dd(
-            "🛑 ERROR FATAL CAPTURADO:",
-            $e->getMessage(),
-            "Línea: " . $e->getLine(),
-            "Archivo: " . $e->getFile()
-        );
+    // PASO A: ¿PHP puede ver la carpeta /Volumes?
+    if (!is_dir('/Volumes')) {
+        dd("❌ ERROR CRÍTICO: PHP no tiene acceso a /Volumes. Es un problema de PERMISOS DE MAC.");
     }
+
+    // PASO B: ¿Qué discos ve PHP realmente?
+    $discos = scandir('/Volumes');
+    $debug[] = "👀 Discos que ve PHP en /Volumes: " . implode(' | ', $discos);
+
+    // PASO C: ¿Ve tu disco específico?
+    if (!in_array(basename($rutaBase), $discos)) {
+        dd($debug, "❌ ERROR: PHP ve otros discos, pero NO ve '" . basename($rutaBase) . "'. ¿Se llama diferente? ¿SIBI 1?");
+    }
+
+    // PASO D: Explorar dentro del disco
+    // Intentamos ver qué carpetas hay dentro de /Volumes/SIBI
+    $contenidoDisco = @scandir($rutaBase);
+
+    if (!$contenidoDisco) {
+        dd($debug, "❌ ERROR DE PERMISOS: PHP ve el disco, pero MacOS le prohíbe leer dentro. Necesitas dar 'Full Disk Access' a la terminal/PHP.");
+    }
+
+    $debug[] = "📂 Carpetas dentro de tu disco: " . implode(' | ', $contenidoDisco);
+
+    // PASO E: Validar la carpeta del archivo
+    // Extraemos la primera parte de tu ruta (Ej: "AA PROGRAMAS")
+    $partes = explode('/', $programa->file_path);
+    $carpeta = $partes[0]; // "AA PROGRAMAS"
+
+    if (!in_array($carpeta, $contenidoDisco)) {
+        dd($debug, "❌ ERROR DE NOMBRE: PHP ve el disco, pero NO encuentra la carpeta exact: '" . $carpeta . "'",
+           "Revisa espacios dobles o mayúsculas. Copia y pega uno de los nombres de arriba 👆");
+    }
+
+    // PASO F: Si llegamos aquí, listamos el contenido de esa carpeta
+    $archivos = scandir($rutaBase . "/" . $carpeta);
+    $nombreArchivo = basename($programa->file_path);
+
+    if (!in_array($nombreArchivo, $archivos)) {
+         dd($debug,
+            "📂 Archivos encontrados en " . $carpeta . ": " . implode(' | ', $archivos),
+            "❌ ERROR FINAL: La carpeta existe, pero el archivo '" . $nombreArchivo . "' no está dentro."
+         );
+    }
+
+    return "✅ ¡TODO PARECE CORRECTO! El archivo debería descargarse. Si ves esto, restaura el código de descarga anterior.";
+
 })->name('download.local');
