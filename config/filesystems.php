@@ -60,6 +60,30 @@ return [
             'report' => false,
         ],
 
+        'disco_data' => [
+            'driver' => 'local',
+            'root' => '/Volumes/Data',
+            'throw' => false,
+        ],
+
+        'disco_hdd' => [
+            'driver' => 'local',
+            'root' => '/Volumes/HDD',
+            'throw' => false,
+        ],
+
+        'disco_laila' => [
+            'driver' => 'local',
+            'root' => '/Volumes/LAILA',
+            'throw' => false,
+        ],
+
+        'disco_sibi' => [
+            'driver' => 'local',
+            'root' => '/Volumes/SIBI',
+            'throw' => false,
+        ],
+
     ],
 
     /*

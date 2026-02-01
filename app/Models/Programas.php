@@ -24,6 +24,8 @@ class Programas extends Model
         'show',
         'show_until',
         'company',
+        'disk_name', // <--- ¡ASEGÚRATE DE QUE ESTE ESTÉ AQUÍ!
+        'file_path',
     ];
 
     protected $casts = [

@@ -32,104 +32,130 @@ class ProgramasResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-        ->columns(5)
+            ->columns(3) // Usamos 3 columnas para que se adapte mejor
             ->schema([
-                TextInput::make('progname')
-                    ->label('Nombre')
-                    ->required()
-                    ->maxLength(255),
 
-                TextInput::make('url')
-                    ->label('Link Descarga')
-                    ->url()
-                    ->required()
-                    ->maxLength(255),
+                // --- SECCIÓN 1: UBICACIÓN (Aquí está la lógica nueva) ---
+                Forms\Components\Section::make('Ubicación del Archivo')
+                    ->description('Selecciona si el archivo está en tus discos locales o en una web externa.')
+                    ->schema([
+                        Select::make('disk_name')
+                            ->label('Disco Local')
+                            ->options([
+                                'disco_sibi' => 'Disco SIBI',
+                                'disco_laila' => 'Disco LAILA',
+                                'disco_hdd' => 'Disco HDD',
+                                'disco_data' => 'Disco DATA',
+                            ])
+                            ->placeholder('Selecciona un disco...')
+                            ->native(false)
+                            ->reactive(),
 
+                        TextInput::make('file_path')
+                            ->label('Ruta del Archivo')
+                            ->placeholder('Ej: AA PROGRAMAS/Installer.zip')
+                            ->hint('Copia la ruta exacta dentro del disco')
+                            ->required(fn (Forms\Get $get) => $get('disk_name') !== null)
+                            ->maxLength(255),
 
-                TextInput::make('working')
-                    ->label('Subcategoría')
-                    ->required()
-                    ->maxLength(255),
+                        TextInput::make('url')
+                            ->label('Link Externo (Alternativo)')
+                            ->placeholder('https://mega.nz/...')
+                            ->url()
+                            ->helperText('Solo si NO usas discos locales'),
+                    ])->columns(2),
 
-                TextInput::make('program_id')
-                    ->label('Código')
-                    ->required(),
+                // --- SECCIÓN 2: DETALLES (Aquí moví tus campos antiguos) ---
+                Forms\Components\Section::make('Detalles del Programa')
+                    ->schema([
+                        TextInput::make('progname')
+                            ->label('Nombre')
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpan(2), // Ocupa 2 espacios para verse mejor
 
-                TextInput::make('level_inst')
-                    ->label('Tags Referencia')
-                    ->required(),
+                        TextInput::make('program_id')
+                            ->label('Código')
+                            ->required(),
 
-                Select::make('os_required')
-                    ->label('Sistema Operativo')
-                    ->required()
-                    ->options([
-                        'windows' => 'Windows',
-                        'mac' => 'Mac',
-                        'win-mac' => 'Win & Mac',
-                    ])
-                    ->native(false),
+                        TextInput::make('size')
+                            ->label('Tamaño')
+                            ->required()
+                            ->maxLength(50),
 
-                Select::make('category')
-                    ->label('Categoría')
-                    ->required()
-                    ->options([
-                        'aplicaciones' => 'Aplicaciones',
-                        'diseño grafico' => 'Diseño gráfico',
-                        'arquitectura' => 'Arquitectura',
-                        'music' => 'Música',
-                        'video' => 'Video',
-                        'kontakt' => 'kontakt',
-                    ])
-                    ->native(false),
+                        Select::make('category')
+                            ->label('Categoría')
+                            ->required()
+                            ->options([
+                                'aplicaciones' => 'Aplicaciones',
+                                'diseño grafico' => 'Diseño gráfico',
+                                'arquitectura' => 'Arquitectura',
+                                'music' => 'Música',
+                                'video' => 'Video',
+                                'kontakt' => 'kontakt',
+                            ])
+                            ->native(false),
 
-                TextInput::make('year_prog')
-                    ->label('Año del programa')
-                    ->required()
-                    ->numeric()
-                    ->minValue(1990)
-                    ->maxValue(date('Y')),
+                        TextInput::make('working')
+                            ->label('Subcategoría')
+                            ->required()
+                            ->maxLength(255),
 
-                TextInput::make('size')
-                    ->label('Tamaño')
-                    ->required()
-                    ->maxLength(50),
+                        Select::make('os_required')
+                            ->label('Sistema Operativo')
+                            ->required()
+                            ->options([
+                                'windows' => 'Windows',
+                                'mac' => 'Mac',
+                                'win-mac' => 'Win & Mac',
+                            ])
+                            ->native(false),
 
-                //TextInput::make('description')
-                //    ->required(),
+                        TextInput::make('year_prog')
+                            ->label('Año del programa')
+                            ->required()
+                            ->numeric()
+                            ->minValue(1990)
+                            ->maxValue(date('Y')),
 
-                DatePicker::make('date_add')
-                    ->label('Fecha de Alta')
-                    ->default(now())
-                    ->required(),
+                        TextInput::make('level_inst')
+                            ->label('Tags Referencia')
+                            ->required(),
 
-                MarkdownEditor::make('description')
-                    ->label('Descripción del Producto')
-                    ->columnSpanFull(),
+                        DatePicker::make('date_add')
+                            ->label('Fecha de Alta')
+                            ->default(now())
+                            ->required(),
+                    ])->columns(3),
+
+                // --- SECCIÓN 3: DESCRIPCIÓN ---
+                Forms\Components\Section::make()
+                    ->schema([
+                        MarkdownEditor::make('description')
+                            ->label('Descripción del Producto')
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
-
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-                // TextColumn::make('program_id')->label('Código'),
 
+                // 1. STATUS (Switch)
                 ToggleColumn::make('show')
                     ->label('STATUS')
                     ->sortable()
                     ->afterStateUpdated(function ($record, $state) {
                         if ($state) {
-                            $record->update([
-                                'show_until' => now()->addMinutes(10),
-                            ]);
+                            $record->update(['show_until' => now()->addMinutes(10)]);
                         } else {
-                            $record->update([
-                                'show_until' => null,
-                            ]);
+                            $record->update(['show_until' => null]);
                         }
                     }),
 
-				BadgeColumn::make('os_required')
+                // 2. SISTEMA OPERATIVO
+                BadgeColumn::make('os_required')
                     ->label('Sist.Op')
                     ->colors([
                         'info' => 'windows',
@@ -143,45 +169,49 @@ class ProgramasResource extends Resource
                         default => strtoupper($state),
                     }),
 
-
-
-
-
+                // 3. CÓDIGO
                 TextColumn::make('id')
                     ->label('Código')
                     ->sortable()
                     ->formatStateUsing(function ($state) {
-                        $padded = str_pad($state, 4, '0', STR_PAD_LEFT); // Ej: 0007
-                        return substr($padded, 0, 2) . ' ' . substr($padded, 2, 2); // Ej: 00 07
+                        $padded = str_pad($state, 4, '0', STR_PAD_LEFT);
+                        return substr($padded, 0, 2) . ' ' . substr($padded, 2, 2);
                     })
                     ->badge()
                     ->color('info'),
 
+                // 4. NOMBRE
                 TextColumn::make('progname')
                     ->label('Nombre')
                     ->sortable()
                     ->searchable()
-                    ->limit(40), // corta el texto,
+                    ->limit(40),
 
+                // 5. TAMAÑO
                 TextColumn::make('size')
                     ->badge()
                     ->label('Tamaño')
                     ->color('success')
                     ->sortable(),
 
-                TextColumn::make('url')
+                // --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE: EL BOTÓN DE DESCARGA ---
+               TextColumn::make('tipo_descarga')
                     ->label('DESCARGAR')
                     ->badge()
-                    ->color('pink')
-                    ->formatStateUsing(fn () => 'DESCARGAR')
-                    ->copyable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->copyMessage('¡Enlace copiado!')
-                    ->copyMessageDuration(1500)
-                    ->url(fn ($record) => $record->url, true), // nueva pestaña
+                    // Definimos manualmente el "Estado" (el texto que se ve)
+                    ->state(fn ($record) => $record->disk_name ? 'LOCAL USB' : 'URL WEB')
 
+                    // Colores según el texto que acabamos de definir
+                    ->color(fn ($state) => $state === 'LOCAL USB' ? 'success' : 'pink')
 
+                    // Iconos
+                    ->icon(fn ($state) => $state === 'LOCAL USB' ? 'heroicon-o-server' : 'heroicon-o-globe-alt')
 
+                    // La acción de clic (Mantenemos tu lógica perfecta)
+                    ->url(fn ($record) => route('download.local', ['id' => $record->id]))
+                    ->openUrlInNewTab()
+                    ->alignCenter(),
+                // 6. CATEGORÍA
                 BadgeColumn::make('category')
                     ->label('Categoría')
                     ->colors([
@@ -192,6 +222,7 @@ class ProgramasResource extends Resource
                     ])
                     ->sortable(),
 
+                // Ocultamos fecha y año por defecto para no saturar, pero se pueden activar
                 BadgeColumn::make('year_prog')
                     ->label('Año')
                     ->color('orange')
@@ -227,7 +258,6 @@ class ProgramasResource extends Resource
                     ->label('')
                     ->tooltip('Eliminar'),
             ])
-            // ->actionsPosition(ActionsPosition::After)
             ->defaultSort('id', 'desc');
     }
 
