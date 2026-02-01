@@ -30,12 +30,10 @@ Route::get('/admin/download-local/{id}', function ($id) {
     $carpetas = scandir($rutaUSB);
     echo "<ul>";
     foreach ($carpetas as $item) {
-        if ($item[0] == '.') continue; // Saltar ocultos
+        if ($item[0] == '.') continue;
 
-        // Truco: Ponemos corchetes para ver espacios invisibles
         echo "<li>Carpeta detectada: <strong>[" . $item . "]</strong></li>";
 
-        // Si vemos la carpeta programas, entramos a mirar
         if (str_contains($item, "PROGRAMAS")) {
             echo "<ul><span style='color:purple'>↳ Mirando dentro de esta carpeta...</span>";
             $archivos = scandir($rutaUSB . "/" . $item);
