@@ -1,61 +1,95 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Http\Request;
+use App\Models\Programas;
 
-Route::get('/admin/download-local/{id}', function ($id) {
-    echo "<style>body{font-family:sans-serif; padding:20px; background:#f0f0f0;}</style>";
-    echo "<div style='background:white; padding:20px; border-radius:8px; box-shadow:0 2px 10px rgba(0,0,0,0.1);'>";
+Route::get('/', function () {
+    return view('welcome');
+});
 
-    // 1. ¿QUIÉN ESTÁ EJECUTANDO LA WEB?
-    $usuario = exec('whoami');
-    echo "<h2>👤 IDENTIDAD</h2>";
-    echo "Soy el usuario: <strong style='font-size:1.2em; color:blue'>" . $usuario . "</strong><br>";
-
-    // Nota: En Forge el usuario suele ser 'forge', no 'rafaelperezoctavio' ni '_www'.
-    if ($usuario == 'daemon' || $usuario == '_www') {
-        echo "<p style='color:red'>❌ MAL: Sigo siendo el usuario fantasma de XAMPP.</p>";
-    } elseif ($usuario == 'rafaelperezoctavio' || $usuario == 'forge') {
-        echo "<p style='color:green'>✅ BIEN: Usuario reconocido ($usuario).</p>";
-    } else {
-        echo "<p style='color:orange'>⚠️ AVISO: Soy el usuario '$usuario'.</p>";
+// -----------------------------------------------------------------------------
+// RUTA DE DESCARGA SEGURA (SOLO CON ENLACE FIRMADO)
+// -----------------------------------------------------------------------------
+// El middleware 'signed' es el portero de discoteca. 
+// Si la firma no es válida, no deja pasar a nadie.
+Route::get('/descarga-cliente/{id}', function (Request $request, $id) {
+    
+    // 1. Verificar si la firma es válida (Por seguridad extra)
+    if (! $request->hasValidSignature()) {
+        abort(403, '⛔ ESTE ENLACE NO ES VÁLIDO O HA CADUCADO.');
     }
 
-    echo "<hr>";
+    // 2. Buscar el programa en la base de datos
+    $programa = Programas::findOrFail($id);
 
-    // 2. ¿QUÉ VEO EN EL USB?
-    // NOTA IMPORTANTE: En el servidor Forge (Linux), esta ruta "/Volumes/SIBI" NO EXISTIRÁ.
-    // Tendrás que cambiarla por la ruta donde hayas montado el disco en Linux (ej: /mnt/sibi)
-    $rutaUSB = "/Volumes/SIBI";
-    echo "<h2>📂 CONTENIDO DEL USB</h2>";
-    echo "<p>Buscando en: <code>$rutaUSB</code></p>";
-
-    if (!is_dir($rutaUSB)) {
-        // Usamos return en vez de die() para que cierre el div correctamente, aunque pare la ejecución lógica
-        echo "<h3 style='color:red'>⛔ ERROR: No veo el USB en $rutaUSB</h3></div>";
-        return;
+    // -----------------------------------------------------
+    // CASO A: Es un enlace externo (pCloud, Drive, DigiStorage)
+    // -----------------------------------------------------
+    if ($programa->url) {
+        // Redirigimos al cliente directamente a la nube.
+        // Es lo mejor para no saturar tu servidor local.
+        return redirect()->away($programa->url);
     }
 
-    $carpetas = scandir($rutaUSB);
-    echo "<ul>";
-    foreach ($carpetas as $item) {
-        if ($item[0] == '.') continue;
+    // -----------------------------------------------------
+    // CASO B: Es un archivo local en tu USB (Mac)
+    // -----------------------------------------------------
+    if ($programa->disk_name && $programa->file_path) {
+        
+        // Ajustamos la ruta base según el disco que tengas conectado
+        $rutaBase = "/Volumes/SIBI"; 
+        if ($programa->disk_name == 'disco_hdd') $rutaBase = "/Volumes/HDD";
+        // Añade aquí más discos si compras más en el futuro
+        
+        $rutaCompleta = $rutaBase . "/" . $programa->file_path;
 
-        echo "<li>Carpeta detectada: <strong>[" . $item . "]</strong></li>";
-
-        if (str_contains($item, "PROGRAMAS")) {
-            echo "<ul><span style='color:purple'>↳ Mirando dentro de esta carpeta...</span>";
-            // Aseguramos que existe la subcarpeta antes de escanear
-            if(is_dir($rutaUSB . "/" . $item)){
-                $archivos = scandir($rutaUSB . "/" . $item);
-                foreach ($archivos as $arch) {
-                    if ($arch[0] == '.') continue;
-                    echo "<li>📄 Archivo: <strong>[" . $arch . "]</strong></li>";
-                }
-            }
-            echo "</ul>";
+        // Verificamos que el archivo exista antes de intentar enviarlo
+        if (file_exists($rutaCompleta)) {
+            // response()->download() envía el archivo al navegador del cliente
+            return response()->download($rutaCompleta);
+        } else {
+            return "❌ Error: El archivo físico no está conectado en el servidor.";
         }
     }
-    echo "</ul>";
-    echo "</div>";
 
-})->name('download.local'); // <--- AQUÍ ES DONDE DEBE IR EL CIERRE Y EL NOMBRE
+    return "⚠️ Este programa no tiene archivo ni enlace configurado.";
+
+})->name('descarga.segura')->middleware('signed');
+
+
+// -----------------------------------------------------------------------------
+// RUTA PARA QUE TÚ GENERES LOS ENLACES (SOLO PARA TI)
+// -----------------------------------------------------------------------------
+// Entra aquí para crear un enlace para un cliente.
+// Ejemplo de uso: midominio.com/generar-link/308
+Route::get('/generar-link/{id}', function ($id) {
+    
+    // 1. Buscamos el programa
+    $prog = Programas::findOrFail($id);
+
+    // 2. GENERAMOS LA URL FIRMADA TEMPORAL
+    // 'descarga.segura' -> Es el nombre de la ruta de arriba.
+    // now()->addDays(7) -> El enlace caducará en 7 días (puedes poner addHours(24)).
+    $urlSegura = URL::temporarySignedRoute(
+        'descarga.segura', 
+        now()->addDays(7), 
+        ['id' => $prog->id]
+    );
+
+    // 3. Mostramos el enlace en pantalla para que lo copies
+    return "
+        <div style='font-family:sans-serif; padding:40px; text-align:center;'>
+            <h1>🔐 Enlace Generado para: {$prog->progname}</h1>
+            <p>Copia este enlace y envíalo por correo al cliente. Caduca en 7 días.</p>
+            
+            <textarea style='width:100%; height:100px; font-size:16px; padding:10px;'>$urlSegura</textarea>
+            
+            <br><br>
+            <a href='$urlSegura' style='background:blue; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;'>
+                Probar Enlace Ahora
+            </a>
+        </div>
+    ";
+});
