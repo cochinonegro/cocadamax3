@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Storage;
 use App\Models\Programas;
 
 Route::get('/', function () {
@@ -11,63 +12,34 @@ Route::get('/admin/download-local/{id}', function ($id) {
     // 1. Buscamos el programa
     $programa = Programas::findOrFail($id);
 
-    // Ruta base esperada
-    $rutaBase = "/Volumes/SIBI";
+    // 2. Si es archivo local (USB)
+    if ($programa->disk_name && $programa->file_path) {
+        set_time_limit(0);
 
-    // Ajuste según el disco seleccionado en BD
-    if ($programa->disk_name == 'disco_hdd') $rutaBase = "/Volumes/HDD";
-    if ($programa->disk_name == 'disco_laila') $rutaBase = "/Volumes/LAILA";
+        // Construimos la ruta manualmente para evitar bloqueos de configuración
+        // Ajusta aquí si tus discos tienen nombres base distintos
+        $rutaBase = "/Volumes/SIBI";
+        if ($programa->disk_name == 'disco_hdd') $rutaBase = "/Volumes/HDD";
+        if ($programa->disk_name == 'disco_laila') $rutaBase = "/Volumes/LAILA";
 
-    $debug = [];
-    $debug[] = "--- INICIO DEL DIAGNÓSTICO ---";
-    $debug[] = "Buscando archivo: " . $programa->file_path;
-    $debug[] = "En el disco montado en: " . $rutaBase;
+        $rutaCompleta = $rutaBase . "/" . $programa->file_path;
 
-    // PASO A: ¿PHP puede ver la carpeta /Volumes?
-    if (!is_dir('/Volumes')) {
-        dd("❌ ERROR CRÍTICO: PHP no tiene acceso a /Volumes. Es un problema de PERMISOS DE MAC.");
+        // Verificamos existencia física
+        if (!file_exists($rutaCompleta)) {
+            // Si falla, mostramos mensaje técnico
+            return "ERROR: MacOS no deja leer el archivo o no existe.\n" .
+                   "Ruta buscada: " . $rutaCompleta . "\n" .
+                   "Solución: Ve a Ajustes > Privacidad > Acceso Total al Disco y activa la Terminal.";
+        }
+
+        // 3. ¡Descarga!
+        return response()->download($rutaCompleta);
     }
 
-    // PASO B: ¿Qué discos ve PHP realmente?
-    $discos = scandir('/Volumes');
-    $debug[] = "👀 Discos que ve PHP en /Volumes: " . implode(' | ', $discos);
-
-    // PASO C: ¿Ve tu disco específico?
-    if (!in_array(basename($rutaBase), $discos)) {
-        dd($debug, "❌ ERROR: PHP ve otros discos, pero NO ve '" . basename($rutaBase) . "'. ¿Se llama diferente? ¿SIBI 1?");
+    // 4. Si es URL externa
+    if ($programa->url) {
+        return redirect()->away($programa->url);
     }
 
-    // PASO D: Explorar dentro del disco
-    // Intentamos ver qué carpetas hay dentro de /Volumes/SIBI
-    $contenidoDisco = @scandir($rutaBase);
-
-    if (!$contenidoDisco) {
-        dd($debug, "❌ ERROR DE PERMISOS: PHP ve el disco, pero MacOS le prohíbe leer dentro. Necesitas dar 'Full Disk Access' a la terminal/PHP.");
-    }
-
-    $debug[] = "📂 Carpetas dentro de tu disco: " . implode(' | ', $contenidoDisco);
-
-    // PASO E: Validar la carpeta del archivo
-    // Extraemos la primera parte de tu ruta (Ej: "AA PROGRAMAS")
-    $partes = explode('/', $programa->file_path);
-    $carpeta = $partes[0]; // "AA PROGRAMAS"
-
-    if (!in_array($carpeta, $contenidoDisco)) {
-        dd($debug, "❌ ERROR DE NOMBRE: PHP ve el disco, pero NO encuentra la carpeta exact: '" . $carpeta . "'",
-           "Revisa espacios dobles o mayúsculas. Copia y pega uno de los nombres de arriba 👆");
-    }
-
-    // PASO F: Si llegamos aquí, listamos el contenido de esa carpeta
-    $archivos = scandir($rutaBase . "/" . $carpeta);
-    $nombreArchivo = basename($programa->file_path);
-
-    if (!in_array($nombreArchivo, $archivos)) {
-         dd($debug,
-            "📂 Archivos encontrados en " . $carpeta . ": " . implode(' | ', $archivos),
-            "❌ ERROR FINAL: La carpeta existe, pero el archivo '" . $nombreArchivo . "' no está dentro."
-         );
-    }
-
-    return "✅ ¡TODO PARECE CORRECTO! El archivo debería descargarse. Si ves esto, restaura el código de descarga anterior.";
-
+    return "No configurado.";
 })->name('download.local');
