@@ -1,35 +1,35 @@
 <?php
 
-
-use App\Models\Programas;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Storage;
-
+use App\Models\Programas;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-
 Route::get('/admin/download-local/{id}', function ($id) {
     // 1. Buscamos el programa
     $programa = Programas::findOrFail($id);
 
-    // 2. Verificamos si es un archivo local o una URL externa
+    // 2. Verificamos si es un archivo local
     if ($programa->disk_name && $programa->file_path) {
-
-        // Configuración para archivos gigantes (evita cortes)
         set_time_limit(0);
 
-        // Verifica si el archivo existe realmente en el disco SIBI (o el que sea)
+        // Verificamos si existe usando el disco
         if (! Storage::disk($programa->disk_name)->exists($programa->file_path)) {
             abort(404, 'EL ARCHIVO NO EXISTE EN EL DISCO: ' . $programa->disk_name);
         }
 
-        // 3. ¡Descarga directa desde el disco USB!
-        return Storage::disk($programa->disk_name)->download($programa->file_path);
+        // --- CAMBIO CLAVE AQUÍ ---
+        // En lugar de usar ->download() del Storage, pedimos la RUTA COMPLETA
+        // y forzamos la descarga directa con PHP. Esto quita el error del editor.
+        $rutaCompleta = Storage::disk($programa->disk_name)->path($programa->file_path);
+
+        return response()->download($rutaCompleta);
     }
 
-    // Si no tiene disco local, intentamos redirigir a la URL externa
+    // 3. Si no es local, URL externa
     if ($programa->url) {
         return redirect()->away($programa->url);
     }
