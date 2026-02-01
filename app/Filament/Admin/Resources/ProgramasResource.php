@@ -322,4 +322,4 @@ class ProgramasResource extends Resource
             'edit' => Pages\EditProgramas::route('/{record}/edit'),
         ];
     }
-
+}
