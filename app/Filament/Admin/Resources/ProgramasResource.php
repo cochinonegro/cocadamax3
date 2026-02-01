@@ -20,6 +20,9 @@ use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Notifications\Notification;
+use Illuminate\Support\Facades\URL;
+
 
 class ProgramasResource extends Resource
 {
@@ -249,6 +252,7 @@ class ProgramasResource extends Resource
                     ->preload(),
             ])
             ->actions([
+                // --- TUS BOTONES ORIGINALES ---
                 Tables\Actions\EditAction::make()
                     ->icon('heroicon-o-pencil')
                     ->label('')
@@ -257,6 +261,55 @@ class ProgramasResource extends Resource
                     ->icon('heroicon-o-trash')
                     ->label('')
                     ->tooltip('Eliminar'),
+
+                // --- NUEVO BOTÓN: GENERAR LINK CLIENTE ---
+                \Filament\Tables\Actions\Action::make('generar_link')
+                    ->label('Link Cliente')
+                    ->icon('heroicon-o-key')
+                    ->color('success')
+                    ->requiresConfirmation()
+                    ->modalHeading('Generar Enlace Seguro')
+                    ->modalDescription('Elige cuánto tiempo funcionará este enlace.')
+                    ->form([
+                        \Filament\Forms\Components\Select::make('duracion')
+                            ->label('Caducidad del enlace')
+                            ->options([
+                                '1' => '24 Horas',
+                                '3' => '3 Días',
+                                '7' => '1 Semana',
+                                '30' => '1 Mes',
+                                '365' => '1 Año',
+                            ])
+                            ->default('3')
+                            ->required(),
+                    ])
+                    ->action(function ($record, array $data) {
+                        // 1. Calcular fecha
+                        $dias = (int) $data['duracion'];
+                        $fechaCaducidad = now()->addDays($dias);
+
+                        // 2. Generar URL (Debe coincidir con el nombre en web.php)
+                        $urlSegura = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                            'cliente.descarga', 
+                            $fechaCaducidad, 
+                            ['id' => $record->id]
+                        );
+
+                        // 3. Notificación con botón de copiar
+                        \Filament\Notifications\Notification::make()
+                            ->title('✅ Enlace Generado')
+                            ->body("Validez: $dias días.<br><strong>Cópialo aquí abajo:</strong>")
+                            ->success()
+                            ->persistent()
+                            ->actions([
+                                \Filament\Notifications\Actions\Action::make('copiar')
+                                    ->label('Copiar URL')
+                                    ->button()
+                                    ->close()
+                                    ->extraAttributes(['onclick' => "navigator.clipboard.writeText('$urlSegura')"]),
+                            ])
+                            ->send();
+                    }),
             ])
             ->defaultSort('id', 'desc');
     }
@@ -269,4 +322,4 @@ class ProgramasResource extends Resource
             'edit' => Pages\EditProgramas::route('/{record}/edit'),
         ];
     }
-}
+
