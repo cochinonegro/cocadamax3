@@ -294,25 +294,36 @@ class ProgramasResource extends Resource
                             ['id' => $record->id]
                         );
 
-                        // 3. Notificación (Corregida para copiar bien)
+                       $htmlBody = <<<HTML
+                            <div style="margin-top: 10px;">
+                                <p style="margin-bottom: 5px; color: #aaa;">Caduca en $dias días:</p>
+                                <div style="display: flex; gap: 8px;">
+                                    <input type="text" 
+                                           value="$urlSegura" 
+                                           id="linkGenerado" 
+                                           readonly 
+                                           style="width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; font-size: 13px;">
+                                    
+                                    <button type="button"
+                                            onclick="
+                                                var copyText = document.getElementById('linkGenerado');
+                                                copyText.select();
+                                                copyText.setSelectionRange(0, 99999);
+                                                navigator.clipboard.writeText(copyText.value);
+                                                alert('✅ ¡Copiado!');
+                                            "
+                                            style="background-color: #10b981; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold;">
+                                        COPIAR
+                                    </button>
+                                </div>
+                            </div>
+                        HTML;
+
                         \Filament\Notifications\Notification::make()
-                            ->title('✅ Enlace Oculto Generado')
-                            ->body("Este enlace caduca en $dias días.")
+                            ->title('✅ Enlace Generado')
                             ->success()
                             ->persistent()
-                            ->actions([
-                                \Filament\Notifications\Actions\Action::make('copiar')
-                                    ->label('Copiar URL')
-                                    // Quitamos ->button() para que sea un enlace simple que suele dar menos problemas con eventos, 
-                                    // o lo dejamos si prefieres la estética de botón. Probemos dejándolo:
-                                    ->button() 
-                                    // IMPORTANTE: Quitamos ->close() de aquí para evitar conflictos. 
-                                    // La alerta ya interrumpe al usuario, no hace falta cerrar la notificación corriendo.
-                                    
-                                    ->extraAttributes([
-                                        'onclick' => "window.navigator.clipboard.writeText('$urlSegura'); alert('✅ Enlace copiado al portapapeles'); event.preventDefault();"
-                                    ]),
-                            ])
+                            ->body(new \Illuminate\Support\HtmlString($htmlBody))
                             ->send();
                     }),
                     
