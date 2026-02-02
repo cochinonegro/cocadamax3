@@ -288,7 +288,34 @@ class ProgramasResource extends Resource
                             ->title('✅ Enlace Generado')
                             ->success()
                             ->persistent()
-                            ->body(new HtmlString($htmlBody))
+                            ->body(new HtmlString("
+                                <div style='margin-top: 10px;'>
+                                    <p style='margin-bottom: 5px; color: #aaa;'>Caduca en $dias días:</p>
+                                    <div style='display: flex; gap: 8px;'>
+                                        <input type='text' 
+                                               value='$urlSegura' 
+                                               id='input_link_cliente' 
+                                               readonly 
+                                               style='width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; font-size: 13px;'>
+                                        
+                                        <button type='button'
+                                                onclick=\"
+                                                    var input = document.getElementById('input_link_cliente');
+                                                    input.select();
+                                                    input.setSelectionRange(0, 99999); /* Para móviles */
+                                                    try {
+                                                        document.execCommand('copy');
+                                                        alert('✅ ¡Copiado al portapapeles!');
+                                                    } catch (err) {
+                                                        alert('❌ Error al copiar. Por favor, cópialo manualmente de la caja.');
+                                                    }
+                                                \"
+                                                style='background-color: #10b981; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold;'>
+                                            COPIAR
+                                        </button>
+                                    </div>
+                                </div>
+                            "))
                             ->send();
                     }),
             ])
