@@ -16,13 +16,12 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\BadgeColumn;
 use Filament\Tables\Columns\ToggleColumn;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Tables\Enums\ActionsPosition;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
-
+use Illuminate\Support\HtmlString;
 
 class ProgramasResource extends Resource
 {
@@ -35,10 +34,8 @@ class ProgramasResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
-            ->columns(3) // Usamos 3 columnas para que se adapte mejor
+            ->columns(3)
             ->schema([
-
-                // --- SECCIÓN 1: UBICACIÓN (Aquí está la lógica nueva) ---
                 Forms\Components\Section::make('Ubicación del Archivo')
                     ->description('Selecciona si el archivo está en tus discos locales o en una web externa.')
                     ->schema([
@@ -68,14 +65,13 @@ class ProgramasResource extends Resource
                             ->helperText('Solo si NO usas discos locales'),
                     ])->columns(2),
 
-                // --- SECCIÓN 2: DETALLES (Aquí moví tus campos antiguos) ---
                 Forms\Components\Section::make('Detalles del Programa')
                     ->schema([
                         TextInput::make('progname')
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2), // Ocupa 2 espacios para verse mejor
+                            ->columnSpan(2),
 
                         TextInput::make('program_id')
                             ->label('Código')
@@ -95,7 +91,7 @@ class ProgramasResource extends Resource
                                 'arquitectura' => 'Arquitectura',
                                 'music' => 'Música',
                                 'video' => 'Video',
-                                'kontakt' => 'kontakt',
+                                'kontakt' => 'Kontakt',
                             ])
                             ->native(false),
 
@@ -131,7 +127,6 @@ class ProgramasResource extends Resource
                             ->required(),
                     ])->columns(3),
 
-                // --- SECCIÓN 3: DESCRIPCIÓN ---
                 Forms\Components\Section::make()
                     ->schema([
                         MarkdownEditor::make('description')
@@ -140,12 +135,11 @@ class ProgramasResource extends Resource
                     ]),
             ]);
     }
+
     public static function table(Table $table): Table
     {
         return $table
             ->columns([
-
-                // 1. STATUS (Switch)
                 ToggleColumn::make('show')
                     ->label('STATUS')
                     ->sortable()
@@ -157,7 +151,6 @@ class ProgramasResource extends Resource
                         }
                     }),
 
-                // 2. SISTEMA OPERATIVO
                 BadgeColumn::make('os_required')
                     ->label('Sist.Op')
                     ->colors([
@@ -172,7 +165,6 @@ class ProgramasResource extends Resource
                         default => strtoupper($state),
                     }),
 
-                // 3. CÓDIGO
                 TextColumn::make('id')
                     ->label('Código')
                     ->sortable()
@@ -183,39 +175,28 @@ class ProgramasResource extends Resource
                     ->badge()
                     ->color('info'),
 
-                // 4. NOMBRE
                 TextColumn::make('progname')
                     ->label('Nombre')
                     ->sortable()
                     ->searchable()
                     ->limit(40),
 
-                // 5. TAMAÑO
                 TextColumn::make('size')
                     ->badge()
                     ->label('Tamaño')
                     ->color('success')
                     ->sortable(),
 
-                // --- AQUÍ ESTÁ EL CAMBIO IMPORTANTE: EL BOTÓN DE DESCARGA ---
-               TextColumn::make('tipo_descarga')
+                TextColumn::make('tipo_descarga')
                     ->label('DESCARGAR')
                     ->badge()
-                    // Definimos manualmente el "Estado" (el texto que se ve)
                     ->state(fn ($record) => $record->disk_name ? 'LOCAL USB' : 'URL WEB')
-
-                    // Colores según el texto que acabamos de definir
                     ->color(fn ($state) => $state === 'LOCAL USB' ? 'success' : 'pink')
-
-                    // Iconos
                     ->icon(fn ($state) => $state === 'LOCAL USB' ? 'heroicon-o-server' : 'heroicon-o-globe-alt')
-
-                    // La acción de clic (Mantenemos tu lógica perfecta)
                     ->url(fn ($record) => $record->url)
-                    //->url(fn ($record) => route('download.local', ['id' => $record->id]))
                     ->openUrlInNewTab()
                     ->alignCenter(),
-                // 6. CATEGORÍA
+
                 BadgeColumn::make('category')
                     ->label('Categoría')
                     ->colors([
@@ -225,18 +206,6 @@ class ProgramasResource extends Resource
                         'gray' => fn ($state) => ! in_array($state, ['diseño grafico', 'music', 'kontakt']),
                     ])
                     ->sortable(),
-
-                // Ocultamos fecha y año por defecto para no saturar, pero se pueden activar
-                BadgeColumn::make('year_prog')
-                    ->label('Año')
-                    ->color('orange')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->sortable(),
-
-                TextColumn::make('date_add')
-                    ->label('Fecha Alta')
-                    ->date('d/m/Y')
-                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('category')
@@ -253,7 +222,6 @@ class ProgramasResource extends Resource
                     ->preload(),
             ])
             ->actions([
-                // --- TUS BOTONES ORIGINALES ---
                 Tables\Actions\EditAction::make()
                     ->icon('heroicon-o-pencil')
                     ->label('')
@@ -263,8 +231,7 @@ class ProgramasResource extends Resource
                     ->label('')
                     ->tooltip('Eliminar'),
 
-                // --- NUEVO BOTÓN: GENERAR LINK CLIENTE ---
-                \Filament\Tables\Actions\Action::make('generar_link')
+                Tables\Actions\Action::make('generar_link')
                     ->label('Link Cliente')
                     ->icon('heroicon-o-key')
                     ->color('success')
@@ -272,7 +239,7 @@ class ProgramasResource extends Resource
                     ->modalHeading('Generar Enlace Seguro')
                     ->modalDescription('El cliente descargará desde tu web, sin ver el enlace real.')
                     ->form([
-                        \Filament\Forms\Components\Select::make('duracion')
+                        Forms\Components\Select::make('duracion')
                             ->label('Caducidad del enlace')
                             ->options([
                                 '1' => '24 Horas',
@@ -282,19 +249,17 @@ class ProgramasResource extends Resource
                             ->default('3')
                             ->required(),
                     ])
-                   ->action(function ($record, array $data) {
-                        // 1. Calcular fecha
+                    ->action(function ($record, array $data) {
                         $dias = (int) $data['duracion'];
                         $fechaCaducidad = now()->addDays($dias);
 
-                        // 2. Generar la URL firmada que apunta a TU web.php
-                        $urlSegura = \Illuminate\Support\Facades\URL::temporarySignedRoute(
+                        $urlSegura = URL::temporarySignedRoute(
                             'cliente.descarga', 
                             $fechaCaducidad, 
                             ['id' => $record->id]
                         );
 
-                       $htmlBody = <<<HTML
+                        $htmlBody = <<<HTML
                             <div style="margin-top: 10px;">
                                 <p style="margin-bottom: 5px; color: #aaa;">Caduca en $dias días:</p>
                                 <div style="display: flex; gap: 8px;">
@@ -319,14 +284,13 @@ class ProgramasResource extends Resource
                             </div>
                         HTML;
 
-                        \Filament\Notifications\Notification::make()
+                        Notification::make()
                             ->title('✅ Enlace Generado')
                             ->success()
                             ->persistent()
-                            ->body(new \Illuminate\Support\HtmlString($htmlBody))
+                            ->body(new HtmlString($htmlBody))
                             ->send();
                     }),
-                    
             ])
             ->defaultSort('id', 'desc');
     }
