@@ -303,12 +303,14 @@ class ProgramasResource extends Resource
                             ->actions([
                                 \Filament\Notifications\Actions\Action::make('copiar')
                                     ->label('Copiar URL')
-                                    ->button()
-                                    ->close()
-                                    // EL TRUCO ESTÁ AQUÍ: Pasamos la variable $urlSegura dentro de las comillas
+                                    // Quitamos ->button() para que sea un enlace simple que suele dar menos problemas con eventos, 
+                                    // o lo dejamos si prefieres la estética de botón. Probemos dejándolo:
+                                    ->button() 
+                                    // IMPORTANTE: Quitamos ->close() de aquí para evitar conflictos. 
+                                    // La alerta ya interrumpe al usuario, no hace falta cerrar la notificación corriendo.
+                                    
                                     ->extraAttributes([
-                                        // CAMBIO CLAVE: Usamos 'x-on:click' en lugar de 'onclick'
-                                        'x-on:click' => "window.navigator.clipboard.writeText('$urlSegura'); alert('¡Enlace copiado!');"
+                                        'onclick' => "window.navigator.clipboard.writeText('$urlSegura'); alert('✅ Enlace copiado al portapapeles'); event.preventDefault();"
                                     ]),
                             ])
                             ->send();
