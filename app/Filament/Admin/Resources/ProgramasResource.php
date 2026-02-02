@@ -211,7 +211,8 @@ class ProgramasResource extends Resource
                     ->icon(fn ($state) => $state === 'LOCAL USB' ? 'heroicon-o-server' : 'heroicon-o-globe-alt')
 
                     // La acción de clic (Mantenemos tu lógica perfecta)
-                    ->url(fn ($record) => route('download.local', ['id' => $record->id]))
+                    ->url(fn ($record) => $record->url)
+                    //->url(fn ($record) => route('download.local', ['id' => $record->id]))
                     ->openUrlInNewTab()
                     ->alignCenter(),
                 // 6. CATEGORÍA
