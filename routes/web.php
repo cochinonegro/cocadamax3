@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
 use App\Models\Programas;
 
 Route::get('/', function () {
@@ -9,33 +8,33 @@ Route::get('/', function () {
 });
 
 // =============================================================================
-// RUTA DE DESCARGA SEGURA PARA CLIENTES
+// RUTA DE DESCARGA SEGURA (MODO OCULTO / PROXY)
 // =============================================================================
-// Esta ruta recibe el ID del programa y valida la firma automáticamente.
-// Nombre de la ruta: 'cliente.descarga' (lo usaremos luego en Filament).
-
-Route::get('/descarga-privada/{id}', function (Request $request, $id) {
+Route::get('/descarga-segura/{id}', function ($id) {
     
-    // 1. VALIDACIÓN DE SEGURIDAD (EL PORTERO)
-    // Laravel verifica que el hash de la URL coincida y que no haya expirado.
-    if (! $request->hasValidSignature()) {
-        // Si la firma falla, abortamos con error 403 (Prohibido).
-        abort(403, '⛔ ENLACE NO VÁLIDO O CADUCADO. Contacta con el administrador.');
+    // 1. Verificar seguridad (firma y caducidad)
+    if (! request()->hasValidSignature()) {
+        abort(403, '⛔ El enlace ha caducado o no es válido.');
     }
 
-    // 2. BUSCAR EL PROGRAMA
-    // Buscamos en la base de datos el programa con ese ID.
-    $programa = Programas::findOrFail($id);
+    // 2. Buscar el programa
+    // Usamos 'Programas' tal cual lo tienes en tus modelos
+    $programa = \App\Models\Programas::findOrFail($id); 
 
-    // 3. REDIRECCIÓN A LA NUBE (DigiStorage / pCloud)
-    // Verificamos si tienes guardado el enlace externo.
-    if ($programa->url) {
-        // 'redirect()->away()' saca al usuario de tu web y lo lleva a la nube
-        // para que descargue el archivo directamente desde allí.
-        return redirect()->away($programa->url);
+    if (empty($programa->url)) {
+        abort(404, 'No hay enlace configurado para este programa.');
     }
 
-    // 4. SI NO HAY ENLACE
-    return "❌ Error: Este programa no tiene un enlace de descarga (URL) configurado.";
+    // 3. MODO STREAMING (Optimizado para DigiStorage)
+    // Usamos headers para forzar la descarga y readfile para no gastar RAM.
+    
+    // Intentamos limpiar el nombre (quitar parámetros extra de la URL si los hubiera)
+    $nombreLimpio = basename(parse_url($programa->url, PHP_URL_PATH));
+    
+    return response()->streamDownload(function () use ($programa) {
+        // 'readfile' es mucho más rápido y ligero que 'file_get_contents'
+        // Lee el archivo de DigiStorage y lo escupe directo al cliente.
+        readfile($programa->url);
+    }, $nombreLimpio);
 
-})->name('cliente.descarga')->middleware('signed'); // 'signed' activa la protección de Laravel.
+})->name('cliente.descarga'); // Este nombre conecta con tu botón de Filament

@@ -270,7 +270,7 @@ class ProgramasResource extends Resource
                     ->color('success')
                     ->requiresConfirmation()
                     ->modalHeading('Generar Enlace Seguro')
-                    ->modalDescription('Elige cuánto tiempo funcionará este enlace.')
+                    ->modalDescription('El cliente descargará desde tu web, sin ver el enlace real.')
                     ->form([
                         \Filament\Forms\Components\Select::make('duracion')
                             ->label('Caducidad del enlace')
@@ -278,28 +278,26 @@ class ProgramasResource extends Resource
                                 '1' => '24 Horas',
                                 '3' => '3 Días',
                                 '7' => '1 Semana',
-                                '30' => '1 Mes',
-                                '365' => '1 Año',
                             ])
                             ->default('3')
                             ->required(),
                     ])
-                    ->action(function ($record, array $data) {
+                   ->action(function ($record, array $data) {
                         // 1. Calcular fecha
                         $dias = (int) $data['duracion'];
                         $fechaCaducidad = now()->addDays($dias);
 
-                        // 2. Generar URL (Debe coincidir con el nombre en web.php)
+                        // 2. Generar la URL firmada que apunta a TU web.php
                         $urlSegura = \Illuminate\Support\Facades\URL::temporarySignedRoute(
                             'cliente.descarga', 
                             $fechaCaducidad, 
                             ['id' => $record->id]
                         );
 
-                        // 3. Notificación con botón de copiar
+                        // 3. Notificación (Corregida para copiar bien)
                         \Filament\Notifications\Notification::make()
-                            ->title('✅ Enlace Generado')
-                            ->body("Validez: $dias días.<br><strong>Cópialo aquí abajo:</strong>")
+                            ->title('✅ Enlace Oculto Generado')
+                            ->body("Este enlace caduca en $dias días.")
                             ->success()
                             ->persistent()
                             ->actions([
@@ -307,10 +305,12 @@ class ProgramasResource extends Resource
                                     ->label('Copiar URL')
                                     ->button()
                                     ->close()
-                                    ->extraAttributes(['onclick' => "navigator.clipboard.writeText('$urlSegura')"]),
+                                    // EL TRUCO ESTÁ AQUÍ: Pasamos la variable $urlSegura dentro de las comillas
+                                    ->extraAttributes(['onclick' => "window.navigator.clipboard.writeText('$urlSegura'); alert('Copiado');"]),
                             ])
                             ->send();
                     }),
+                    
             ])
             ->defaultSort('id', 'desc');
     }
