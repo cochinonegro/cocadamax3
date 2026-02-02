@@ -306,7 +306,10 @@ class ProgramasResource extends Resource
                                     ->button()
                                     ->close()
                                     // EL TRUCO ESTÁ AQUÍ: Pasamos la variable $urlSegura dentro de las comillas
-                                    ->extraAttributes(['onclick' => "window.navigator.clipboard.writeText('$urlSegura'); alert('Copiado');"]),
+                                    ->extraAttributes([
+                                        // CAMBIO CLAVE: Usamos 'x-on:click' en lugar de 'onclick'
+                                        'x-on:click' => "window.navigator.clipboard.writeText('$urlSegura'); alert('¡Enlace copiado!');"
+                                    ]),
                             ])
                             ->send();
                     }),
