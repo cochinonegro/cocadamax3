@@ -284,33 +284,27 @@ class ProgramasResource extends Resource
                             </div>
                         HTML;
 
+                        $urlSeguraJS = addslashes($urlSegura);
+
                         Notification::make()
                             ->title('✅ Enlace Generado')
                             ->success()
                             ->persistent()
                             ->body(new HtmlString("
-                                <div style='margin-top: 10px;'>
-                                    <p style='margin-bottom: 5px; color: #aaa;'>Caduca en $dias días:</p>
+                                <div x-data=\"{ url: '{$urlSeguraJS}' }\" style='margin-top: 10px;'>
+                                    <p style='margin-bottom: 8px; color: #aaa; font-size: 0.9em;'>Caduca en {$dias} días:</p>
                                     <div style='display: flex; gap: 8px;'>
                                         <input type='text' 
-                                               value='$urlSegura' 
-                                               id='input_link_cliente' 
+                                               x-model='url' 
                                                readonly 
                                                style='width: 100%; padding: 8px; border-radius: 6px; border: 1px solid #444; background: #222; color: #fff; font-size: 13px;'>
                                         
                                         <button type='button'
-                                                onclick=\"
-                                                    var input = document.getElementById('input_link_cliente');
-                                                    input.select();
-                                                    input.setSelectionRange(0, 99999); /* Para móviles */
-                                                    try {
-                                                        document.execCommand('copy');
-                                                        alert('✅ ¡Copiado al portapapeles!');
-                                                    } catch (err) {
-                                                        alert('❌ Error al copiar. Por favor, cópialo manualmente de la caja.');
-                                                    }
+                                                x-on:click=\"
+                                                    window.navigator.clipboard.writeText(url);
+                                                    alert('✅ ¡Enlace copiado al portapapeles!');
                                                 \"
-                                                style='background-color: #10b981; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold;'>
+                                                style='background-color: #10b981; color: white; border: none; padding: 0 15px; border-radius: 6px; cursor: pointer; font-weight: bold; white-space: nowrap;'>
                                             COPIAR
                                         </button>
                                     </div>
