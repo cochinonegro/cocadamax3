@@ -10,7 +10,7 @@ class Dashboard extends BaseDashboard
 {
     protected static ?string $title = 'Escritorio';
     protected static ?string $navigationLabel = 'Escritorio';
-    protected static ?string $navigationIcon = 'heroicon-o-home';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
 
     /*protected function getHeaderWidgets(): array
     {

@@ -6,5 +6,5 @@ use Filament\Widgets\Widget;
 
 class QuickAccessWidget extends Widget
 {
-    protected static string $view = 'filament.admin.widgets.quick-access';
+    protected string $view = 'filament.admin.widgets.quick-access';
 }

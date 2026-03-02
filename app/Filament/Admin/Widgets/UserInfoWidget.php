@@ -6,7 +6,7 @@ use Filament\Widgets\Widget;
 
 class UserInfoWidget extends Widget
 {
-    protected static string $view = 'filament.admin.widgets.user-info';
+    protected string $view = 'filament.admin.widgets.user-info';
 
     protected static ?int $sort = 2;
 }
