@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Programas\Pages;
 use App\Filament\Admin\Resources\Programas\ProgramasResource;
 use App\Filament\Admin\Resources\Programas\Schemas\ProgramasForm;
 use App\Filament\Concerns\PersistsProgramaWizardProgress;
+use App\Filament\Support\ProgramaImageUpload;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
@@ -27,7 +28,9 @@ class EditProgramas extends EditRecord
 
     protected function mutateFormDataBeforeFill(array $data): array
     {
-        return ProgramasForm::hydrateOsCheckboxes($data);
+        $data = ProgramasForm::hydrateOsCheckboxes($data);
+
+        return ProgramaImageUpload::normalizeFormImagePaths($data);
     }
 
     protected function getHeaderActions(): array

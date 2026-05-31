@@ -3,6 +3,7 @@
 namespace App\Filament\Concerns;
 
 use App\Filament\Admin\Resources\Programas\Schemas\ProgramasForm;
+use App\Filament\Support\ProgramaImageUpload;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
@@ -22,6 +23,7 @@ trait PersistsProgramaWizardProgress
     {
         $data = $this->normalizeProgramaVisibility($data);
         $data = $this->normalizeInstallationSteps($data);
+        $data = ProgramaImageUpload::normalizeFormImagePaths($data);
 
         if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
             $data['gallery_images'] = array_values(array_filter($data['gallery_images']));

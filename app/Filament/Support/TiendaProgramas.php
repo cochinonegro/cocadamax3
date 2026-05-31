@@ -4,7 +4,6 @@ namespace App\Filament\Support;
 
 use App\Models\Programas;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class TiendaProgramas
@@ -63,7 +62,7 @@ class TiendaProgramas
             return null;
         }
 
-        return Storage::disk('public')->url($images[0]);
+        return ProgramaImageUpload::publicUrl($images[0], 'programas/gallery');
     }
 
     public static function plainDescription(Programas $programa, int $limit = 160): ?string

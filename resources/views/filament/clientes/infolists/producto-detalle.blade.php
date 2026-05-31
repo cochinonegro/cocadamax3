@@ -1,7 +1,6 @@
 @php
     use App\Filament\Support\ProgramaCategories;
     use App\Filament\Support\ProgramasTableColumns;
-    use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
     /** @var \App\Models\Programas $record */
@@ -26,7 +25,7 @@
     <div class="space-y-3">
         @forelse ($images as $image)
             <img
-                src="{{ Storage::disk('public')->url($image) }}"
+                src="{{ \App\Filament\Support\ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
                 alt="{{ $record->progname }}"
                 class="w-full rounded-xl border border-gray-200 object-cover dark:border-gray-700"
             />
