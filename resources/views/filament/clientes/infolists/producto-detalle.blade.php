@@ -80,28 +80,28 @@
 <div class="cliente-producto-layout">
     <div class="cliente-producto-gallery">
         @forelse ($images as $image)
-            <img
-                src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
-                alt="{{ $record->progname }}"
-                @class([
-                    'cliente-producto-thumb',
-                    'cliente-producto-thumb--secondary' => ! $loop->first,
-                ])
-                @if ($loop->first) style="width:4.5rem;height:4.5rem;max-width:4.5rem;object-fit:cover;" @else style="width:3.5rem;height:2.625rem;max-width:3.5rem;object-fit:cover;" @endif
-            />
+            <div @class([
+                'cliente-producto-frame',
+                'cliente-producto-frame--secondary' => ! $loop->first,
+            ])>
+                <img
+                    src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
+                    alt="{{ $record->progname }}"
+                />
+            </div>
         @empty
             <div class="cliente-producto-placeholder">
-                Sin imágenes
+                Sin imágenes del producto
             </div>
         @endforelse
     </div>
 
-    <div class="min-w-0 space-y-4">
-        <dl class="grid grid-cols-2 gap-3 gap-x-4 md:grid-cols-4">
+    <div class="cliente-producto-content">
+        <dl class="cliente-producto-meta">
             @foreach ($metaFields as $field)
-                <div>
-                    <dt class="text-xs text-zinc-400">{{ $field['label'] }}</dt>
-                    <dd class="mt-1.5">
+                <div class="cliente-producto-meta-item">
+                    <dt>{{ $field['label'] }}</dt>
+                    <dd>
                         <span class="{{ $field['badge'] }}">
                             {{ $field['value'] }}
                         </span>
@@ -111,8 +111,8 @@
         </dl>
 
         @if ($webOficialUrl)
-            <div class="text-sm">
-                <p class="text-xs text-zinc-400">Web oficial</p>
+            <div class="cliente-producto-web">
+                <p class="cliente-producto-web-label">Web oficial</p>
                 <a
                     href="{{ $webOficialUrl }}"
                     target="_blank"
@@ -124,7 +124,7 @@
             </div>
         @endif
 
-        <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
+        <div class="cliente-producto-descripcion">
             <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
             @if (filled($record->description))
                 <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
