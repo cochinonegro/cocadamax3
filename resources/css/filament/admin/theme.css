@@ -225,6 +225,11 @@
   padding-top: 0;
 }
 
+.programa-detalles-section > .fi-section-content-ctn > .fi-sc > .programa-detalles-group:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
 .programa-detalles-group--last {
   padding-bottom: 0;
 }

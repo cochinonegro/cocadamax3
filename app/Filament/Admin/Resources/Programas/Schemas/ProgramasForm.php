@@ -52,30 +52,6 @@ class ProgramasForm
             ->description('Datos principales del programa')
             ->afterValidation(self::persistAfterValidation())
             ->schema([
-                Section::make('Ubicación del archivo')
-                    ->collapsed()
-                    ->description('Opcional. Solo si el archivo está en un disco local.')
-                    ->schema([
-                        Select::make('disk_name')
-                            ->label('Disco local')
-                            ->options([
-                                'disco_sibi' => 'Disco SIBI',
-                                'disco_laila' => 'Disco LAILA',
-                                'disco_hdd' => 'Disco HDD',
-                                'disco_data' => 'Disco DATA',
-                            ])
-                            ->placeholder('Selecciona un disco…')
-                            ->native(false)
-                            ->live(),
-
-                        TextInput::make('file_path')
-                            ->label('Ruta del archivo')
-                            ->placeholder('Ej: AA PROGRAMAS/Installer.zip')
-                            ->required(fn (Get $get) => filled($get('disk_name')))
-                            ->maxLength(255),
-                    ])
-                    ->columns(2),
-
                 Section::make('Detalles del programa')
                     ->extraAttributes(['class' => 'programa-detalles-section'])
                     ->schema([
@@ -96,7 +72,8 @@ class ProgramasForm
                                     ->maxLength(255)
                                     ->columnSpanFull(),
                             ])
-                            ->columns(2),
+                            ->columns(2)
+                            ->columnSpanFull(),
 
                         Section::make('Clasificación')
                             ->extraAttributes(['class' => 'programa-detalles-group'])
@@ -147,11 +124,7 @@ class ProgramasForm
                                     ])
                                     ->native(false),
                             ])
-                            ->columns([
-                                'default' => 1,
-                                'sm' => 2,
-                                'lg' => 4,
-                            ]),
+                            ->columns(1),
 
                         Section::make('Ficha técnica')
                             ->extraAttributes(['class' => 'programa-detalles-group'])
@@ -196,14 +169,10 @@ class ProgramasForm
                                     ->default(now())
                                     ->required(),
                             ])
-                            ->columns([
-                                'default' => 1,
-                                'sm' => 2,
-                                'lg' => 4,
-                            ]),
+                            ->columns(1),
 
                         Section::make('Visibilidad')
-                            ->extraAttributes(['class' => 'programa-detalles-group programa-detalles-group--last'])
+                            ->extraAttributes(['class' => 'programa-detalles-group'])
                             ->schema([
                                 Toggle::make('show')
                                     ->label('Visible para clientes')
@@ -219,14 +188,43 @@ class ProgramasForm
                                     ->columnSpan([
                                         'default' => 1,
                                         'sm' => 2,
-                                        'lg' => 3,
                                     ]),
                             ])
                             ->columns([
                                 'default' => 1,
                                 'sm' => 2,
-                                'lg' => 4,
-                            ]),
+                            ])
+                            ->columnSpanFull(),
+
+                        Section::make('Ubicación del archivo')
+                            ->extraAttributes(['class' => 'programa-detalles-group programa-detalles-group--last'])
+                            ->collapsed()
+                            ->description('Opcional. Solo si el archivo está en un disco local.')
+                            ->schema([
+                                Select::make('disk_name')
+                                    ->label('Disco local')
+                                    ->options([
+                                        'disco_sibi' => 'Disco SIBI',
+                                        'disco_laila' => 'Disco LAILA',
+                                        'disco_hdd' => 'Disco HDD',
+                                        'disco_data' => 'Disco DATA',
+                                    ])
+                                    ->placeholder('Selecciona un disco…')
+                                    ->native(false)
+                                    ->live(),
+
+                                TextInput::make('file_path')
+                                    ->label('Ruta del archivo')
+                                    ->placeholder('Ej: AA PROGRAMAS/Installer.zip')
+                                    ->required(fn (Get $get) => filled($get('disk_name')))
+                                    ->maxLength(255),
+                            ])
+                            ->columns(2)
+                            ->columnSpanFull(),
+                    ])
+                    ->columns([
+                        'default' => 1,
+                        'md' => 2,
                     ]),
             ]);
     }
