@@ -2,8 +2,10 @@
 
 namespace App\Filament\Clientes\Resources\Programas\Pages;
 
+use App\Filament\Clientes\Pages\Tienda\TiendaElegirOs;
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\HasProgramasOsTabs;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProgramas extends ListRecords
@@ -14,6 +16,12 @@ class ListProgramas extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [];
+        return [
+            Action::make('ver_tienda')
+                ->label('VER TIENDA')
+                ->icon('heroicon-o-building-storefront')
+                ->color('primary')
+                ->url(TiendaElegirOs::getUrl()),
+        ];
     }
 }

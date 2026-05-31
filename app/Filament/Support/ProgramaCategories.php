@@ -30,7 +30,7 @@ class ProgramaCategories
     /** @return list<string> */
     public static function withSubcategories(): array
     {
-        return ['music', 'office-pdf', 'aplicaciones'];
+        return ['music', 'office-pdf', 'aplicaciones', 'diseño grafico'];
     }
 
     public static function hasSubcategories(?string $category): bool
@@ -58,6 +58,11 @@ class ProgramaCategories
                 'tools' => 'Tools',
                 'drivers' => 'Drivers',
                 'sist_op' => 'Sist.Op',
+                'otros' => 'Otros',
+            ],
+            'diseño grafico' => [
+                'video' => 'Video',
+                'diseno' => 'Diseño',
                 'otros' => 'Otros',
             ],
             default => null,
