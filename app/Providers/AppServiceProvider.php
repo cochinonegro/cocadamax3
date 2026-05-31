@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use BezhanSalleh\PanelSwitch\PanelSwitch;
+use Carbon\Carbon;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -18,6 +20,9 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+        App::setLocale(config('app.locale', 'es'));
+        Carbon::setLocale(config('app.locale', 'es'));
+
         FilamentColor::register([
             'blue' => Color::Blue,
             'sky' => Color::Sky,

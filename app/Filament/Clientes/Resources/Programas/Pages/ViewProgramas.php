@@ -9,6 +9,8 @@ class ViewProgramas extends ViewRecord
 {
     protected static string $resource = ProgramasResource::class;
 
+    protected static ?string $title = 'Ver programa';
+
     protected function getHeaderActions(): array
     {
         return [];

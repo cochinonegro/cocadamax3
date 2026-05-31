@@ -36,17 +36,21 @@ class ProgramasResource extends Resource
     public static function infolist(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
                 ViewEntry::make('progname')
                     ->hiddenLabel()
-                    ->view('filament.clientes.infolists.producto-detalle'),
+                    ->view('filament.clientes.infolists.producto-detalle')
+                    ->columnSpanFull(),
 
-                Section::make('INSTALACION')
-                    ->collapsed()
+                Section::make('Instalación')
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'cliente-instalacion-section'])
                     ->schema([
                         ViewEntry::make('installation_steps')
                             ->hiddenLabel()
-                            ->view('filament.clientes.infolists.instalacion'),
+                            ->view('filament.clientes.infolists.instalacion')
+                            ->columnSpanFull(),
                     ]),
             ]);
     }

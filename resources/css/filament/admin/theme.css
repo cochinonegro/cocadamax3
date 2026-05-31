@@ -141,3 +141,21 @@
   align-items: center;
   gap: 0.5rem;
 }
+
+/* Vista programa cliente — instalación a ancho completo */
+.fi-panel-clientes .cliente-instalacion-section,
+.fi-panel-clientes .cliente-instalacion-section .fi-section,
+.fi-panel-clientes .cliente-instalacion-section .fi-section-content-ctn {
+  grid-column: 1 / -1;
+  width: 100%;
+  max-width: none;
+}
+
+.fi-panel-clientes .cliente-instalacion {
+  width: 100%;
+  max-width: none;
+}
+
+.fi-panel-clientes .fi-resource-view-record-page .fi-page-main {
+  max-width: none;
+}
