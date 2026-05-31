@@ -19,7 +19,7 @@ class ProgramasResource extends Resource
 {
     protected static ?string $model = Programas::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-cpu-chip';
+    protected static ?string $navigationIcon = 'heroicon-o-cpu-chip';
 
     protected static ?string $navigationLabel = 'Programas';
 

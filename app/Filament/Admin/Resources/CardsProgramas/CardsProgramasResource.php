@@ -12,7 +12,7 @@ class CardsProgramasResource extends Resource
 {
     protected static ?string $model = Programas::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-squares-2x2';
+    protected static ?string $navigationIcon = 'heroicon-o-squares-2x2';
 
     protected static ?string $navigationLabel = 'Cards Programas';
 
