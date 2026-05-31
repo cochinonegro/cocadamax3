@@ -201,24 +201,41 @@ class ProgramasResource extends Resource
                     ->columnSpanFull()
                     ->collapsed()
                     ->schema([
+                        Section::make('Imagen del instalador')
+                            ->description('Primera imagen que verá el cliente en la guía de instalación.')
+                            ->schema([
+                                ProgramaImageUpload::installerPhoto()
+                                    ->columnSpanFull(),
+                            ]),
+
                         MarkdownEditor::make('info_install')
                             ->label('Información sobre esta instalación')
                             ->columnSpanFull(),
 
                         Repeater::make('installation_steps')
                             ->label('Pasos de instalación')
-                            ->maxItems(4)
                             ->defaultItems(0)
                             ->addActionLabel('Agregar paso')
+                            ->reorderable()
+                            ->itemLabel(fn (array $state): ?string => filled($state['title'] ?? null)
+                                ? $state['title']
+                                : 'Nuevo paso')
                             ->schema([
+                                TextInput::make('title')
+                                    ->label('Título')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
+                                Textarea::make('description')
+                                    ->label('Descripción')
+                                    ->rows(4)
+                                    ->required()
+                                    ->columnSpanFull(),
                                 ProgramaImageUpload::installationStep()
-                                    ->required(),
-                                Textarea::make('text')
-                                    ->label('Instrucciones')
-                                    ->rows(5)
-                                    ->required(),
+                                    ->required()
+                                    ->columnSpanFull(),
                             ])
-                            ->columns(2)
+                            ->columns(1)
                             ->columnSpanFull(),
                     ]),
             ]);

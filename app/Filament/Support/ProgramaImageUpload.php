@@ -44,6 +44,12 @@ class ProgramaImageUpload
     public static function installationStep(): FileUpload
     {
         return self::make('image', 'programas/instalacion')
-            ->label('Foto');
+            ->label('Foto del paso');
+    }
+
+    public static function installerPhoto(): FileUpload
+    {
+        return self::make('foto_instalador', 'programas/instalador')
+            ->label('Imagen del instalador');
     }
 }

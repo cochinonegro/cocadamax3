@@ -23,6 +23,7 @@ class Programas extends Model
         'gallery_images',
         'installation_steps',
         'info_install',
+        'foto_instalador',
         'url',
         'show',
         'show_until',
