@@ -47,7 +47,7 @@
             <h2 class="text-2xl font-bold text-gray-950 dark:text-white">{{ $record->progname }}</h2>
         </div>
 
-        <dl class="grid grid-cols-2 gap-3 text-sm">
+        <dl class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3 lg:grid-cols-4">
             <div>
                 <dt class="text-gray-500 dark:text-gray-400">Código</dt>
                 <dd class="font-medium text-gray-950 dark:text-white">{{ $codigo }}</dd>
@@ -101,7 +101,7 @@
                 </div>
             @endif
             @if ($webOficialUrl)
-                <div class="col-span-2">
+                <div class="col-span-2 sm:col-span-3 lg:col-span-4">
                     <dt class="text-gray-500 dark:text-gray-400">Web oficial</dt>
                     <dd>
                         <a
