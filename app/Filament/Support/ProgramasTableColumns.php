@@ -128,7 +128,7 @@ class ProgramasTableColumns
                 ->url(fn (Programas $record): ?string => self::webOficialUrl($record->web_oficial))
                 ->openUrlInNewTab()
                 ->sortable()
-                ->visible($withWebOficial),
+                ->toggledHiddenByDefault(! $withWebOficial),
 
             TextColumn::make('year_prog')
                 ->label('Año')
@@ -214,10 +214,14 @@ class ProgramasTableColumns
      */
     private static function withToggleableColumns(array $columns): array
     {
-        return array_map(
-            fn (Column $column): Column => $column->toggleable(),
-            $columns,
-        );
+        return array_map(function (Column $column): Column {
+            $hiddenByDefault = $column->isToggledHiddenByDefault();
+
+            return $column->toggleable(
+                condition: true,
+                isToggledHiddenByDefault: $hiddenByDefault,
+            );
+        }, $columns);
     }
 
     public static function osRequiredLabel(?string $state): string

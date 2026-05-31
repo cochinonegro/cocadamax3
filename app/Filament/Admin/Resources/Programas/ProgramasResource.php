@@ -47,7 +47,9 @@ class ProgramasResource extends Resource
                 withStatus: true,
                 copyDownloadUrlOnly: true,
             ))
+            ->columnManager()
             ->reorderableColumns()
+            ->persistColumnsInSession()
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
