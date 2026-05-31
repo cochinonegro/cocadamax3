@@ -2,6 +2,8 @@
 
 namespace App\Filament\Concerns;
 
+use App\Filament\Support\ProgramaCategories;
+use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\CreateRecord;
@@ -22,6 +24,14 @@ trait PersistsProgramaWizardProgress
 
         if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
             $data['gallery_images'] = array_values(array_filter($data['gallery_images']));
+        }
+
+        if (blank($data['working'] ?? null) && ! ProgramaCategories::hasSubcategories($data['category'] ?? null)) {
+            $data['working'] = null;
+        }
+
+        if (filled($data['url'] ?? null)) {
+            $data['url'] = ProgramasTableColumns::downloadUrl($data['url']);
         }
 
         return $data;
