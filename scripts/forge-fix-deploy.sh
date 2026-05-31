@@ -29,7 +29,8 @@ COMMIT=$(git rev-parse --short HEAD)
 echo "==> Commit DESPUÉS: $(git log -1 --oneline)"
 
 echo "==> composer install..."
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+composer dump-autoload --optimize
 
 echo "==> Laravel..."
 php artisan migrate --force

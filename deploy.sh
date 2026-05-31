@@ -17,8 +17,12 @@ git reset --hard "origin/${FORGE_SITE_BRANCH:-main}"
 COMMIT=$(git rev-parse --short HEAD)
 echo "==> Commit: $(git log -1 --oneline)"
 
-composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
+# --no-scripts evita cargar Laravel mientras Composer cambia Filament v4→v5
+echo "==> composer install..."
+composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
+composer dump-autoload --optimize
 
+echo "==> Laravel..."
 php artisan migrate --force
 php artisan optimize:clear
 php artisan filament:optimize-clear 2>/dev/null || true
