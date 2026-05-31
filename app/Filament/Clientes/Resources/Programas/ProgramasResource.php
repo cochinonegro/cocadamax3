@@ -84,7 +84,7 @@ class ProgramasResource extends Resource
             ])
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay programas disponibles')
-            ->emptyStateDescription('Los programas aparecerán aquí cuando estén activos.');
+            ->emptyStateDescription('Los programas aparecerán aquí cuando el STATUS esté activo en administración.');
     }
 
     public static function getPages(): array

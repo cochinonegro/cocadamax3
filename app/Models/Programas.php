@@ -52,32 +52,28 @@ class Programas extends Model
             $programa->show = true;
             $programa->show_until ??= now()->addYear();
         });
+
+        static::saving(function (self $programa): void {
+            if (! $programa->show) {
+                return;
+            }
+
+            if (blank($programa->show_until) || $programa->show_until->isPast()) {
+                $programa->show_until = now()->addYear();
+            }
+        });
     }
 
     public function isVisibleToClients(): bool
     {
-        if (! $this->show) {
-            return false;
-        }
-
-        if (blank($this->show_until)) {
-            return true;
-        }
-
-        return $this->show_until->greaterThanOrEqualTo(now());
+        return (bool) $this->show;
     }
 
     /**
-     * Solo programas visibles para clientes (show activo y no vencido).
+     * Programas con STATUS activo en admin (mismo criterio que la columna STATUS).
      */
     public function scopeActive(Builder $query): Builder
     {
-        return $query
-            ->where('show', true)
-            ->where(function (Builder $query): void {
-                $query
-                    ->whereNull('show_until')
-                    ->orWhere('show_until', '>=', now());
-            });
+        return $query->where('show', true);
     }
 }

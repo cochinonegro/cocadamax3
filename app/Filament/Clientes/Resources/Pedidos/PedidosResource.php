@@ -109,7 +109,7 @@ class PedidosResource extends Resource
             )
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay pedidos disponibles')
-            ->emptyStateDescription('Los programas aparecerán aquí cuando el administrador los active.');
+            ->emptyStateDescription('Los programas aparecerán aquí cuando el STATUS esté activo en administración.');
     }
 
     public static function getPages(): array
