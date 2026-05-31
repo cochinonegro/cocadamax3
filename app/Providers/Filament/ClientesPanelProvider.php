@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Clientes\Resources\Programas\ProgramasResource;
+use App\Filament\Clientes\Resources\Pedidos\PedidosResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,12 +27,11 @@ class ClientesPanelProvider extends PanelProvider
             ->path('clientes')
             ->login()
             ->brandName('Catálogo de Programas')
-            ->homeUrl(fn (): string => ProgramasResource::getUrl())
+            ->homeUrl(fn (): string => PedidosResource::getUrl())
             ->colors([
                 'primary' => Color::Amber,
             ])
-            ->sidebarCollapsibleOnDesktop()
-            ->sidebarWidth('14rem')
+            ->topNavigation()
             ->maxContentWidth(Width::Full)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Clientes/Resources'), for: 'App\\Filament\\Clientes\\Resources')
