@@ -4,24 +4,29 @@ namespace App\Filament\Admin\Widgets;
 
 use App\Models\Venta;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 
-class VentasUltimos10DiasChart extends ChartWidget
+class VentasMesPasadoChart extends ChartWidget
 {
     protected static bool $isDiscovered = false;
 
-    protected ?string $heading = 'Ventas de los últimos 10 días';
-
-    protected static ?int $sort = 0;
+    protected static ?int $sort = 1;
 
     protected int | string | array $columnSpan = 1;
 
+    public function getHeading(): ?string
+    {
+        $mes = now()->subMonth()->locale('es')->translatedFormat('F Y');
+
+        return "Ventas de {$mes}";
+    }
+
     protected function getData(): array
     {
-        $inicio = now()->subDays(9)->startOfDay();
+        $inicio = now()->subMonth()->startOfMonth();
+        $fin = now()->subMonth()->endOfMonth();
 
         $conteos = Venta::query()
-            ->whereDate('fecha_venta', '>=', $inicio)
+            ->whereBetween('fecha_venta', [$inicio->toDateString(), $fin->toDateString()])
             ->selectRaw('DATE(fecha_venta) as dia, COUNT(*) as total')
             ->groupByRaw('DATE(fecha_venta)')
             ->pluck('total', 'dia');
@@ -29,10 +34,10 @@ class VentasUltimos10DiasChart extends ChartWidget
         $etiquetas = [];
         $datos = [];
 
-        for ($i = 0; $i < 10; $i++) {
-            $fecha = Carbon::today()->subDays(9 - $i);
+        for ($dia = 1; $dia <= $inicio->daysInMonth; $dia++) {
+            $fecha = $inicio->copy()->day($dia);
             $clave = $fecha->toDateString();
-            $etiquetas[] = $fecha->format('d/m');
+            $etiquetas[] = (string) $dia;
             $datos[] = (int) ($conteos[$clave] ?? 0);
         }
 
@@ -41,8 +46,8 @@ class VentasUltimos10DiasChart extends ChartWidget
                 [
                     'label' => 'Ventas',
                     'data' => $datos,
-                    'backgroundColor' => '#f59e0b',
-                    'borderColor' => '#d97706',
+                    'backgroundColor' => '#38bdf8',
+                    'borderColor' => '#0ea5e9',
                     'borderWidth' => 1,
                 ],
             ],

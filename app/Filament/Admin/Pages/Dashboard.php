@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Pages;
 
 use App\Filament\Admin\Widgets\QuickAccessWidget;
 use App\Filament\Admin\Widgets\UserInfoWidget;
+use App\Filament\Admin\Widgets\VentasMesPasadoChart;
 use App\Filament\Admin\Widgets\VentasUltimos10DiasChart;
 use Filament\Pages\Dashboard as BaseDashboard;
 
@@ -19,6 +20,7 @@ class Dashboard extends BaseDashboard
     {
         return [
             VentasUltimos10DiasChart::class,
+            VentasMesPasadoChart::class,
             UserInfoWidget::class,
             QuickAccessWidget::class,
         ];
