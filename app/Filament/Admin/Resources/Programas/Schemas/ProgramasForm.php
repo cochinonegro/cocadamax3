@@ -212,7 +212,12 @@ class ProgramasForm
                                     ->default(now())
                                     ->required(),
                             ])
-                            ->columns(1),
+                            ->columns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 4,
+                            ])
+                            ->columnSpanFull(),
 
                         Section::make('Visibilidad')
                             ->extraAttributes(['class' => 'programa-detalles-group'])
