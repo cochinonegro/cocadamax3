@@ -29,9 +29,9 @@
     };
 
     $labeledBadge = fn (string $title, string $value, string $classes = 'bg-gray-500/15 text-gray-300 ring-gray-500/30') => <<<HTML
-        <span class="inline-flex items-center gap-1.5 sm:gap-1">
-            <span class="text-sm font-medium text-white sm:text-[10px]">{$title}:</span>
-            <span class="inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset sm:px-1.5 sm:py-0.5 sm:text-[10px] {$classes}">{$value}</span>
+        <span class="inline-flex items-center gap-1.5 sm:gap-1.5">
+            <span class="text-sm font-medium text-white sm:text-xs">{$title}:</span>
+            <span class="inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset sm:px-2 sm:py-1 sm:text-xs {$classes}">{$value}</span>
         </span>
     HTML;
 @endphp
@@ -85,11 +85,11 @@
                         x-on:click="expanded = ! expanded"
                         class="flex w-full cursor-pointer items-center justify-between gap-2 text-left"
                     >
-                        <h3 class="min-w-0 flex-1 text-base font-semibold uppercase leading-snug tracking-wide text-white transition hover:text-amber-300 sm:text-xs">
+                        <h3 class="min-w-0 flex-1 text-lg font-semibold uppercase leading-snug tracking-wide text-white transition hover:text-amber-300 sm:text-sm">
                             {{ mb_strtoupper($programa->progname) }}
                         </h3>
                         <span
-                            class="shrink-0 text-[10px] leading-none text-gray-500 transition-transform"
+                            class="shrink-0 text-xs leading-none text-gray-500 transition-transform"
                             x-bind:class="expanded && 'rotate-180'"
                         >▼</span>
                     </button>
@@ -140,7 +140,7 @@
 
                                 <div class="ml-auto inline-flex flex-wrap items-center justify-end gap-x-3 gap-y-1.5">
                                     <div class="inline-flex items-center gap-2.5">
-                                        <span class="text-sm font-medium text-gray-300 sm:text-xs">Instalador</span>
+                                        <span class="text-sm font-medium text-gray-300 sm:text-sm">Instalador</span>
                                         <button
                                             type="button"
                                             role="switch"
@@ -163,7 +163,7 @@
                                     </div>
 
                                     <div class="inline-flex items-center gap-2.5">
-                                        <span class="text-sm font-medium text-gray-300 sm:text-xs">Pedidos</span>
+                                        <span class="text-sm font-medium text-gray-300 sm:text-sm">Pedidos</span>
                                         <button
                                             type="button"
                                             role="switch"
@@ -201,11 +201,11 @@
                             <button
                                 type="button"
                                 x-on:click="open = ! open"
-                                class="flex w-full items-center justify-between gap-2 rounded-md border border-gray-700/80 bg-gray-950/50 px-2.5 py-1.5 text-left text-sm font-medium text-gray-400 transition hover:border-gray-600 hover:text-gray-200 sm:px-2 sm:py-1 sm:text-xs"
+                                class="flex w-full items-center justify-between gap-2 rounded-md border border-gray-700/80 bg-gray-950/50 px-2.5 py-1.5 text-left text-sm font-medium text-gray-400 transition hover:border-gray-600 hover:text-gray-200 sm:px-2.5 sm:py-1.5 sm:text-sm"
                             >
                                 <span>Descripción</span>
                                 <span
-                                    class="shrink-0 text-[10px] leading-none text-gray-500 transition-transform"
+                                    class="shrink-0 text-xs leading-none text-gray-500 transition-transform"
                                     x-bind:class="open && 'rotate-180'"
                                 >▼</span>
                             </button>
@@ -216,11 +216,11 @@
                                 class="mt-1 rounded-md border border-gray-800/60 bg-gray-950/30 px-2.5 py-2 sm:px-2 sm:py-1.5"
                             >
                                 @if (filled($descripcionPlano))
-                                    <p class="break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
+                                    <p class="break-words text-sm leading-relaxed text-gray-400 sm:text-xs sm:leading-relaxed">
                                         {{ $descripcionPlano }}
                                     </p>
                                 @else
-                                    <p class="text-sm italic text-gray-500 sm:text-[10px]">Sin descripción.</p>
+                                    <p class="text-sm italic text-gray-500 sm:text-xs">Sin descripción.</p>
                                 @endif
                             </div>
                         </div>
@@ -228,7 +228,7 @@
                         <div class="flex gap-2 border-t border-gray-800 pt-3 sm:pt-2">
                             <a
                                 href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
-                                class="inline-flex flex-1 items-center justify-center rounded-md bg-amber-500/15 px-1 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                                class="inline-flex flex-1 items-center justify-center rounded-md bg-amber-500/15 px-2 py-2 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1.5 sm:text-xs"
                             >
                                 Editar
                             </a>
@@ -243,7 +243,7 @@
                                 @else
                                     x-on:click="$wire.notifyNoLink()"
                                 @endif
-                                class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-rose-500/15 px-1 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                                class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-rose-500/15 px-2 py-2 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1.5 sm:text-xs"
                             >
                                 CopyLink
                             </button>
@@ -252,7 +252,7 @@
                                 type="button"
                                 wire:click="deletePrograma({{ $programa->id }})"
                                 wire:confirm="¿Eliminar este programa? Esta acción no se puede deshacer."
-                                class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-red-500/15 px-1 py-1.5 text-sm font-semibold text-red-300 ring-1 ring-inset ring-red-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                                class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-red-500/15 px-2 py-2 text-sm font-semibold text-red-300 ring-1 ring-inset ring-red-500/30 sm:px-2 sm:py-1.5 sm:text-xs"
                             >
                                 Borrar
                             </button>
