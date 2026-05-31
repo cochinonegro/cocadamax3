@@ -2,6 +2,9 @@
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
+    /** @var \App\Models\Programas $record */
+    $record = $record ?? $schemaComponent?->getRecord();
+
     $steps = $record->installation_steps ?? [];
     $installerPhotoUrl = filled($record->foto_instalador)
         ? Storage::disk('public')->url($record->foto_instalador)
@@ -14,21 +17,21 @@
 
 <div class="cliente-instalacion w-full">
     @if (! $hasContent)
-        <p class="text-sm text-gray-400">No hay instrucciones de instalación para este producto.</p>
+        <p class="text-sm text-gray-500 dark:text-gray-400">No hay instrucciones de instalación para este producto.</p>
     @else
         @if (filled($record->info_install))
             <div class="mb-8">
-                <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-400">
+                <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
                     Información general
                 </h4>
-                <div class="prose prose-invert max-w-none text-sm text-gray-200">
+                <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
                     {!! Str::markdown($record->info_install) !!}
                 </div>
             </div>
         @endif
 
         <div class="mb-8">
-            <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-400">
+            <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
                 Foto del instalador
             </h4>
             @if ($installerPhotoUrl)
@@ -37,13 +40,13 @@
                     'alt' => 'Foto del instalador — ' . $record->progname,
                 ])
             @else
-                <p class="text-sm text-gray-400">Sin foto del instalador.</p>
+                <p class="text-sm text-gray-500 dark:text-gray-400">Sin foto del instalador.</p>
             @endif
         </div>
 
         @if (count($steps) > 0)
             <div class="space-y-6">
-                <h4 class="text-sm font-semibold uppercase tracking-wide text-amber-400">
+                <h4 class="text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
                     Pasos de instalación
                 </h4>
 
@@ -56,13 +59,13 @@
                         $imageUrl = filled($imagePath) ? Storage::disk('public')->url($imagePath) : null;
                     @endphp
 
-                    <div class="rounded-xl border border-gray-700 bg-gray-900/40 p-4 md:p-6">
-                        <p class="mb-1 text-xs font-semibold uppercase tracking-widest text-amber-500">
+                    <div class="rounded-xl border border-gray-200 bg-gray-50 p-4 md:p-6 dark:border-gray-700 dark:bg-gray-900/40">
+                        <p class="mb-1 text-xs font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-500">
                             Paso {{ $stepNumber }}
                         </p>
 
                         @if (filled($title))
-                            <h5 class="mb-4 text-lg font-semibold text-white">
+                            <h5 class="mb-4 text-lg font-semibold text-gray-950 dark:text-white">
                                 {{ $title }}
                             </h5>
                         @endif
@@ -75,7 +78,7 @@
                                         'alt' => 'Paso ' . $stepNumber . ' — ' . ($title ?? $record->progname),
                                     ])
                                 @else
-                                    <div class="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-600 text-sm text-gray-500">
+                                    <div class="flex h-48 items-center justify-center rounded-lg border border-dashed border-gray-300 text-sm text-gray-500 dark:border-gray-600 dark:text-gray-500">
                                         Sin imagen
                                     </div>
                                 @endif
@@ -83,11 +86,11 @@
 
                             <div class="flex items-start">
                                 @if (filled($description))
-                                    <div class="prose prose-invert max-w-none text-sm text-gray-200">
+                                    <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
                                         {!! Str::markdown($description) !!}
                                     </div>
                                 @else
-                                    <p class="text-sm text-gray-400">Sin descripción.</p>
+                                    <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción.</p>
                                 @endif
                             </div>
                         </div>

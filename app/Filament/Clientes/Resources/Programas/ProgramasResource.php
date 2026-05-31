@@ -5,9 +5,9 @@ namespace App\Filament\Clientes\Resources\Programas;
 use App\Filament\Clientes\Resources\Programas\Pages\ListProgramas;
 use App\Filament\Clientes\Resources\Programas\Pages\ViewProgramas;
 use App\Models\Programas;
-use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\View;
 use Filament\Schemas\Schema;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Filament\Support\ProgramaCategories;
@@ -39,9 +39,7 @@ class ProgramasResource extends Resource
         return $schema
             ->columns(1)
             ->components([
-                ViewEntry::make('progname')
-                    ->hiddenLabel()
-                    ->view('filament.clientes.infolists.producto-detalle')
+                View::make('filament.clientes.infolists.producto-detalle')
                     ->columnSpanFull(),
 
                 Section::make('Instalación')
@@ -49,9 +47,7 @@ class ProgramasResource extends Resource
                     ->visible(fn (Programas $record): bool => $record->isInstaladorVisibleToClients())
                     ->extraAttributes(['class' => 'cliente-instalacion-section'])
                     ->schema([
-                        ViewEntry::make('installation_steps')
-                            ->hiddenLabel()
-                            ->view('filament.clientes.infolists.instalacion')
+                        View::make('filament.clientes.infolists.instalacion')
                             ->columnSpanFull(),
                     ]),
             ]);

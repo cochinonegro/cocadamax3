@@ -12,9 +12,10 @@
                         $descripcion = TiendaProgramas::plainDescription($programa);
                     @endphp
 
-                    <article
+                    <a
+                        href="{{ $this->verMasUrl($programa) }}"
                         wire:key="tienda-producto-{{ $programa->id }}"
-                        class="tienda-producto-card"
+                        class="tienda-producto-card tienda-producto-card--link"
                     >
                         <div class="tienda-producto-card__media">
                             @if ($cover)
@@ -39,11 +40,9 @@
                                 <p class="tienda-producto-card__desc is-empty">Sin descripción.</p>
                             @endif
 
-                            <a href="{{ $this->verMasUrl($programa) }}" class="tienda-ver-mas-btn">
-                                Ver más
-                            </a>
+                            <span class="tienda-ver-mas-btn">Ver más</span>
                         </div>
-                    </article>
+                    </a>
                 @empty
                     <div class="tienda-catalogo__empty">
                         <x-heroicon-o-shopping-bag class="h-12 w-12 opacity-40" />
