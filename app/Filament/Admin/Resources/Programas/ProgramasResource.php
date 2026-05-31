@@ -203,7 +203,7 @@ class ProgramasResource extends Resource
                     ->schema([
                         Toggle::make('show_instalador')
                             ->label('Instalador visible para clientes')
-                            ->default(true)
+                            ->default(false)
                             ->dehydrated()
                             ->columnSpanFull(),
 
