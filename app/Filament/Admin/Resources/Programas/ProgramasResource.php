@@ -75,123 +75,156 @@ class ProgramasResource extends Resource
 
                 Section::make('Detalles del Programa')
                     ->columnSpanFull()
-                    ->compact()
-                    ->inlineLabel()
                     ->extraAttributes(['class' => 'programa-detalles-section'])
                     ->schema([
-                        TextInput::make('progname')
-                            ->label('Nombre')
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpan(['default' => 2, 'md' => 2, 'xl' => 3]),
+                        Section::make('Identificación')
+                            ->extraAttributes(['class' => 'programa-detalles-group'])
+                            ->schema([
+                                TextInput::make('progname')
+                                    ->label('Nombre')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
 
-                        TextInput::make('url')
-                            ->label('Link descarga')
-                            ->placeholder('https://mega.nz/...')
-                            ->url()
-                            ->required()
-                            ->maxLength(255)
-                            ->columnSpan(['default' => 2, 'md' => 2, 'xl' => 3]),
-
-                        TextInput::make('program_id')
-                            ->label('Código')
-                            ->required(),
-
-                        TextInput::make('size')
-                            ->label('Tamaño')
-                            ->required()
-                            ->maxLength(50),
-
-                        Select::make('category')
-                            ->label('Categoría')
-                            ->required()
-                            ->options(ProgramaCategories::options())
-                            ->live()
-                            ->afterStateUpdated(fn (Set $set) => $set('working', null))
-                            ->native(false),
-
-                        Select::make('working')
-                            ->label('Subcategoría')
-                            ->options(fn (Get $get): array => ProgramaCategories::subcategoryOptions($get('category')) ?? [])
-                            ->visible(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
-                            ->required(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
-                            ->native(false),
-
-                        TextInput::make('working')
-                            ->label('Subcategoría')
-                            ->visible(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
-                            ->required(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
-                            ->maxLength(255),
-
-                        Select::make('os_required')
-                            ->label('Sistema')
-                            ->required()
-                            ->options([
-                                'windows' => 'Windows',
-                                'mac' => 'Mac',
-                                'win-mac' => 'Win & Mac',
+                                TextInput::make('url')
+                                    ->label('Link descarga')
+                                    ->placeholder('https://mega.nz/...')
+                                    ->url()
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->columnSpanFull(),
                             ])
-                            ->native(false),
+                            ->columns(2),
 
-                        TextInput::make('year_prog')
-                            ->label('Año')
-                            ->required()
-                            ->numeric()
-                            ->minValue(1990)
-                            ->maxValue(date('Y')),
+                        Section::make('Clasificación')
+                            ->extraAttributes(['class' => 'programa-detalles-group'])
+                            ->schema([
+                                Select::make('category')
+                                    ->label('Categoría')
+                                    ->required()
+                                    ->options(ProgramaCategories::options())
+                                    ->live()
+                                    ->afterStateUpdated(fn (Set $set) => $set('working', null))
+                                    ->native(false)
+                                    ->searchable(),
 
-                        TextInput::make('company')
-                            ->label('Marca')
-                            ->maxLength(255),
+                                Select::make('working')
+                                    ->label('Subcategoría')
+                                    ->placeholder('Selecciona…')
+                                    ->options(fn (Get $get): array => ProgramaCategories::subcategoryOptions($get('category')) ?? [])
+                                    ->visible(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
+                                    ->required(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
+                                    ->native(false),
 
-                        TextInput::make('web_oficial')
-                            ->label('Web oficial')
-                            ->placeholder('https://www.ejemplo.com')
-                            ->maxLength(255),
+                                TextInput::make('working')
+                                    ->label('Subcategoría')
+                                    ->placeholder('Opcional')
+                                    ->visible(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
+                                    ->maxLength(255),
 
-                        TextInput::make('required')
-                            ->label('Requerido')
-                            ->placeholder('Ej: Windows 11')
-                            ->maxLength(255),
+                                Select::make('os_required')
+                                    ->label('Sistema')
+                                    ->required()
+                                    ->placeholder('Selecciona…')
+                                    ->options([
+                                        'windows' => 'Windows',
+                                        'mac' => 'Mac',
+                                        'win-mac' => 'Win & Mac',
+                                    ])
+                                    ->native(false),
 
-                        Select::make('idioma')
-                            ->label('Idioma')
-                            ->options([
-                                'multi' => 'Multi',
-                                'es' => 'Español',
-                                'en' => 'Inglés',
-                                'fr' => 'Francés',
-                                'de' => 'Alemán',
+                                Select::make('idioma')
+                                    ->label('Idioma')
+                                    ->placeholder('Selecciona…')
+                                    ->options([
+                                        'multi' => 'Multi',
+                                        'es' => 'Español',
+                                        'en' => 'Inglés',
+                                        'fr' => 'Francés',
+                                        'de' => 'Alemán',
+                                    ])
+                                    ->native(false),
                             ])
-                            ->native(false),
+                            ->columns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 4,
+                            ]),
 
-                        TextInput::make('level_inst')
-                            ->label('Tipo/archivo')
-                            ->placeholder('Ej: zip file')
-                            ->maxLength(255),
+                        Section::make('Ficha técnica')
+                            ->extraAttributes(['class' => 'programa-detalles-group'])
+                            ->schema([
+                                TextInput::make('program_id')
+                                    ->label('Código')
+                                    ->required(),
 
-                        DatePicker::make('date_add')
-                            ->label('Fecha')
-                            ->default(now())
-                            ->required(),
+                                TextInput::make('size')
+                                    ->label('Tamaño')
+                                    ->required()
+                                    ->maxLength(50),
 
-                        Toggle::make('show')
-                            ->label('Visible clientes')
-                            ->default(true)
-                            ->dehydrated()
-                            ->live(),
+                                TextInput::make('year_prog')
+                                    ->label('Año')
+                                    ->required()
+                                    ->numeric()
+                                    ->minValue(1990)
+                                    ->maxValue(date('Y')),
 
-                        DateTimePicker::make('show_until')
-                            ->label('Visible hasta')
-                            ->default(now()->addYear())
-                            ->required(fn (Get $get) => (bool) $get('show'))
-                            ->visible(fn (Get $get) => (bool) $get('show'))
-                            ->columnSpan(3),
-                    ])
-                    ->columns([
-                        'default' => 2,
-                        'md' => 4,
-                        'xl' => 6,
+                                TextInput::make('level_inst')
+                                    ->label('Tipo/archivo')
+                                    ->placeholder('Ej: zip file')
+                                    ->maxLength(255),
+
+                                TextInput::make('company')
+                                    ->label('Marca')
+                                    ->maxLength(255),
+
+                                TextInput::make('web_oficial')
+                                    ->label('Web oficial')
+                                    ->placeholder('https://www.ejemplo.com')
+                                    ->maxLength(255),
+
+                                TextInput::make('required')
+                                    ->label('Requerido')
+                                    ->placeholder('Ej: Windows 11')
+                                    ->maxLength(255),
+
+                                DatePicker::make('date_add')
+                                    ->label('Fecha')
+                                    ->default(now())
+                                    ->required(),
+                            ])
+                            ->columns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 4,
+                            ]),
+
+                        Section::make('Visibilidad')
+                            ->extraAttributes(['class' => 'programa-detalles-group programa-detalles-group--last'])
+                            ->schema([
+                                Toggle::make('show')
+                                    ->label('Visible para clientes')
+                                    ->default(true)
+                                    ->dehydrated()
+                                    ->live(),
+
+                                DateTimePicker::make('show_until')
+                                    ->label('Visible hasta')
+                                    ->default(now()->addYear())
+                                    ->required(fn (Get $get) => (bool) $get('show'))
+                                    ->visible(fn (Get $get) => (bool) $get('show'))
+                                    ->columnSpan([
+                                        'default' => 1,
+                                        'sm' => 2,
+                                        'lg' => 3,
+                                    ]),
+                            ])
+                            ->columns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 4,
+                            ]),
                     ]),
 
                 Section::make('Descripción')
