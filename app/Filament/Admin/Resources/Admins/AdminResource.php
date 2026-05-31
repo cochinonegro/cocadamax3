@@ -23,8 +23,7 @@ class AdminResource extends Resource
 {
     protected static ?string $model = Admin::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
-
+    protected static ?string $navigationIcon = 'heroicon-o-user'; // O el icono que tengas puesto
     public static function shouldRegisterNavigation(): bool
     {
         return false;
