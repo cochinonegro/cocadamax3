@@ -2,7 +2,6 @@
 
 namespace App\Providers;
 
-use App\Enums\UserRole;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
@@ -36,7 +35,15 @@ class AppServiceProvider extends ServiceProvider
 
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch): void {
             $panelSwitch
-                ->panels(['admin', 'clientes'])
+                ->panels(function (): ?array {
+                    $user = auth()->user();
+
+                    if (! $user?->canSwitchPanels()) {
+                        return null;
+                    }
+
+                    return ['admin', 'clientes'];
+                })
                 ->modalHeading('Cambiar panel')
                 ->labels([
                     'admin' => 'Administración',
