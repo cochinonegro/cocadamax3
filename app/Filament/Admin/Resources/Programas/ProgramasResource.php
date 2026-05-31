@@ -73,20 +73,23 @@ class ProgramasResource extends Resource
 
                 Section::make('Detalles del Programa')
                     ->columnSpanFull()
+                    ->compact()
+                    ->inlineLabel()
+                    ->extraAttributes(['class' => 'programa-detalles-section'])
                     ->schema([
                         TextInput::make('progname')
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpan(['default' => 2, 'md' => 2, 'xl' => 3]),
 
                         TextInput::make('url')
-                            ->label('Link Descarga')
+                            ->label('Link descarga')
                             ->placeholder('https://mega.nz/...')
                             ->url()
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpan(['default' => 2, 'md' => 2, 'xl' => 3]),
 
                         TextInput::make('program_id')
                             ->label('Código')
@@ -116,7 +119,7 @@ class ProgramasResource extends Resource
                             ->maxLength(255),
 
                         Select::make('os_required')
-                            ->label('Sistema Operativo')
+                            ->label('Sistema')
                             ->required()
                             ->options([
                                 'windows' => 'Windows',
@@ -126,7 +129,7 @@ class ProgramasResource extends Resource
                             ->native(false),
 
                         TextInput::make('year_prog')
-                            ->label('Año del programa')
+                            ->label('Año')
                             ->required()
                             ->numeric()
                             ->minValue(1990)
@@ -137,7 +140,7 @@ class ProgramasResource extends Resource
                             ->maxLength(255),
 
                         TextInput::make('web_oficial')
-                            ->label('Web Oficial')
+                            ->label('Web oficial')
                             ->placeholder('https://www.ejemplo.com')
                             ->maxLength(255),
 
@@ -158,7 +161,7 @@ class ProgramasResource extends Resource
                             ->native(false),
 
                         TextInput::make('level_inst')
-                            ->label('Tipo / Archivo')
+                            ->label('Tipo/archivo')
                             ->placeholder('Ej: zip file')
                             ->maxLength(255),
 
@@ -168,19 +171,23 @@ class ProgramasResource extends Resource
                             ->required(),
 
                         Toggle::make('show')
-                            ->label('Visible para clientes')
+                            ->label('Visible clientes')
                             ->default(true)
                             ->dehydrated()
-                            ->live()
-                            ->columnSpan(2),
+                            ->live(),
 
                         DateTimePicker::make('show_until')
                             ->label('Visible hasta')
                             ->default(now()->addYear())
                             ->required(fn (Get $get) => (bool) $get('show'))
                             ->visible(fn (Get $get) => (bool) $get('show'))
-                            ->columnSpan(2),
-                    ])->columns(4),
+                            ->columnSpan(3),
+                    ])
+                    ->columns([
+                        'default' => 2,
+                        'md' => 4,
+                        'xl' => 6,
+                    ]),
 
                 Section::make('Descripción')
                     ->columnSpanFull()
