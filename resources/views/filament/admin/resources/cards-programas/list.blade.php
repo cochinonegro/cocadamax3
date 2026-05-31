@@ -135,8 +135,8 @@
                                 {!! $labeledBadge('Categoría', ProgramaCategories::label($programa->category), $categoryColor($programa->category)) !!}
                             @endif
 
-                            <div class="ml-auto inline-flex items-center gap-2">
-                                <span class="text-xs font-medium text-gray-400 sm:text-[10px]">Pedidos</span>
+                            <div class="ml-auto inline-flex items-center gap-2.5">
+                                <span class="text-sm font-medium text-gray-300 sm:text-xs">Pedidos</span>
                                 <button
                                     type="button"
                                     role="switch"
@@ -144,16 +144,15 @@
                                     aria-checked="{{ $programa->isPedidosTimerActive() ? 'true' : 'false' }}"
                                     title="{{ $programa->isPedidosTimerActive() ? 'Visible en Pedidos (30 min)' : 'Oculto en Pedidos' }}"
                                     @class([
-                                        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40',
+                                        'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50',
                                         'bg-amber-500' => $programa->isPedidosTimerActive(),
-                                        'bg-gray-700' => ! $programa->isPedidosTimerActive(),
+                                        'bg-gray-600' => ! $programa->isPedidosTimerActive(),
                                     ])
                                 >
                                     <span
                                         @class([
-                                            'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200',
-                                            'translate-x-4' => $programa->isPedidosTimerActive(),
-                                            'translate-x-0' => ! $programa->isPedidosTimerActive(),
+                                            'card-pedidos-switch-knob pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out',
+                                            'is-on' => $programa->isPedidosTimerActive(),
                                         ])
                                     ></span>
                                 </button>
