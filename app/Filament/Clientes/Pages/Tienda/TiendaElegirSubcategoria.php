@@ -52,7 +52,7 @@ class TiendaElegirSubcategoria extends Page
 
     public function getSubheading(): ?string
     {
-        return TiendaProgramas::osLabel((string) $this->os).' · Elige una subcategoría';
+        return null;
     }
 
     /** @return array<string, string> */

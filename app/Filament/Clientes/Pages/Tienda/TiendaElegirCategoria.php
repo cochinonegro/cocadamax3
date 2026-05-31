@@ -34,7 +34,7 @@ class TiendaElegirCategoria extends Page
 
     public function getSubheading(): ?string
     {
-        return 'Sistema: '.TiendaProgramas::osLabel((string) $this->os);
+        return null;
     }
 
     /** @return array<string, string> */

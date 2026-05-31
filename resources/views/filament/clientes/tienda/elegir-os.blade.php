@@ -1,23 +1,31 @@
 <x-filament-panels::page>
-    <div class="tienda-flow mx-auto max-w-3xl">
-        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+    <x-tienda.shell :step="1">
+        <p class="tienda-shell__lead">Elige tu plataforma para ver programas compatibles.</p>
+
+        <div class="tienda-os-grid">
             <button
                 type="button"
                 wire:click="elegirOs('windows')"
-                class="tienda-choice-btn tienda-choice-btn--windows"
+                class="tienda-os-btn tienda-os-btn--windows"
             >
-                <x-heroicon-o-computer-desktop class="h-10 w-10" />
-                <span>Windows</span>
+                <span class="tienda-os-btn__icon">
+                    <x-heroicon-o-computer-desktop class="h-9 w-9" />
+                </span>
+                <span class="tienda-os-btn__label">Windows</span>
+                <span class="tienda-os-btn__hint">PC · Laptop</span>
             </button>
 
             <button
                 type="button"
                 wire:click="elegirOs('mac')"
-                class="tienda-choice-btn tienda-choice-btn--mac"
+                class="tienda-os-btn tienda-os-btn--mac"
             >
-                <x-heroicon-o-device-tablet class="h-10 w-10" />
-                <span>Mac</span>
+                <span class="tienda-os-btn__icon">
+                    <x-heroicon-o-device-tablet class="h-9 w-9" />
+                </span>
+                <span class="tienda-os-btn__label">Mac</span>
+                <span class="tienda-os-btn__hint">MacBook · iMac</span>
             </button>
         </div>
-    </div>
+    </x-tienda.shell>
 </x-filament-panels::page>

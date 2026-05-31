@@ -55,18 +55,26 @@ class TiendaCatalogo extends Page
 
     public function getHeading(): string
     {
-        $title = ProgramaCategories::label($this->category);
-
-        if (filled($this->working)) {
-            $title .= ' · '.ProgramaCategories::subcategoryLabel($this->category, $this->working);
-        }
-
-        return $title;
+        return 'Catálogo de productos';
     }
 
     public function getSubheading(): ?string
     {
-        return TiendaProgramas::osLabel((string) $this->os);
+        return null;
+    }
+
+    public function catalogBadge(): string
+    {
+        $parts = [
+            TiendaProgramas::osLabel((string) $this->os),
+            ProgramaCategories::label($this->category),
+        ];
+
+        if (filled($this->working)) {
+            $parts[] = ProgramaCategories::subcategoryLabel($this->category, $this->working);
+        }
+
+        return implode(' · ', $parts);
     }
 
     /** @return \Illuminate\Contracts\Pagination\LengthAwarePaginator<int, Programas> */
