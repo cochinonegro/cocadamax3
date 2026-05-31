@@ -94,7 +94,7 @@ class PedidosResource extends Resource
             )
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay pedidos disponibles')
-            ->emptyStateDescription('Los programas aparecerán aquí cuando un administrador los active en Cards Programas (30 minutos) o cuando no esté activo el botón OFF.');
+            ->emptyStateDescription('Los programas aparecerán aquí cuando un administrador los active en Cards (30 minutos) o cuando no esté activo el botón OFF.');
     }
 
     public static function getPages(): array

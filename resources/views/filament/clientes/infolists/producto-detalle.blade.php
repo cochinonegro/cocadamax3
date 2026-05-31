@@ -19,7 +19,6 @@
         default => strtoupper((string) $record->os_required),
     };
 
-    $downloadUrl = ProgramasTableColumns::downloadUrl($record->url);
     $webOficialUrl = ProgramasTableColumns::webOficialUrl($record->web_oficial);
 @endphp
 
@@ -113,19 +112,6 @@
                 </div>
             @endif
         </dl>
-
-        @if ($downloadUrl)
-            <div>
-                <a
-                    href="{{ $downloadUrl }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="inline-flex items-center gap-2 rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-500"
-                >
-                    Descargar
-                </a>
-            </div>
-        @endif
 
         <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
             <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>

@@ -21,7 +21,7 @@ class ListCardsProgramas extends Page
 
     protected string $view = 'filament.admin.resources.cards-programas.list';
 
-    protected static ?string $title = 'Cards Programas';
+    protected static ?string $title = 'Cards';
 
     protected function getHeaderActions(): array
     {

@@ -14,11 +14,11 @@ class CardsProgramasResource extends Resource
 
     protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-squares-2x2';
 
-    protected static ?string $navigationLabel = 'Cards Programas';
+    protected static ?string $navigationLabel = 'Cards';
 
-    protected static ?string $modelLabel = 'Card Programa';
+    protected static ?string $modelLabel = 'Card';
 
-    protected static ?string $pluralModelLabel = 'Cards Programas';
+    protected static ?string $pluralModelLabel = 'Cards';
 
     protected static ?int $navigationSort = 3;
 
