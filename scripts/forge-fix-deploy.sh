@@ -1,26 +1,34 @@
 #!/bin/bash
-# Forzar deploy en Forge (proyecto en raíz, sin carpeta /current)
+# Deploy manual cuando Forge no actualiza el servidor.
 #
-# Por SSH:
+# Opción 1 — Terminal web Forge: Server > programas.space > Terminal (o SSH)
+# Opción 2 — SSH local:
+#   ssh forge@TU_IP
 #   cd /home/forge/programas.space && bash scripts/forge-fix-deploy.sh
+#
+# Si el script no existe aún en el servidor, pega el bloque de abajo (ONELINER).
 
 set -euo pipefail
 
-SITE="/home/forge/programas.space"
+SITE="${FORGE_SITE_PATH:-/home/forge/programas.space}"
+BRANCH="${FORGE_SITE_BRANCH:-main}"
+
 cd "$SITE"
 
-echo "==> Directorio: $(pwd)"
-echo "==> Commit ANTES:"
-git log -1 --oneline
+echo "==> Deploy manual en: $(pwd)"
+echo "==> Rama: $BRANCH"
+echo "==> Commit ANTES: $(git log -1 --oneline)"
 
-echo "==> Actualizando desde GitHub..."
-git fetch origin main
-git reset --hard origin/main
+echo "==> git fetch..."
+git fetch origin "$BRANCH"
 
-echo "==> Commit DESPUÉS:"
-git log -1 --oneline
+echo "==> git reset --hard origin/$BRANCH"
+git reset --hard "origin/$BRANCH"
 
-echo "==> Composer..."
+COMMIT=$(git rev-parse --short HEAD)
+echo "==> Commit DESPUÉS: $(git log -1 --oneline)"
+
+echo "==> composer install..."
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
 
 echo "==> Laravel..."
@@ -30,12 +38,14 @@ php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
 php artisan config:cache
 
-echo "==> Verificación archivos:"
-head -3 resources/views/welcome.blade.php
-cat public/deploy-marker.txt 2>/dev/null || echo "AVISO: falta public/deploy-marker.txt"
+echo "$COMMIT-$(date +%Y%m%d-%H%M)" > public/deploy-marker.txt
 
 echo ""
-echo "LISTO. Comprueba en el navegador:"
-echo "  https://programas.space/deploy-marker.txt"
-echo "  https://programas.space/deploy-check"
+echo "==> Verificación:"
+grep 'navigationIcon' app/Filament/Admin/Resources/Admins/AdminResource.php | head -1
+echo "deploy-marker: $(cat public/deploy-marker.txt)"
+echo ""
+echo "LISTO. Prueba en el navegador:"
 echo "  https://programas.space/"
+echo "  https://programas.space/deploy-marker.txt  (debe empezar con $COMMIT)"
+echo "  https://programas.space/admin/login"
