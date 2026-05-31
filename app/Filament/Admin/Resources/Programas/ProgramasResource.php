@@ -197,19 +197,16 @@ class ProgramasResource extends Resource
                         ProgramaImageUpload::gallery(),
                     ]),
 
-                Section::make('INSTALACION')
+                Section::make('Instalación')
                     ->columnSpanFull()
                     ->collapsed()
                     ->schema([
-                        Section::make('Imagen del instalador')
-                            ->description('Primera imagen que verá el cliente en la guía de instalación.')
-                            ->schema([
-                                ProgramaImageUpload::installerPhoto()
-                                    ->columnSpanFull(),
-                            ]),
-
                         MarkdownEditor::make('info_install')
-                            ->label('Información sobre esta instalación')
+                            ->label('Información general')
+                            ->columnSpanFull(),
+
+                        ProgramaImageUpload::installerPhoto()
+                            ->helperText('Visible en la guía de instalación para clientes y al editar el producto.')
                             ->columnSpanFull(),
 
                         Repeater::make('installation_steps')

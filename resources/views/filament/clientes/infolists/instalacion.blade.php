@@ -27,17 +27,19 @@
             </div>
         @endif
 
-        @if ($installerPhotoUrl)
-            <div class="mb-8">
-                <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-400">
-                    Imagen del instalador
-                </h4>
+        <div class="mb-8">
+            <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-400">
+                Foto del instalador
+            </h4>
+            @if ($installerPhotoUrl)
                 @include('filament.clientes.partials.image-lightbox', [
                     'src' => $installerPhotoUrl,
-                    'alt' => 'Imagen del instalador — ' . $record->progname,
+                    'alt' => 'Foto del instalador — ' . $record->progname,
                 ])
-            </div>
-        @endif
+            @else
+                <p class="text-sm text-gray-400">Sin foto del instalador.</p>
+            @endif
+        </div>
 
         @if (count($steps) > 0)
             <div class="space-y-6">
