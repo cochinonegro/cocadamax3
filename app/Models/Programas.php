@@ -146,4 +146,20 @@ class Programas extends Model
 
         return $duplicate->fresh();
     }
+
+    public function duplicateAsCopy(string $suffix = '.copia'): self
+    {
+        $duplicate = $this->replicate([
+            'pedidos_visible_until',
+        ]);
+
+        $maxLength = 255;
+        $baseName = mb_substr((string) $this->progname, 0, $maxLength - mb_strlen($suffix));
+
+        $duplicate->progname = $baseName.$suffix;
+        $duplicate->pedidos_visible_until = null;
+        $duplicate->save();
+
+        return $duplicate->fresh();
+    }
 }

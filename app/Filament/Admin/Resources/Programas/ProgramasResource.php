@@ -62,6 +62,29 @@ class ProgramasResource extends Resource
                     ->label('')
                     ->tooltip('Eliminar'),
 
+                Action::make('duplicar')
+                    ->label('')
+                    ->icon('heroicon-o-square-2-stack')
+                    ->color('warning')
+                    ->tooltip('Duplicar producto')
+                    ->requiresConfirmation()
+                    ->modalHeading('Duplicar producto')
+                    ->modalDescription(fn (Programas $record): string => "Se creará una copia idéntica con el nombre «{$record->progname}.copia».")
+                    ->action(function (Programas $record): void {
+                        $duplicate = $record->duplicateAsCopy();
+
+                        Notification::make()
+                            ->title('Producto duplicado')
+                            ->body("Copia creada: {$duplicate->progname}")
+                            ->success()
+                            ->actions([
+                                Action::make('editar')
+                                    ->label('Editar copia')
+                                    ->url(static::getUrl('edit', ['record' => $duplicate])),
+                            ])
+                            ->send();
+                    }),
+
                 Action::make('win_mac')
                     ->label('WIN=MAC')
                     ->icon('heroicon-o-document-duplicate')
