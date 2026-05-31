@@ -112,12 +112,13 @@
   color: rgb(190 18 60);
 }
 
-/* Panel clientes — nombre de usuario visible en la barra superior */
-.fi-panel-clientes .fi-topbar-end {
+/* Nombre de usuario visible en la barra superior (admin y clientes) */
+.fi-topbar-end {
   gap: 0.75rem;
 }
 
-.fi-panel-clientes .fi-clientes-user-name {
+.fi-auth-user-name {
+  display: none;
   font-size: 0.875rem;
   font-weight: 500;
   line-height: 1.25rem;
@@ -125,11 +126,17 @@
   white-space: nowrap;
 }
 
-.dark .fi-panel-clientes .fi-clientes-user-name {
+@media (min-width: 640px) {
+  .fi-auth-user-name {
+    display: inline;
+  }
+}
+
+.dark .fi-auth-user-name {
   color: var(--color-white);
 }
 
-.fi-panel-clientes .fi-user-menu-trigger {
+.fi-topbar .fi-user-menu-trigger {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;

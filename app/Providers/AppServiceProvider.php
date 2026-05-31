@@ -5,6 +5,8 @@ namespace App\Providers;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
+use Filament\Support\Facades\FilamentView;
+use Filament\View\PanelsRenderHook;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -32,6 +34,13 @@ class AppServiceProvider extends ServiceProvider
             'indigo' => Color::Indigo,
             'purple' => Color::Purple,
         ]);
+
+        FilamentView::registerRenderHook(
+            PanelsRenderHook::USER_MENU_BEFORE,
+            fn (): string => auth()->check()
+                ? view('filament.partials.user-name')->render()
+                : '',
+        );
 
         PanelSwitch::configureUsing(function (PanelSwitch $panelSwitch): void {
             $panelSwitch
