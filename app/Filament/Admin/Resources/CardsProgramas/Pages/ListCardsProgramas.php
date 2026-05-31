@@ -20,8 +20,20 @@ class ListCardsProgramas extends Page
 
     public ?string $search = '';
 
+    public string $osFilter = 'windows';
+
     public function updatedSearch(): void
     {
+        $this->resetPage();
+    }
+
+    public function setOsFilter(string $os): void
+    {
+        if (! in_array($os, ['windows', 'mac'], true)) {
+            return;
+        }
+
+        $this->osFilter = $os;
         $this->resetPage();
     }
 
@@ -31,6 +43,8 @@ class ListCardsProgramas extends Page
     public function getProgramasProperty()
     {
         return Programas::query()
+            ->when($this->osFilter === 'windows', fn ($query) => $query->whereIn('os_required', ['windows', 'win-mac']))
+            ->when($this->osFilter === 'mac', fn ($query) => $query->whereIn('os_required', ['mac', 'win-mac']))
             ->when(filled($this->search), function ($query) {
                 $term = '%'.$this->search.'%';
 

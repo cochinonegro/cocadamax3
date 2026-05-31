@@ -36,7 +36,32 @@
 
 <x-filament-panels::page>
     <div class="space-y-4">
-        <div class="sticky top-0 z-10 -mx-4 bg-gray-950/90 px-4 py-2 backdrop-blur sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:py-0">
+        <div class="sticky top-0 z-10 -mx-4 space-y-2 bg-gray-950/90 px-4 py-2 backdrop-blur sm:static sm:mx-0 sm:bg-transparent sm:px-0 sm:py-0">
+            <div class="flex gap-2">
+                <button
+                    type="button"
+                    wire:click="setOsFilter('windows')"
+                    @class([
+                        'programas-os-tab programas-os-tab--windows inline-flex flex-1 items-center justify-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition sm:flex-none sm:px-4 sm:py-1 sm:text-xs',
+                        'border-blue-500 bg-blue-500/15 text-blue-300' => $this->osFilter === 'windows',
+                        'border-gray-700 bg-gray-900/60 text-blue-300/70 hover:border-blue-500/50' => $this->osFilter !== 'windows',
+                    ])
+                >
+                    Windows
+                </button>
+                <button
+                    type="button"
+                    wire:click="setOsFilter('mac')"
+                    @class([
+                        'programas-os-tab programas-os-tab--mac inline-flex flex-1 items-center justify-center rounded-lg border px-3 py-1.5 text-sm font-semibold transition sm:flex-none sm:px-4 sm:py-1 sm:text-xs',
+                        'border-rose-900 bg-rose-500/15 text-rose-300' => $this->osFilter === 'mac',
+                        'border-gray-700 bg-gray-900/60 text-rose-300/70 hover:border-rose-900/50' => $this->osFilter !== 'mac',
+                    ])
+                >
+                    Mac
+                </button>
+            </div>
+
             <x-filament::input.wrapper>
                 <x-filament::input
                     type="search"
