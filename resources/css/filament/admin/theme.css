@@ -338,6 +338,38 @@
   font-weight: 600;
 }
 
+/* Cards Programas — layout compacto colapsado */
+.cards-programa--collapsed {
+  padding: 0.25rem 0.5rem;
+}
+
+.cards-programa--expanded {
+  padding: 0.625rem 0.75rem;
+}
+
+.cards-programa-title {
+  font-size: 0.6875rem;
+  line-height: 1.1;
+}
+
+.cards-programa-chevron {
+  font-size: 0.5625rem;
+}
+
+@media (min-width: 640px) {
+  .cards-programa--collapsed {
+    padding: 0.1875rem 0.4375rem;
+  }
+
+  .cards-programa--expanded {
+    padding: 0.5rem 0.625rem;
+  }
+
+  .cards-programa-title {
+    font-size: 0.625rem;
+  }
+}
+
 /* Cards Programas — switch Pedidos horizontal y táctil */
 .card-pedidos-switch {
   width: 3.75rem;

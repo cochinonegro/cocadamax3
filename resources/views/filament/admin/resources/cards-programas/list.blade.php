@@ -73,23 +73,24 @@
             </x-filament::input.wrapper>
         </div>
 
-        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
+        <div class="cards-programas-grid grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-1.5 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
             @forelse ($this->programas as $programa)
                 <article
                     wire:key="card-programa-{{ $programa->id }}"
                     x-data="{ expanded: false }"
-                    class="rounded-xl border border-gray-700/80 bg-gray-900/60 p-4 shadow-sm sm:p-3"
+                    x-bind:class="expanded ? 'cards-programa cards-programa--expanded' : 'cards-programa cards-programa--collapsed'"
+                    class="rounded-lg border border-gray-700/80 bg-gray-900/60"
                 >
                     <button
                         type="button"
                         x-on:click="expanded = ! expanded"
-                        class="flex w-full cursor-pointer items-center justify-between gap-2 text-left"
+                        class="flex w-full cursor-pointer items-center justify-between gap-1.5 text-left"
                     >
-                        <h3 class="min-w-0 flex-1 text-base font-semibold uppercase leading-snug tracking-wide text-white transition hover:text-amber-300 sm:text-xs">
+                        <h3 class="cards-programa-title min-w-0 flex-1 font-semibold uppercase tracking-wide text-white transition hover:text-amber-300">
                             {{ mb_strtoupper($programa->progname) }}
                         </h3>
                         <span
-                            class="shrink-0 text-[10px] leading-none text-gray-500 transition-transform"
+                            class="cards-programa-chevron shrink-0 leading-none text-gray-500 transition-transform"
                             x-bind:class="expanded && 'rotate-180'"
                         >▼</span>
                     </button>
