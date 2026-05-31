@@ -1,0 +1,92 @@
+<?php
+
+namespace App\Filament\Concerns;
+
+use App\Models\Programas;
+use Filament\Notifications\Notification;
+use Filament\Resources\Pages\CreateRecord;
+use Filament\Resources\Pages\EditRecord;
+
+trait PersistsProgramaWizardProgress
+{
+    use NormalizesProgramaVisibility;
+
+    /**
+     * @param  array<string, mixed>  $data
+     * @return array<string, mixed>
+     */
+    protected function prepareProgramaPersistenceData(array $data): array
+    {
+        $data = $this->normalizeProgramaVisibility($data);
+        $data = $this->normalizeInstallationSteps($data);
+
+        if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
+            $data['gallery_images'] = array_values(array_filter($data['gallery_images']));
+        }
+
+        return $data;
+    }
+
+    public function persistProgramaWizardStep(): void
+    {
+        /** @var array<string, mixed> $state */
+        $state = $this->form->getState();
+
+        if ($this instanceof CreateRecord && ! $this->record?->exists) {
+            $data = $this->prepareProgramaPersistenceData($state);
+            $record = Programas::query()->create($data);
+
+            Notification::make()
+                ->title('Paso guardado')
+                ->body('El programa quedó registrado. Puedes continuar más tarde desde editar.')
+                ->success()
+                ->duration(3500)
+                ->send();
+
+            $url = static::getResource()::getUrl('edit', ['record' => $record]);
+            $url .= '?paso='.$this->nextWizardStepKey();
+
+            $this->redirect($url, navigate: true);
+
+            return;
+        }
+
+        if ($this instanceof EditRecord && $this->record instanceof Programas) {
+            $data = $this->prepareProgramaPersistenceData($state);
+            $this->record->update($data);
+            $this->form->model($this->record)->saveRelationships();
+            $this->record->refresh();
+
+            Notification::make()
+                ->title('Paso guardado')
+                ->success()
+                ->duration(2500)
+                ->send();
+        }
+    }
+
+    public function persistProgramaWizardDraft(): void
+    {
+        $state = $this->form->getState();
+
+        if (blank($state['progname'] ?? null)) {
+            Notification::make()
+                ->title('Indica al menos el nombre del programa')
+                ->warning()
+                ->send();
+
+            return;
+        }
+
+        $this->persistProgramaWizardStep();
+    }
+
+    protected function nextWizardStepKey(): string
+    {
+        return match (request()->query('paso')) {
+            'descripcion' => 'galeria',
+            'galeria' => 'instalacion',
+            default => 'descripcion',
+        };
+    }
+}

@@ -277,6 +277,25 @@
   }
 }
 
+/* Wizard — crear / editar programa */
+.programa-wizard.fi-sc-wizard {
+  margin-inline: auto;
+  max-width: 72rem;
+}
+
+.programa-wizard .fi-sc-wizard-header {
+  margin-bottom: 1.25rem;
+}
+
+.programa-wizard .fi-sc-wizard-header-step-btn {
+  padding-inline: 0.75rem;
+}
+
+.programa-wizard .fi-sc-wizard-header-step-label {
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
 /* Cards Programas — switch Pedidos horizontal y táctil */
 .card-pedidos-switch {
   width: 3.75rem;

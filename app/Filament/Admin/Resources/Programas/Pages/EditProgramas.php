@@ -2,15 +2,15 @@
 
 namespace App\Filament\Admin\Resources\Programas\Pages;
 
-use Filament\Actions\DeleteAction;
 use App\Filament\Admin\Resources\Programas\ProgramasResource;
-use App\Filament\Concerns\NormalizesProgramaVisibility;
-use Filament\Actions;
+use App\Filament\Concerns\PersistsProgramaWizardProgress;
+use Filament\Actions\Action;
+use Filament\Actions\DeleteAction;
 use Filament\Resources\Pages\EditRecord;
 
 class EditProgramas extends EditRecord
 {
-    use NormalizesProgramaVisibility;
+    use PersistsProgramaWizardProgress;
 
     protected static string $resource = ProgramasResource::class;
 
@@ -21,19 +21,19 @@ class EditProgramas extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        $data = $this->normalizeProgramaVisibility($data);
-        $data = $this->normalizeInstallationSteps($data);
-
-        if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
-            $data['gallery_images'] = array_values(array_filter($data['gallery_images']));
-        }
-
-        return $data;
+        return $this->prepareProgramaPersistenceData($data);
     }
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('save_draft')
+                ->label('Guardar borrador')
+                ->color('gray')
+                ->action(function (): void {
+                    $this->persistProgramaWizardDraft();
+                }),
+
             DeleteAction::make(),
         ];
     }
