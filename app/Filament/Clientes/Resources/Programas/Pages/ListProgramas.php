@@ -7,12 +7,40 @@ use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\HasProgramasOsTabs;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
+use Filament\Schemas\Components\EmbeddedTable;
+use Filament\Schemas\Components\RenderHook;
+use Filament\Schemas\Components\Text;
+use Filament\Schemas\Schema;
+use Filament\View\PanelsRenderHook;
 
 class ListProgramas extends ListRecords
 {
     use HasProgramasOsTabs;
 
     protected static string $resource = ProgramasResource::class;
+
+    public function content(Schema $schema): Schema
+    {
+        return $schema
+            ->components([
+                $this->getTabsContentComponent(),
+                Text::make('Estás viendo sólo programas de Windows ')
+                    ->color(null)
+                    ->visible(fn (): bool => $this->activeTab === 'windows')
+                    ->extraAttributes([
+                        'class' => 'programas-os-tab-notice programas-os-tab-notice--windows',
+                    ]),
+                Text::make('Estás viendo sólo programas para Mac ')
+                    ->color(null)
+                    ->visible(fn (): bool => $this->activeTab === 'mac')
+                    ->extraAttributes([
+                        'class' => 'programas-os-tab-notice programas-os-tab-notice--mac',
+                    ]),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
+                EmbeddedTable::make(),
+                RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_AFTER),
+            ]);
+    }
 
     protected function getHeaderActions(): array
     {
