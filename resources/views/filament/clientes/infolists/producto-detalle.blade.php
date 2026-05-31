@@ -22,26 +22,26 @@
     $webOficialUrl = ProgramasTableColumns::webOficialUrl($record->web_oficial);
 @endphp
 
-<div class="cliente-producto-detalle grid grid-cols-1 gap-6 lg:grid-cols-2">
-    <div class="space-y-3">
+<div class="cliente-producto-detalle">
+    <div class="cliente-producto-detalle__gallery">
         @forelse ($images as $image)
             <img
                 src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
                 alt="{{ $record->progname }}"
                 @class([
-                    'rounded-xl border border-gray-200 object-cover dark:border-gray-700',
-                    'w-1/2' => $loop->first,
-                    'w-full' => ! $loop->first,
+                    'cliente-producto-detalle__image',
+                    'cliente-producto-detalle__image--primary' => $loop->first,
+                    'cliente-producto-detalle__image--secondary' => ! $loop->first,
                 ])
             />
         @empty
-            <div class="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-900/50 dark:text-gray-400">
+            <div class="cliente-producto-detalle__placeholder">
                 Sin imágenes del producto
             </div>
         @endforelse
     </div>
 
-    <div class="space-y-4">
+    <div class="cliente-producto-detalle__content space-y-4">
         <div>
             <p class="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">Programa</p>
             <h2 class="text-2xl font-bold text-gray-950 dark:text-white">{{ $record->progname }}</h2>
