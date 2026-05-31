@@ -27,6 +27,8 @@ class ProgramasResource extends Resource
 
     protected static ?string $modelLabel = 'Programa';
 
+    protected static ?int $navigationSort = 1;
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([]);

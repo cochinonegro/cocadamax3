@@ -25,10 +25,7 @@ class PedidosResource extends Resource
 
     protected static ?string $slug = 'pedidos';
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
+    protected static ?int $navigationSort = 2;
 
     public static function form(Schema $schema): Schema
     {
