@@ -16,7 +16,7 @@ trait HasPedidosOffAction
             ->color('danger')
             ->requiresConfirmation()
             ->modalHeading('Ocultar todos en Pedidos')
-            ->modalDescription('Ningún producto aparecerá en la tabla Pedidos de los clientes hasta que actives productos individualmente desde Cards Programas (30 minutos).')
+            ->modalDescription('Ningún producto aparecerá en la tabla Pedidos de los clientes hasta que actives productos individualmente desde Programas o Cards Programas (30 minutos).')
             ->action(function (): void {
                 PedidosVisibility::hideAll();
 
