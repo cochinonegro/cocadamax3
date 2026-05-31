@@ -151,6 +151,10 @@ class ProgramasTableColumns
                             $record->update(['show_until' => null]);
                         }
                     }),
+
+                ToggleColumn::make('show_instalador')
+                    ->label('Instalador')
+                    ->sortable(),
             ]);
         }
 

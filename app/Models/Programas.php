@@ -24,6 +24,7 @@ class Programas extends Model
         'installation_steps',
         'info_install',
         'foto_instalador',
+        'show_instalador',
         'url',
         'show',
         'show_until',
@@ -37,6 +38,7 @@ class Programas extends Model
 
     protected $casts = [
         'show'               => 'boolean',
+        'show_instalador'    => 'boolean',
         'show_until'         => 'datetime',
         'date_add'           => 'date',
         'gallery_images'     => 'array',
@@ -68,6 +70,11 @@ class Programas extends Model
     public function isVisibleToClients(): bool
     {
         return (bool) $this->show;
+    }
+
+    public function isInstaladorVisibleToClients(): bool
+    {
+        return (bool) $this->show_instalador;
     }
 
     /**

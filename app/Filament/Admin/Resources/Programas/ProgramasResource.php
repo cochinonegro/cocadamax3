@@ -201,6 +201,12 @@ class ProgramasResource extends Resource
                     ->columnSpanFull()
                     ->collapsed()
                     ->schema([
+                        Toggle::make('show_instalador')
+                            ->label('Instalador visible para clientes')
+                            ->default(true)
+                            ->dehydrated()
+                            ->columnSpanFull(),
+
                         MarkdownEditor::make('info_install')
                             ->label('Información general')
                             ->columnSpanFull(),

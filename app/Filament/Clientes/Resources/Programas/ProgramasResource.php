@@ -45,6 +45,7 @@ class ProgramasResource extends Resource
 
                 Section::make('Instalación')
                     ->columnSpanFull()
+                    ->visible(fn (Programas $record): bool => $record->isInstaladorVisibleToClients())
                     ->extraAttributes(['class' => 'cliente-instalacion-section'])
                     ->schema([
                         ViewEntry::make('installation_steps')
