@@ -92,7 +92,7 @@
                     <div class="mb-2 space-y-2 sm:space-y-1">
                         {{-- Fila 1 --}}
                         <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-y-1">
-                            @if ($programa->show && $programa->show_until?->isFuture())
+                            @if ($programa->isVisibleToClients())
                                 {!! $labeledBadge('Estado', 'ACTIVO', 'bg-green-500/15 text-green-300 ring-green-500/30') !!}
                             @else
                                 {!! $labeledBadge('Estado', 'INACTIVO', 'bg-gray-500/15 text-gray-400 ring-gray-500/30') !!}

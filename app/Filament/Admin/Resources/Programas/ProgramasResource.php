@@ -169,6 +169,7 @@ class ProgramasResource extends Resource
                         Toggle::make('show')
                             ->label('Visible para clientes')
                             ->default(true)
+                            ->dehydrated()
                             ->live()
                             ->columnSpanFull(),
 

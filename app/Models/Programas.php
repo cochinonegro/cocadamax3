@@ -42,14 +42,42 @@ class Programas extends Model
         'installation_steps' => 'array',
     ];
 
+    protected static function booted(): void
+    {
+        static::creating(function (self $programa): void {
+            if ($programa->show === false) {
+                return;
+            }
+
+            $programa->show = true;
+            $programa->show_until ??= now()->addYear();
+        });
+    }
+
+    public function isVisibleToClients(): bool
+    {
+        if (! $this->show) {
+            return false;
+        }
+
+        if (blank($this->show_until)) {
+            return true;
+        }
+
+        return $this->show_until->greaterThanOrEqualTo(now());
+    }
+
     /**
-     * Solo programas activos (encendidos y no vencidos)
+     * Solo programas visibles para clientes (show activo y no vencido).
      */
     public function scopeActive(Builder $query): Builder
     {
         return $query
             ->where('show', true)
-            ->whereNotNull('show_until')
-            ->where('show_until', '>=', now());
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('show_until')
+                    ->orWhere('show_until', '>=', now());
+            });
     }
 }

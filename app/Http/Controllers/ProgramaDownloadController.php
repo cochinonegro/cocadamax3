@@ -18,11 +18,7 @@ class ProgramaDownloadController extends Controller
             403,
         );
 
-        abort_unless(
-            $programas->show && $programas->show_until && $programas->show_until->isFuture(),
-            404,
-            'Este programa no está disponible para descarga.',
-        );
+        abort_unless($programas->isVisibleToClients(), 404, 'Este programa no está disponible para descarga.');
 
         if ($programas->disk_name && $programas->file_path) {
             abort_unless(
