@@ -23,7 +23,9 @@ class CreateProgramas extends CreateRecord
         return [
             Action::make('create')
                 ->label('CREAR')
-                ->action(fn (): void => $this->create())
+                ->action(function (): void {
+                    $this->create();
+                })
                 ->keyBindings(['mod+s']),
         ];
     }
