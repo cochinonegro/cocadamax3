@@ -1,15 +1,17 @@
 <?php
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Spatie\Permission\Traits\HasRoles;
 
 class User extends Authenticatable implements FilamentUser
 {
-    use HasFactory, Notifiable;
+    use HasFactory, HasRoles, Notifiable;
 
     protected $fillable = [
         'name',
@@ -32,8 +34,18 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        // Permite acceder al panel admin.
-        // (Luego lo puedes endurecer por rol/email si quieres)
-        return $panel->getId() === 'admin';
+        return match ($panel->getId()) {
+            'admin' => $this->hasRole(UserRole::Administrador->value),
+            'clientes' => $this->hasAnyRole([
+                UserRole::Invitado->value,
+                UserRole::Administrador->value,
+            ]),
+            default => false,
+        };
+    }
+
+    public function canSwitchPanels(): bool
+    {
+        return $this->hasRole(UserRole::Administrador->value);
     }
 }

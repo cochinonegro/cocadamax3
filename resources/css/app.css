@@ -5,11 +5,9 @@
 @source '../**/*.js';
 @source '../../storage/framework/views/*.php';
 
-/* LARAVEL PAGINATION (opcional) */
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
-
-/* ✅ FILAMENT (ESTO ES LO QUE TE FALTA) */
+/* ✅ FILAMENT (Esto es lo que arregla los iconos gigantes) */
 @source '../../vendor/filament/**/*.blade.php';
+@source '../../vendor/filament/**/*.js';
 @source '../../vendor/filament/**/*.php';
 
 @theme {

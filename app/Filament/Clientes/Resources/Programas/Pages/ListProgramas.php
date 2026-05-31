@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Programas\Pages;
+namespace App\Filament\Clientes\Resources\Programas\Pages;
 
-use App\Filament\Admin\Resources\Programas\ProgramasResource;
+use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\HasProgramasOsTabs;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProgramas extends ListRecords
@@ -15,8 +14,6 @@ class ListProgramas extends ListRecords
 
     protected function getHeaderActions(): array
     {
-        return [
-            CreateAction::make(),
-        ];
+        return [];
     }
 }

@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProgramaDownloadController;
 use App\Models\Programas;
 
 Route::get('/', function () {
@@ -38,3 +39,13 @@ Route::get('/descarga-segura/{id}', function ($id) {
     }, $nombreLimpio);
 
 })->name('cliente.descarga'); // Este nombre conecta con tu botón de Filament
+
+Route::middleware(['auth'])->get('/clientes/descarga/{programas}', [ProgramaDownloadController::class, 'download'])
+    ->name('invitado.descarga');
+
+// Esta línea le dice a Laravel dónde está la puerta de entrada
+Route::redirect('/login', '/admin/login')->name('login');
+
+// Esta línea opcional hace que si entras a la raíz, te mande al panel
+Route::redirect('/', '/admin');
+

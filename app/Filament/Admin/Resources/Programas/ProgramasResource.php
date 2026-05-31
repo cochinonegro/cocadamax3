@@ -15,15 +15,18 @@ use App\Models\Programas;
 use Filament\Forms;
 use Filament\Resources\Resource;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Toggle;
 use Filament\Tables;
 use Filament\Tables\Table;
 use App\Filament\Admin\Resources\ProgramasResource\Pages;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
-use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\ToggleColumn;
+use App\Filament\Support\ProgramasTableColumns;
 use Filament\Forms\Components\MarkdownEditor;
+use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Notifications\Notification;
 use Illuminate\Support\Facades\URL;
@@ -40,9 +43,11 @@ class ProgramasResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
-            ->columns(3)
+            ->columns(1)
             ->components([
                 Section::make('Ubicación del Archivo')
+                    ->columnSpanFull()
+                    ->collapsed()
                     ->description('Selecciona si el archivo está en tus discos locales o en una web externa.')
                     ->schema([
                         Select::make('disk_name')
@@ -63,21 +68,24 @@ class ProgramasResource extends Resource
                             ->hint('Copia la ruta exacta dentro del disco')
                             ->required(fn (Get $get) => $get('disk_name') !== null)
                             ->maxLength(255),
-
-                        TextInput::make('url')
-                            ->label('Link Externo (Alternativo)')
-                            ->placeholder('https://mega.nz/...')
-                            ->url()
-                            ->helperText('Solo si NO usas discos locales'),
                     ])->columns(2),
 
                 Section::make('Detalles del Programa')
+                    ->columnSpanFull()
                     ->schema([
                         TextInput::make('progname')
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpan(2),
+                            ->columnSpanFull(),
+
+                        TextInput::make('url')
+                            ->label('Link Descarga')
+                            ->placeholder('https://mega.nz/...')
+                            ->url()
+                            ->required()
+                            ->maxLength(255)
+                            ->columnSpanFull(),
 
                         TextInput::make('program_id')
                             ->label('Código')
@@ -123,20 +131,105 @@ class ProgramasResource extends Resource
                             ->minValue(1990)
                             ->maxValue(date('Y')),
 
+                        TextInput::make('company')
+                            ->label('Marca')
+                            ->maxLength(255),
+
+                        TextInput::make('web_oficial')
+                            ->label('Web Oficial')
+                            ->placeholder('https://www.ejemplo.com')
+                            ->maxLength(255),
+
+                        TextInput::make('required')
+                            ->label('Requerido')
+                            ->placeholder('Ej: Windows 11')
+                            ->maxLength(255),
+
+                        Select::make('idioma')
+                            ->label('Idioma')
+                            ->options([
+                                'multi' => 'Multi',
+                                'es' => 'Español',
+                                'en' => 'Inglés',
+                                'fr' => 'Francés',
+                                'de' => 'Alemán',
+                            ])
+                            ->native(false),
+
                         TextInput::make('level_inst')
-                            ->label('Tags Referencia')
-                            ->required(),
+                            ->label('Tipo / Archivo')
+                            ->placeholder('Ej: zip file')
+                            ->maxLength(255),
 
                         DatePicker::make('date_add')
-                            ->label('Fecha de Alta')
+                            ->label('Fecha')
                             ->default(now())
                             ->required(),
+
+                        Toggle::make('show')
+                            ->label('Visible para clientes')
+                            ->default(true)
+                            ->live()
+                            ->columnSpanFull(),
+
+                        DateTimePicker::make('show_until')
+                            ->label('Visible hasta')
+                            ->default(now()->addYear())
+                            ->required(fn (Get $get) => (bool) $get('show'))
+                            ->visible(fn (Get $get) => (bool) $get('show'))
+                            ->minDate(now())
+                            ->columnSpanFull(),
                     ])->columns(3),
 
-                Section::make()
+                Section::make('Descripción')
+                    ->columnSpanFull()
                     ->schema([
                         MarkdownEditor::make('description')
-                            ->label('Descripción del Producto')
+                            ->label('Descripción')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('Galería del producto')
+                    ->columnSpanFull()
+                    ->description('Hasta 4 imágenes que verá el cliente a la izquierda de la ficha.')
+                    ->schema([
+                        FileUpload::make('gallery_images')
+                            ->label('Imágenes')
+                            ->image()
+                            ->multiple()
+                            ->maxFiles(4)
+                            ->reorderable()
+                            ->disk('public')
+                            ->directory('programas/gallery')
+                            ->columnSpanFull(),
+                    ]),
+
+                Section::make('INSTALACION')
+                    ->columnSpanFull()
+                    ->collapsed()
+                    ->schema([
+                        MarkdownEditor::make('info_install')
+                            ->label('Información sobre esta instalación')
+                            ->columnSpanFull(),
+
+                        Repeater::make('installation_steps')
+                            ->label('Pasos de instalación')
+                            ->maxItems(4)
+                            ->defaultItems(0)
+                            ->addActionLabel('Agregar paso')
+                            ->schema([
+                                FileUpload::make('image')
+                                    ->label('Foto')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('programas/instalacion')
+                                    ->required(),
+                                Textarea::make('text')
+                                    ->label('Instrucciones')
+                                    ->rows(5)
+                                    ->required(),
+                            ])
+                            ->columns(2)
                             ->columnSpanFull(),
                     ]),
             ]);
@@ -145,74 +238,7 @@ class ProgramasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns([
-                ToggleColumn::make('show')
-                    ->label('STATUS')
-                    ->sortable()
-                    ->afterStateUpdated(function ($record, $state) {
-                        if ($state) {
-                            $record->update(['show_until' => now()->addMinutes(10)]);
-                        } else {
-                            $record->update(['show_until' => null]);
-                        }
-                    }),
-
-                BadgeColumn::make('os_required')
-                    ->label('Sist.Op')
-                    ->colors([
-                        'info' => 'windows',
-                        'danger' => 'mac',
-                        'gray' => 'win-mac',
-                    ])
-                    ->formatStateUsing(fn ($state) => match ($state) {
-                        'windows' => 'Windows',
-                        'mac' => 'Mac',
-                        'win-mac' => 'Win & Mac',
-                        default => strtoupper($state),
-                    }),
-
-                TextColumn::make('id')
-                    ->label('Código')
-                    ->sortable()
-                    ->formatStateUsing(function ($state) {
-                        $padded = str_pad($state, 4, '0', STR_PAD_LEFT);
-                        return substr($padded, 0, 2) . ' ' . substr($padded, 2, 2);
-                    })
-                    ->badge()
-                    ->color('info'),
-
-                TextColumn::make('progname')
-                    ->label('Nombre')
-                    ->sortable()
-                    ->searchable()
-                    ->limit(40),
-
-                TextColumn::make('size')
-                    ->badge()
-                    ->label('Tamaño')
-                    ->color('success')
-                    ->sortable(),
-
-                TextColumn::make('tipo_descarga')
-                    ->label('DESCARGAR')
-                    ->badge()
-                    ->state(fn ($record) => $record->disk_name ? 'LOCAL USB' : 'URL WEB')
-                    ->color(fn ($state) => $state === 'LOCAL USB' ? 'success' : 'pink')
-                    ->icon(fn ($state) => $state === 'LOCAL USB' ? 'heroicon-o-server' : 'heroicon-o-globe-alt')
-                    ->url(fn ($record) => $record->url)
-                    ->openUrlInNewTab()
-                    ->alignCenter(),
-
-                BadgeColumn::make('category')
-                    ->label('Categoría')
-                    ->colors([
-                        'pink' => 'diseño grafico',
-                        'info' => 'musica',
-                        'orange' => 'kontakt',
-                        'gray' => fn ($state) => ! in_array($state, ['diseño grafico', 'music', 'kontakt']),
-                    ])
-                    ->sortable(),
-            ])
+            ->columns(ProgramasTableColumns::make(withStatus: true))
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')

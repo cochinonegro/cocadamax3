@@ -11,7 +11,7 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+        // Déjalo vacío, no toques nada aquí por ahora
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

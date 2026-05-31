@@ -20,18 +20,26 @@ class Programas extends Model
         'category',
         'content',
         'foto',
+        'gallery_images',
+        'installation_steps',
+        'info_install',
         'url',
         'show',
         'show_until',
         'company',
-        'disk_name', // <--- ¡ASEGÚRATE DE QUE ESTE ESTÉ AQUÍ!
+        'web_oficial',
+        'required',
+        'idioma',
+        'disk_name',
         'file_path',
     ];
 
     protected $casts = [
-        'show'       => 'boolean',
-        'show_until' => 'datetime',
-        'date_add'   => 'datetime',
+        'show'               => 'boolean',
+        'show_until'         => 'datetime',
+        'date_add'           => 'date',
+        'gallery_images'     => 'array',
+        'installation_steps' => 'array',
     ];
 
     /**

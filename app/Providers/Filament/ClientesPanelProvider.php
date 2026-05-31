@@ -2,16 +2,14 @@
 
 namespace App\Providers\Filament;
 
-use Filament\Pages\Dashboard;
+use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Pages;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
-use Filament\Widgets;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
@@ -26,19 +24,18 @@ class ClientesPanelProvider extends PanelProvider
         return $panel
             ->id('clientes')
             ->path('clientes')
+            ->login()
+            ->brandName('Catálogo de Programas')
+            ->homeUrl(fn (): string => ProgramasResource::getUrl())
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->viteTheme('resources/css/filament/admin/theme.css')
             ->discoverResources(in: app_path('Filament/Clientes/Resources'), for: 'App\\Filament\\Clientes\\Resources')
             ->discoverPages(in: app_path('Filament/Clientes/Pages'), for: 'App\\Filament\\Clientes\\Pages')
-            ->pages([
-                Dashboard::class,
-            ])
+            ->pages([])
             ->discoverWidgets(in: app_path('Filament/Clientes/Widgets'), for: 'App\\Filament\\Clientes\\Widgets')
-            ->widgets([
-                //Widgets\AccountWidget::class,
-                //Widgets\FilamentInfoWidget::class,
-            ])
+            ->widgets([])
             ->middleware([
                 EncryptCookies::class,
                 AddQueuedCookiesToResponse::class,

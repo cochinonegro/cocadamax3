@@ -1,6 +1,8 @@
 @import "tailwindcss";
 @import "../../../../vendor/filament/filament/resources/css/theme.css";
 
+@source '../../../../vendor/bezhansalleh/filament-panel-switch/resources/views/**/*.blade.php';
+
 /* 1. CONFIGURACIÓN DE COLORES (TUYO) */
 @theme {
     --color-fondo-claro: #e4e4f6;
@@ -48,4 +50,29 @@
   .fi-ta tbody td.fi-ta-cell :where([class*="min-h-"], [class*="!min-h-"]) {
     min-height: 0 !important;
   }
+}
+
+/* Tabs Windows / Mac — Programas */
+.fi-tabs-item.programas-os-tab--windows .fi-tabs-item-label {
+  color: rgb(96 165 250 / 0.75);
+}
+
+.fi-tabs-item.programas-os-tab--windows.fi-active {
+  border-color: rgb(59 130 246);
+}
+
+.fi-tabs-item.programas-os-tab--windows.fi-active .fi-tabs-item-label {
+  color: rgb(96 165 250);
+}
+
+.fi-tabs-item.programas-os-tab--mac .fi-tabs-item-label {
+  color: rgb(190 18 60 / 0.75);
+}
+
+.fi-tabs-item.programas-os-tab--mac.fi-active {
+  border-color: rgb(136 19 55);
+}
+
+.fi-tabs-item.programas-os-tab--mac.fi-active .fi-tabs-item-label {
+  color: rgb(190 18 60);
 }

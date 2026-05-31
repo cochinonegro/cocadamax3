@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Users;
 
+use App\Enums\UserRole;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Actions\EditAction;
@@ -21,6 +22,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Select;
 use Filament\Tables\Columns\TextColumn;
 
 class UserResource extends Resource
@@ -55,6 +57,16 @@ class UserResource extends Resource
                         ->required(fn (string $operation) => $operation === 'create')
                         ->dehydrateStateUsing(fn ($state) => filled($state) ? $state : null)
                         ->dehydrated(fn ($state) => filled($state)),
+
+                    Select::make('role')
+                        ->label('Tipo de usuario')
+                        ->options([
+                            UserRole::Administrador->value => 'Administrador',
+                            UserRole::Invitado->value => 'Invitado (cliente)',
+                        ])
+                        ->required()
+                        ->native(false)
+                        ->dehydrated(true),
                 ])
                 ->columns(2),
         ]);
@@ -72,8 +84,21 @@ public static function table(Table $table): Table
             TextColumn::make('email')
                 ->label('Email')
                 ->searchable()
+                ->sortable(),
 
-->badge()                ->sortable(),
+            TextColumn::make('roles.name')
+                ->label('Tipo')
+                ->badge()
+                ->formatStateUsing(fn (?string $state) => match ($state) {
+                    UserRole::Administrador->value => 'Administrador',
+                    UserRole::Invitado->value => 'Invitado',
+                    default => $state ?? 'Sin rol',
+                })
+                ->color(fn (?string $state) => match ($state) {
+                    UserRole::Administrador->value => 'success',
+                    UserRole::Invitado->value => 'info',
+                    default => 'gray',
+                }),
 
             TextColumn::make('created_at')
                 ->label('Creado')
