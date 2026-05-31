@@ -2,6 +2,7 @@
 
 namespace App\Filament\Concerns;
 
+use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\Tabs\Tab;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -10,19 +11,52 @@ trait HasProgramasOsTabs
     public function getTabs(): array
     {
         return [
-            'windows' => Tab::make('Windows')
-                ->icon('heroicon-o-computer-desktop')
-                ->extraAttributes([
-                    'class' => 'programas-os-tab programas-os-tab--windows',
-                ])
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('os_required', ['windows', 'win-mac'])),
+            'windows' => $this->makeProgramasOsTab(
+                label: 'Windows',
+                icon: 'heroicon-o-computer-desktop',
+                cssClass: 'programas-os-tab programas-os-tab--windows',
+                osValues: ['windows', 'win-mac'],
+                badgeColor: 'info',
+            ),
 
-            'mac' => Tab::make('Mac')
-                ->icon('heroicon-o-device-tablet')
-                ->extraAttributes([
-                    'class' => 'programas-os-tab programas-os-tab--mac',
-                ])
-                ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('os_required', ['mac', 'win-mac'])),
+            'mac' => $this->makeProgramasOsTab(
+                label: 'Mac',
+                icon: 'heroicon-o-device-tablet',
+                cssClass: 'programas-os-tab programas-os-tab--mac',
+                osValues: ['mac', 'win-mac'],
+                badgeColor: 'danger',
+            ),
         ];
+    }
+
+    /**
+     * @param  list<string>  $osValues
+     */
+    protected function makeProgramasOsTab(
+        string $label,
+        string $icon,
+        string $cssClass,
+        array $osValues,
+        string $badgeColor,
+    ): Tab {
+        return Tab::make($label)
+            ->icon($icon)
+            ->extraAttributes([
+                'class' => $cssClass,
+            ])
+            ->modifyQueryUsing(fn (Builder $query) => $query->whereIn('os_required', $osValues))
+            ->badge(fn (): int => $this->countProgramasForOsTab($osValues))
+            ->badgeColor($badgeColor);
+    }
+
+    /**
+     * @param  list<string>  $osValues
+     */
+    protected function countProgramasForOsTab(array $osValues): int
+    {
+        /** @var ListRecords $this */
+        return static::getResource()::getEloquentQuery()
+            ->whereIn('os_required', $osValues)
+            ->count();
     }
 }
