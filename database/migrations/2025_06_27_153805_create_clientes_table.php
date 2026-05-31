@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('os_required');
             $table->string('email')->nullable();
             $table->string('publicidad')->nullable();
-            $table->string('result_client')->nullable;
+            $table->string('result_client')->nullable();
             $table->string('observaciones')->nullable();
             $table->unsignedInteger('phone'); // ← corregido
         });

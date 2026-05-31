@@ -2,34 +2,129 @@
 
 namespace App\Filament\Admin\Resources\Clientes;
 
-use Filament\Schemas\Schema;
-use Filament\Actions\EditAction;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
-use App\Filament\Admin\Resources\Clientes\Pages\ListClientes;
 use App\Filament\Admin\Resources\Clientes\Pages\CreateClientes;
 use App\Filament\Admin\Resources\Clientes\Pages\EditClientes;
-use App\Filament\Admin\Resources\ClientesResource\Pages;
-use App\Filament\Admin\Resources\ClientesResource\RelationManagers;
+use App\Filament\Admin\Resources\Clientes\Pages\ListClientes;
 use App\Models\Clientes;
-use Filament\Forms;
+use Filament\Actions\BulkActionGroup;
+use Filament\Actions\DeleteAction;
+use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
-use Filament\Tables;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class ClientesResource extends Resource
 {
     protected static ?string $model = Clientes::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-user-group';
+
+    protected static ?string $navigationLabel = 'Clientes';
+
+    protected static ?string $modelLabel = 'Cliente';
+
+    protected static ?string $pluralModelLabel = 'Clientes';
 
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->columns(1)
             ->components([
-                //
+                Section::make('Datos del cliente')
+                    ->schema([
+                        TextInput::make('name')
+                            ->label('Nombre')
+                            ->required()
+                            ->maxLength(255),
+
+                        TextInput::make('phone')
+                            ->label('Teléfono')
+                            ->tel()
+                            ->maxLength(50),
+
+                        TextInput::make('email')
+                            ->label('Correo')
+                            ->email()
+                            ->maxLength(255),
+
+                        TextInput::make('nombre_whatsapp')
+                            ->label('Nombre WhatsApp')
+                            ->maxLength(255),
+
+                        TextInput::make('ciudad')
+                            ->label('Ciudad')
+                            ->maxLength(100),
+                    ]),
+
+                Section::make('Programa solicitado')
+                    ->schema([
+                        TextInput::make('required_prog')
+                            ->label('Programa requerido')
+                            ->maxLength(255),
+
+                        Select::make('os_required')
+                            ->label('Sistema operativo')
+                            ->options([
+                                'windows' => 'Windows',
+                                'mac' => 'Mac',
+                                'win-mac' => 'Win & Mac',
+                            ])
+                            ->native(false),
+
+                        Select::make('category')
+                            ->label('Categoría')
+                            ->options([
+                                'aplicaciones' => 'Aplicaciones',
+                                'diseño grafico' => 'Diseño gráfico',
+                                'arquitectura' => 'Arquitectura',
+                                'music' => 'Música',
+                                'video' => 'Video',
+                                'kontakt' => 'Kontakt',
+                            ])
+                            ->native(false),
+
+                        TextInput::make('company')
+                            ->label('Empresa / Marca')
+                            ->maxLength(255),
+
+                        TextInput::make('referencia')
+                            ->label('Referencia')
+                            ->maxLength(255),
+                    ]),
+
+                Section::make('Seguimiento')
+                    ->schema([
+                        DatePicker::make('date')
+                            ->label('Fecha')
+                            ->default(now())
+                            ->native(false),
+
+                        TextInput::make('publicidad')
+                            ->label('Publicidad / origen')
+                            ->maxLength(255),
+
+                        TextInput::make('result_client')
+                            ->label('Resultado')
+                            ->maxLength(255),
+
+                        Textarea::make('observaciones')
+                            ->label('Observaciones')
+                            ->rows(3)
+                            ->columnSpanFull(),
+
+                        Textarea::make('comentario_info_cliente')
+                            ->label('Comentario interno')
+                            ->rows(3)
+                            ->columnSpanFull(),
+                    ]),
             ]);
     }
 
@@ -37,13 +132,73 @@ class ClientesResource extends Resource
     {
         return $table
             ->columns([
-                //
+                TextColumn::make('id')
+                    ->label('ID')
+                    ->sortable(),
+
+                TextColumn::make('name')
+                    ->label('Nombre')
+                    ->searchable()
+                    ->sortable(),
+
+                TextColumn::make('phone')
+                    ->label('Teléfono')
+                    ->searchable(),
+
+                TextColumn::make('email')
+                    ->label('Correo')
+                    ->searchable()
+                    ->toggleable(),
+
+                TextColumn::make('required_prog')
+                    ->label('Programa')
+                    ->searchable()
+                    ->limit(30),
+
+                TextColumn::make('os_required')
+                    ->label('SO')
+                    ->formatStateUsing(fn (?string $state) => match ($state) {
+                        'windows' => 'Windows',
+                        'mac' => 'Mac',
+                        'win-mac' => 'Win & Mac',
+                        default => $state,
+                    })
+                    ->badge()
+                    ->color(fn (?string $state) => match ($state) {
+                        'windows' => 'info',
+                        'mac' => 'danger',
+                        'win-mac' => 'gray',
+                        default => 'gray',
+                    }),
+
+                TextColumn::make('category')
+                    ->label('Categoría')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('date')
+                    ->label('Fecha')
+                    ->date('d/m/Y')
+                    ->sortable(),
+
+                TextColumn::make('created_at')
+                    ->label('Alta')
+                    ->dateTime('d/m/Y H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('id', 'desc')
             ->filters([
-                //
+                SelectFilter::make('os_required')
+                    ->label('Sistema operativo')
+                    ->options([
+                        'windows' => 'Windows',
+                        'mac' => 'Mac',
+                        'win-mac' => 'Win & Mac',
+                    ]),
             ])
             ->recordActions([
                 EditAction::make(),
+                DeleteAction::make(),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
@@ -54,9 +209,7 @@ class ClientesResource extends Resource
 
     public static function getRelations(): array
     {
-        return [
-            //
-        ];
+        return [];
     }
 
     public static function getPages(): array

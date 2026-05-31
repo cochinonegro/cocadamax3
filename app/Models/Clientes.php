@@ -17,6 +17,19 @@ class Clientes extends Model
         'publicidad',
         'date',
         'category',
-
+        'company',
+        'referencia',
+        'nombre_whatsapp',
+        'ciudad',
+        'comentario_info_cliente',
+        'result_client',
+        'observaciones',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'date' => 'date',
+        ];
+    }
 }
