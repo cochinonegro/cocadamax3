@@ -28,7 +28,11 @@
             <img
                 src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
                 alt="{{ $record->progname }}"
-                class="w-full rounded-xl border border-gray-200 object-cover dark:border-gray-700"
+                @class([
+                    'rounded-xl border border-gray-200 object-cover dark:border-gray-700',
+                    'w-1/2' => $loop->first,
+                    'w-full' => ! $loop->first,
+                ])
             />
         @empty
             <div class="flex h-48 items-center justify-center rounded-xl border border-dashed border-gray-300 bg-gray-50 text-sm text-gray-500 dark:border-gray-600 dark:bg-gray-900/50 dark:text-gray-400">

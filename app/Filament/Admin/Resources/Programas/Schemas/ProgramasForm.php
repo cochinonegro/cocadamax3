@@ -167,7 +167,12 @@ class ProgramasForm
                                     ])
                                     ->native(false),
                             ])
-                            ->columns(1),
+                            ->columns([
+                                'default' => 1,
+                                'sm' => 2,
+                                'lg' => 3,
+                            ])
+                            ->columnSpanFull(),
 
                         Section::make('Ficha técnica')
                             ->extraAttributes(['class' => 'programa-detalles-group'])
