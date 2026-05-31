@@ -77,20 +77,20 @@
     }
 @endphp
 
-<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[minmax(11rem,17rem)_minmax(0,1fr)] md:gap-7">
-    <div class="flex flex-col gap-3">
+<div class="grid grid-cols-1 items-start gap-5 md:grid-cols-[minmax(6rem,8rem)_minmax(0,1fr)] md:gap-7">
+    <div class="flex flex-col gap-2">
         @forelse ($images as $image)
             <img
                 src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
                 alt="{{ $record->progname }}"
                 @class([
-                    'block w-full rounded-xl border border-zinc-700 object-cover',
-                    'max-w-[17rem] aspect-square' => $loop->first,
-                    'max-w-48 aspect-[4/3]' => ! $loop->first,
+                    'block w-full rounded-lg border border-zinc-700 object-cover',
+                    'max-w-28 aspect-square' => $loop->first,
+                    'max-w-20 aspect-[4/3]' => ! $loop->first,
                 ])
             />
         @empty
-            <div class="flex min-h-40 max-w-[17rem] items-center justify-center rounded-xl border border-dashed border-zinc-600 bg-zinc-900/50 p-4 text-center text-sm text-zinc-400">
+            <div class="flex min-h-28 max-w-28 items-center justify-center rounded-lg border border-dashed border-zinc-600 bg-zinc-900/50 p-3 text-center text-xs text-zinc-400">
                 Sin imágenes del producto
             </div>
         @endforelse
