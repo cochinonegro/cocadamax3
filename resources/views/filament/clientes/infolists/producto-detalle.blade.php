@@ -77,62 +77,146 @@
     }
 @endphp
 
-<div class="cliente-producto-layout">
-    <div class="cliente-producto-gallery">
-        @forelse ($images as $image)
-            <div @class([
-                'cliente-producto-frame',
-                'cliente-producto-frame--secondary' => ! $loop->first,
-            ])>
-                <img
-                    src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
-                    alt="{{ $record->progname }}"
-                />
-            </div>
-        @empty
-            <div class="cliente-producto-placeholder">
-                Sin imágenes del producto
-            </div>
-        @endforelse
-    </div>
+<div id="cliente-producto-detalle">
+    <style>
+        #cliente-producto-detalle .cp-layout {
+            display: grid !important;
+            grid-template-columns: 9rem minmax(0, 1fr) !important;
+            gap: 1.5rem 2rem;
+            align-items: start;
+        }
 
-    <div class="cliente-producto-content">
-        <dl class="cliente-producto-meta">
-            @foreach ($metaFields as $field)
-                <div class="cliente-producto-meta-item">
-                    <dt>{{ $field['label'] }}</dt>
-                    <dd>
-                        <span class="{{ $field['badge'] }}">
-                            {{ $field['value'] }}
-                        </span>
-                    </dd>
+        #cliente-producto-detalle .cp-gallery {
+            display: flex;
+            flex-direction: column;
+            gap: 0.625rem;
+        }
+
+        #cliente-producto-detalle .cp-frame {
+            display: flex;
+            width: 9rem;
+            height: 9rem;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid rgb(63 63 70);
+            background: rgb(24 24 27 / 0.55);
+            padding: 0.625rem;
+            box-sizing: border-box;
+        }
+
+        #cliente-producto-detalle .cp-frame img {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            object-position: center;
+        }
+
+        #cliente-producto-detalle .cp-content {
+            min-width: 0;
+        }
+
+        #cliente-producto-detalle .cp-meta {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 0.875rem 1.25rem;
+        }
+
+        #cliente-producto-detalle .cp-meta-label {
+            font-size: 0.75rem;
+            line-height: 1rem;
+            color: rgb(161 161 170);
+        }
+
+        #cliente-producto-detalle .cp-meta-value {
+            margin-top: 0.375rem;
+        }
+
+        #cliente-producto-detalle .cp-web {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        #cliente-producto-detalle .cp-web-label {
+            font-size: 0.75rem;
+            color: rgb(161 161 170);
+        }
+
+        #cliente-producto-detalle .cp-descripcion {
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgb(63 63 70);
+        }
+
+        @media (max-width: 767px) {
+            #cliente-producto-detalle .cp-layout {
+                grid-template-columns: 1fr !important;
+            }
+
+            #cliente-producto-detalle .cp-meta {
+                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            }
+        }
+    </style>
+
+    <div class="cp-layout">
+        <div class="cp-gallery">
+            @forelse ($images as $image)
+                <div class="cp-frame">
+                    <img
+                        src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
+                        alt="{{ $record->progname }}"
+                    />
                 </div>
-            @endforeach
-        </dl>
-
-        @if ($webOficialUrl)
-            <div class="cliente-producto-web">
-                <p class="cliente-producto-web-label">Web oficial</p>
-                <a
-                    href="{{ $webOficialUrl }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="mt-1 inline-block font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300"
-                >
-                    {{ $record->web_oficial }}
-                </a>
-            </div>
-        @endif
-
-        <div class="cliente-producto-descripcion">
-            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
-            @if (filled($record->description))
-                <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
-                    {!! Str::markdown($record->description) !!}
+            @empty
+                <div class="cp-frame" style="font-size:0.75rem;color:rgb(161 161 170);text-align:center;">
+                    Sin imágenes
                 </div>
-            @else
-                <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción disponible.</p>
+            @endforelse
+        </div>
+
+        <div class="cp-content">
+            <div class="cp-meta">
+                @foreach ($metaFields as $field)
+                    <div>
+                        <div class="cp-meta-label">{{ $field['label'] }}</div>
+                        <div class="cp-meta-value">
+                            <span class="{{ $field['badge'] }}">
+                                {{ $field['value'] }}
+                            </span>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+
+            @if ($webOficialUrl)
+                <div class="cp-web">
+                    <div class="cp-web-label">Web oficial</div>
+                    <a
+                        href="{{ $webOficialUrl }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="mt-1 inline-block font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300"
+                    >
+                        {{ $record->web_oficial }}
+                    </a>
+                </div>
             @endif
+
+            <div class="cp-descripcion">
+                <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
+                @if (filled($record->description))
+                    <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
+                        {!! Str::markdown($record->description) !!}
+                    </div>
+                @else
+                    <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción disponible.</p>
+                @endif
+            </div>
         </div>
     </div>
 </div>
