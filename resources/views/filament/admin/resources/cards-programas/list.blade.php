@@ -89,11 +89,44 @@
                         {!! $labeledBadge('ID', '#'.$programa->id, 'bg-blue-500/15 text-blue-300 ring-blue-500/30 shrink-0') !!}
                     </div>
 
-                    @if (filled($programa->description))
-                        <p class="mb-2 line-clamp-2 w-full break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
-                            {{ Str::of(strip_tags(Str::markdown($programa->description)))->squish() }}
-                        </p>
-                    @endif
+                    @php
+                        $descripcionPlano = filled($programa->description)
+                            ? Str::of(strip_tags(Str::markdown($programa->description)))->squish()
+                            : null;
+                    @endphp
+                    <div x-data="{ open: false }" class="mb-2 rounded-lg border border-gray-800/80 bg-gray-950/40">
+                        <button
+                            type="button"
+                            x-on:click="open = ! open"
+                            class="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-gray-300 transition hover:text-white sm:px-2 sm:py-1.5 sm:text-xs"
+                        >
+                            <span>Descripción</span>
+                            <svg
+                                class="size-4 shrink-0 text-gray-500 transition-transform sm:size-3"
+                                x-bind:class="open && 'rotate-180'"
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                aria-hidden="true"
+                            >
+                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
+                            </svg>
+                        </button>
+                        <div
+                            x-show="open"
+                            x-collapse
+                            x-cloak
+                            class="border-t border-gray-800/80 px-3 pb-3 pt-2 sm:px-2 sm:pb-2 sm:pt-1.5"
+                        >
+                            @if (filled($descripcionPlano))
+                                <p class="break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
+                                    {{ $descripcionPlano }}
+                                </p>
+                            @else
+                                <p class="text-sm italic text-gray-500 sm:text-[10px]">Sin descripción.</p>
+                            @endif
+                        </div>
+                    </div>
 
                     <div class="mb-2 space-y-2 sm:space-y-1">
                         {{-- Fila 1 --}}
