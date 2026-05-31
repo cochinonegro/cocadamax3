@@ -8,7 +8,7 @@ use Filament\Tables\Columns\ToggleColumn;
 
 class ProgramasTableColumns
 {
-    public static function make(bool $withStatus = false, bool $withWebOficial = false): array
+    public static function make(bool $withStatus = false, bool $withWebOficial = false, bool $withDirectDownloadUrl = false): array
     {
         $columns = [
             TextColumn::make('id')
@@ -26,11 +26,15 @@ class ProgramasTableColumns
                 ->color('amber'),
 
             TextColumn::make('descargar')
-                ->label('DESCARGAR')
+                ->label($withDirectDownloadUrl ? 'DESCARGAS' : 'DESCARGAR')
                 ->badge()
-                ->color('rose')
-                ->state(fn () => 'DESCARGAR')
-                ->url(fn (Programas $record) => route('invitado.descarga', $record))
+                ->color(fn (Programas $record) => $withDirectDownloadUrl && ! filled($record->url) ? 'gray' : 'rose')
+                ->state(fn (Programas $record) => $withDirectDownloadUrl
+                    ? (filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
+                    : 'DESCARGAR')
+                ->url(fn (Programas $record): ?string => $withDirectDownloadUrl
+                    ? (filled($record->url) ? $record->url : null)
+                    : route('invitado.descarga', $record))
                 ->openUrlInNewTab()
                 ->alignCenter(),
 

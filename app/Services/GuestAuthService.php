@@ -78,6 +78,6 @@ class GuestAuthService
             return url('/admin');
         }
 
-        return url('/clientes/pedidos');
+        return url('/clientes/programas');
     }
 }

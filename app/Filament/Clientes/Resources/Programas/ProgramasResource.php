@@ -27,11 +27,6 @@ class ProgramasResource extends Resource
 
     protected static ?string $modelLabel = 'Programa';
 
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
-
     public static function form(Schema $schema): Schema
     {
         return $schema->components([]);
@@ -63,7 +58,7 @@ class ProgramasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(ProgramasTableColumns::make(withStatus: false, withWebOficial: true))
+            ->columns(ProgramasTableColumns::make(withStatus: false, withWebOficial: true, withDirectDownloadUrl: true))
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
@@ -78,6 +73,10 @@ class ProgramasResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
+            ->recordUrl(
+                fn (Programas $record): ?string => filled($record->url) ? $record->url : null,
+                shouldOpenInNewTab: true,
+            )
             ->recordActions([
                 ViewAction::make(),
             ])
