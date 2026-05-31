@@ -5,6 +5,11 @@ use App\Http\Controllers\WelcomeController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
+Route::get('/deploy-check', fn () => response()->json([
+    'app' => 'cocadamax3',
+    'version' => 'guest-welcome-v5',
+    'time' => now()->toIso8601String(),
+]))->name('deploy.check');
 Route::post('/registro', [WelcomeController::class, 'register'])->name('welcome.register');
 Route::post('/iniciar-sesion', [WelcomeController::class, 'login'])->name('welcome.login');
 

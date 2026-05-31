@@ -15,7 +15,7 @@ class WelcomeController extends Controller
             return redirect(app(GuestAuthService::class)->redirectAfterLogin($request->user()));
         }
 
-        return view('guest.welcome');
+        return view('welcome');
     }
 
     public function register(Request $request): RedirectResponse
