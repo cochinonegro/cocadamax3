@@ -37,6 +37,8 @@ class UserResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Usuarios';
 
+    protected static ?int $navigationSort = 5;
+
     public static function form(Schema $schema): Schema
 {
     return $schema

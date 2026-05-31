@@ -20,6 +20,8 @@ class CardsProgramasResource extends Resource
 
     protected static ?string $pluralModelLabel = 'Cards Programas';
 
+    protected static ?int $navigationSort = 3;
+
     protected static ?string $slug = 'cards-programas';
 
     public static function form(Schema $schema): Schema
