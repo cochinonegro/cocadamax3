@@ -5,8 +5,10 @@ namespace App\Filament\Admin\Resources\Programas\Schemas;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramaImageUpload;
 use App\Filament\Support\ProgramasTableColumns;
+use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\Hidden;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
@@ -22,6 +24,37 @@ use Livewire\Component;
 
 class ProgramasForm
 {
+    public static function syncOsRequired(Get $get, Set $set): void
+    {
+        $windows = (bool) $get('os_windows');
+        $mac = (bool) $get('os_mac');
+
+        $set('os_required', match (true) {
+            $windows && $mac => 'win-mac',
+            $windows => 'windows',
+            $mac => 'mac',
+            default => null,
+        });
+    }
+
+    /** @param  array<string, mixed>  $data */
+    public static function hydrateOsCheckboxes(array $data): array
+    {
+        $os = $data['os_required'] ?? null;
+        $data['os_windows'] = in_array($os, ['windows', 'win-mac'], true);
+        $data['os_mac'] = in_array($os, ['mac', 'win-mac'], true);
+
+        return $data;
+    }
+
+    /** @param  array<string, mixed>  $data */
+    public static function stripVirtualOsFields(array $data): array
+    {
+        unset($data['os_windows'], $data['os_mac']);
+
+        return $data;
+    }
+
     public static function wizard(): Wizard
     {
         return Wizard::make([
@@ -103,16 +136,24 @@ class ProgramasForm
                                     ->visible(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
                                     ->maxLength(255),
 
-                                Select::make('os_required')
-                                    ->label('Sistema')
-                                    ->required()
-                                    ->placeholder('Selecciona…')
-                                    ->options([
-                                        'windows' => 'Windows',
-                                        'mac' => 'Mac',
-                                        'win-mac' => 'Win & Mac',
-                                    ])
-                                    ->native(false),
+                                Hidden::make('os_required')
+                                    ->default('windows')
+                                    ->dehydrated()
+                                    ->required(),
+
+                                Checkbox::make('os_windows')
+                                    ->label('Windows')
+                                    ->default(true)
+                                    ->dehydrated(false)
+                                    ->live()
+                                    ->afterStateUpdated(fn (Get $get, Set $set) => self::syncOsRequired($get, $set)),
+
+                                Checkbox::make('os_mac')
+                                    ->label('Mac')
+                                    ->default(false)
+                                    ->dehydrated(false)
+                                    ->live()
+                                    ->afterStateUpdated(fn (Get $get, Set $set) => self::syncOsRequired($get, $set)),
 
                                 Select::make('idioma')
                                     ->label('Idioma')

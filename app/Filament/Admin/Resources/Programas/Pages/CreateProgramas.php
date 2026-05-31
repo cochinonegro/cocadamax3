@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources\Programas\Pages;
 
+use App\Filament\Admin\Resources\Programas\Schemas\ProgramasForm;
 use App\Filament\Admin\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\PersistsProgramaWizardProgress;
 use Filament\Actions\Action;
@@ -39,6 +40,8 @@ class CreateProgramas extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
-        return $this->prepareProgramaPersistenceData($data);
+        return ProgramasForm::stripVirtualOsFields(
+            $this->prepareProgramaPersistenceData($data)
+        );
     }
 }

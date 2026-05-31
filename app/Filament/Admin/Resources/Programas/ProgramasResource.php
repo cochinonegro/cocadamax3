@@ -61,6 +61,40 @@ class ProgramasResource extends Resource
                     ->label('')
                     ->tooltip('Eliminar'),
 
+                Action::make('win_mac')
+                    ->label('WIN=MAC')
+                    ->icon('heroicon-o-document-duplicate')
+                    ->color('info')
+                    ->tooltip(fn (Programas $record): string => match ($record->normalizedOsRequired()) {
+                        'mac' => 'Crear duplicado para Windows',
+                        'windows' => 'Crear duplicado para Mac',
+                        default => 'Duplicar para el otro sistema operativo',
+                    })
+                    ->visible(fn (Programas $record): bool => filled($record->swappedOsRequired()))
+                    ->requiresConfirmation()
+                    ->modalHeading('Duplicar producto')
+                    ->modalDescription(function (Programas $record): string {
+                        $target = ProgramasTableColumns::osRequiredLabel($record->swappedOsRequired());
+
+                        return "Se creará una copia idéntica con sistema {$target}. Todo lo demás permanece igual.";
+                    })
+                    ->action(function (Programas $record): void {
+                        $duplicate = $record->duplicateWithSwappedOs();
+
+                        $osLabel = ProgramasTableColumns::osRequiredLabel($duplicate->os_required);
+
+                        Notification::make()
+                            ->title('Producto duplicado')
+                            ->body("Copia creada para {$osLabel}.")
+                            ->success()
+                            ->actions([
+                                Action::make('editar')
+                                    ->label('Editar copia')
+                                    ->url(static::getUrl('edit', ['record' => $duplicate])),
+                            ])
+                            ->send();
+                    }),
+
                 Action::make('generar_link')
                     ->label('Link Cliente')
                     ->icon('heroicon-o-key')

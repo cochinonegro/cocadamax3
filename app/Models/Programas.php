@@ -111,4 +111,39 @@ class Programas extends Model
 
         return $query->where('pedidos_visible_until', '>', now());
     }
+
+    public function normalizedOsRequired(): ?string
+    {
+        $os = strtolower(trim((string) $this->os_required));
+
+        return in_array($os, ['windows', 'mac', 'win-mac'], true) ? $os : null;
+    }
+
+    public function swappedOsRequired(): ?string
+    {
+        return match ($this->normalizedOsRequired()) {
+            'windows' => 'mac',
+            'mac' => 'windows',
+            default => null,
+        };
+    }
+
+    public function duplicateWithSwappedOs(): self
+    {
+        $newOs = $this->swappedOsRequired();
+
+        if ($newOs === null) {
+            throw new \InvalidArgumentException('Solo se puede duplicar productos Windows o Mac.');
+        }
+
+        $duplicate = $this->replicate([
+            'pedidos_visible_until',
+        ]);
+
+        $duplicate->os_required = $newOs;
+        $duplicate->pedidos_visible_until = null;
+        $duplicate->save();
+
+        return $duplicate->fresh();
+    }
 }

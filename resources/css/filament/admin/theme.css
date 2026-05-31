@@ -276,6 +276,14 @@
   align-items: center !important;
 }
 
+.programa-detalles-group .fi-fo-checkbox {
+  margin-top: 0.15rem;
+}
+
+.programa-detalles-group .fi-fo-field-wrp:has(.fi-fo-checkbox) .fi-fo-field-wrp-label {
+  font-weight: 600 !important;
+}
+
 @media (min-width: 1024px) {
   .programa-detalles-group .fi-sc {
     gap: 0.875rem 1.25rem !important;

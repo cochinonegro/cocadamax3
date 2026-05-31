@@ -24,6 +24,11 @@ class EditProgramas extends EditRecord
         return $this->prepareProgramaPersistenceData($data);
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        return ProgramasForm::hydrateOsCheckboxes($data);
+    }
+
     protected function getHeaderActions(): array
     {
         return [

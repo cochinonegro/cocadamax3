@@ -2,6 +2,7 @@
 
 namespace App\Filament\Concerns;
 
+use App\Filament\Admin\Resources\Programas\Schemas\ProgramasForm;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
@@ -34,7 +35,7 @@ trait PersistsProgramaWizardProgress
             $data['url'] = ProgramasTableColumns::downloadUrl($data['url']);
         }
 
-        return $data;
+        return ProgramasForm::stripVirtualOsFields($data);
     }
 
     public function persistProgramaWizardStep(): void
