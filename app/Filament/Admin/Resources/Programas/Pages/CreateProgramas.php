@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Resources\Programas\Pages;
 
 use App\Filament\Admin\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\NormalizesProgramaVisibility;
-use Filament\Actions;
+use Filament\Actions\Action;
 use Filament\Resources\Pages\CreateRecord;
 
 class CreateProgramas extends CreateRecord
@@ -16,6 +16,16 @@ class CreateProgramas extends CreateRecord
     protected function getRedirectUrl(): string
     {
         return $this->getResource()::getUrl('index');
+    }
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            Action::make('create')
+                ->label('CREAR')
+                ->action(fn (): void => $this->create())
+                ->keyBindings(['mod+s']),
+        ];
     }
 
     protected function mutateFormDataBeforeCreate(array $data): array

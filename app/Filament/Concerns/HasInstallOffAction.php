@@ -13,7 +13,7 @@ trait HasInstallOffAction
         return Action::make('Install_Off')
             ->label('Install_Off')
             ->icon('heroicon-o-eye-slash')
-            ->color('warning')
+            ->color('danger')
             ->requiresConfirmation()
             ->modalHeading('Ocultar instaladores')
             ->modalDescription('Se desactivará el instalador en todos los programas. Los clientes dejarán de ver el procedimiento de instalación.')

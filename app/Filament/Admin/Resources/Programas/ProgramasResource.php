@@ -78,7 +78,7 @@ class ProgramasResource extends Resource
                             ->label('Nombre')
                             ->required()
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
 
                         TextInput::make('url')
                             ->label('Link Descarga')
@@ -86,7 +86,7 @@ class ProgramasResource extends Resource
                             ->url()
                             ->required()
                             ->maxLength(255)
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
 
                         TextInput::make('program_id')
                             ->label('Código')
@@ -172,18 +172,19 @@ class ProgramasResource extends Resource
                             ->default(true)
                             ->dehydrated()
                             ->live()
-                            ->columnSpanFull(),
+                            ->columnSpan(2),
 
                         DateTimePicker::make('show_until')
                             ->label('Visible hasta')
                             ->default(now()->addYear())
                             ->required(fn (Get $get) => (bool) $get('show'))
                             ->visible(fn (Get $get) => (bool) $get('show'))
-                            ->columnSpanFull(),
-                    ])->columns(3),
+                            ->columnSpan(2),
+                    ])->columns(4),
 
                 Section::make('Descripción')
                     ->columnSpanFull()
+                    ->collapsed()
                     ->schema([
                         MarkdownEditor::make('description')
                             ->label('Descripción')

@@ -18,8 +18,8 @@ class ListProgramas extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            $this->makeInstallOffAction(),
             CreateAction::make(),
+            $this->makeInstallOffAction(),
         ];
     }
 }
