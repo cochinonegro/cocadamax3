@@ -27,9 +27,9 @@
     };
 
     $labeledBadge = fn (string $title, string $value, string $classes = 'bg-gray-500/15 text-gray-300 ring-gray-500/30') => <<<HTML
-        <span class="inline-flex items-center gap-1">
-            <span class="text-[10px] font-medium text-white">{$title}:</span>
-            <span class="inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-medium ring-1 ring-inset {$classes}">{$value}</span>
+        <span class="inline-flex items-center gap-1.5 sm:gap-1">
+            <span class="text-sm font-medium text-white sm:text-[10px]">{$title}:</span>
+            <span class="inline-flex items-center rounded-md px-2 py-1 text-sm font-medium ring-1 ring-inset sm:px-1.5 sm:py-0.5 sm:text-[10px] {$classes}">{$value}</span>
         </span>
     HTML;
 @endphp
@@ -50,10 +50,10 @@
             @forelse ($this->programas as $programa)
                 <article
                     wire:key="card-programa-{{ $programa->id }}"
-                    class="rounded-xl border border-gray-700/80 bg-gray-900/60 p-3 shadow-sm"
+                    class="rounded-xl border border-gray-700/80 bg-gray-900/60 p-4 shadow-sm sm:p-3"
                 >
                     <div class="mb-2 flex items-start justify-between gap-2">
-                        <h3 class="min-w-0 flex-1 text-xs font-semibold uppercase leading-snug tracking-wide">
+                        <h3 class="min-w-0 flex-1 text-base font-semibold uppercase leading-snug tracking-wide sm:text-xs">
                             <a
                                 href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
                                 class="text-white transition hover:text-amber-300 hover:underline"
@@ -65,14 +65,14 @@
                     </div>
 
                     @if (filled($programa->description))
-                        <p class="mb-2 line-clamp-2 w-full break-words text-[10px] leading-snug text-gray-400">
+                        <p class="mb-2 line-clamp-2 w-full break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
                             {{ Str::of(strip_tags(Str::markdown($programa->description)))->squish() }}
                         </p>
                     @endif
 
-                    <div class="mb-2 space-y-1">
+                    <div class="mb-2 space-y-2 sm:space-y-1">
                         {{-- Fila 1 --}}
-                        <div class="flex min-h-[1.125rem] flex-wrap items-center gap-x-2 gap-y-1">
+                        <div class="flex min-h-[1.5rem] flex-wrap items-center gap-x-2 gap-y-1.5 sm:min-h-[1.125rem] sm:gap-y-1">
                             @if ($programa->show && $programa->show_until?->isFuture())
                                 {!! $labeledBadge('Estado', 'ACTIVO', 'bg-green-500/15 text-green-300 ring-green-500/30') !!}
                             @else
@@ -97,7 +97,7 @@
                         </div>
 
                         {{-- Fila 2 --}}
-                        <div class="flex min-h-[1.125rem] flex-wrap items-center gap-x-2 gap-y-1">
+                        <div class="flex min-h-[1.5rem] flex-wrap items-center gap-x-2 gap-y-1.5 sm:min-h-[1.125rem] sm:gap-y-1">
                             @if (filled($programa->year_prog))
                                 {!! $labeledBadge('Año', $programa->year_prog, 'bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30') !!}
                             @endif
@@ -116,7 +116,7 @@
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 border-t border-gray-800 pt-2">
+                    <div class="flex flex-wrap items-center gap-2 border-t border-gray-800 pt-3 sm:pt-2">
                         {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}
 
                         <button
@@ -129,14 +129,14 @@
                             @else
                                 x-on:click="$wire.notifyNoLink()"
                             @endif
-                            class="inline-flex cursor-pointer items-center rounded-md bg-rose-500/15 px-2 py-1 text-[10px] font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30"
+                            class="inline-flex cursor-pointer items-center rounded-md bg-rose-500/15 px-3 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
                             DESCARGAR
                         </button>
 
                         <a
                             href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
-                            class="inline-flex items-center rounded-md bg-amber-500/15 px-2 py-1 text-[10px] font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30"
+                            class="inline-flex items-center rounded-md bg-amber-500/15 px-3 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
                             Editar
                         </a>
