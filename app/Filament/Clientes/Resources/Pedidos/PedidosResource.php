@@ -54,7 +54,7 @@ class PedidosResource extends Resource
                     ->badge()
                     ->color(fn (Programas $record) => filled($record->url) ? 'success' : 'gray')
                     ->state(fn (Programas $record) => filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
-                    ->url(fn (Programas $record): ?string => filled($record->url) ? $record->url : null)
+                    ->url(fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url))
                     ->openUrlInNewTab()
                     ->alignCenter(),
 
@@ -89,7 +89,7 @@ class PedidosResource extends Resource
                     ->preload(),
             ])
             ->recordUrl(
-                fn (Programas $record): ?string => filled($record->url) ? $record->url : null,
+                fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url),
                 shouldOpenInNewTab: true,
             )
             ->defaultSort('id', 'desc')

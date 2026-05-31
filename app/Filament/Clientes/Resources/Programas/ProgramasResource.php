@@ -67,7 +67,7 @@ class ProgramasResource extends Resource
         return $table
             ->columns(ProgramasTableColumns::make(
                 withWebOficial: true,
-                withDownloadColumn: false,
+                withDirectDownloadUrl: true,
             ))
             ->filters([
                 SelectFilter::make('category')

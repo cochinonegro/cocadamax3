@@ -39,7 +39,7 @@ class ProgramasTableColumns
                     ? (filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
                     : 'DESCARGAR')
                 ->url(fn (Programas $record): ?string => $withDirectDownloadUrl
-                    ? (filled($record->url) ? $record->url : null)
+                    ? self::downloadUrl($record->url)
                     : route('invitado.descarga', $record))
                 ->openUrlInNewTab()
                 ->alignCenter();
@@ -174,16 +174,21 @@ class ProgramasTableColumns
 
     public static function webOficialUrl(?string $web): ?string
     {
-        if (blank($web)) {
+        return self::downloadUrl($web);
+    }
+
+    public static function downloadUrl(?string $url): ?string
+    {
+        if (blank($url)) {
             return null;
         }
 
-        $web = trim($web);
+        $url = trim($url);
 
-        if (preg_match('/^https?:\/\//i', $web)) {
-            return $web;
+        if (preg_match('/^https?:\/\//i', $url)) {
+            return $url;
         }
 
-        return 'https://'.$web;
+        return 'https://'.$url;
     }
 }
