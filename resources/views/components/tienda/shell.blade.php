@@ -9,6 +9,10 @@
     $steps = TiendaPresentation::steps($step);
 @endphp
 
+@once
+    <link rel="stylesheet" href="{{ asset('css/tienda.css') }}?v=1">
+@endonce
+
 <div {{ $attributes->merge(['class' => 'tienda-shell']) }}>
     <div class="tienda-shell__inner">
         <nav class="tienda-steps" aria-label="Progreso de la tienda">
