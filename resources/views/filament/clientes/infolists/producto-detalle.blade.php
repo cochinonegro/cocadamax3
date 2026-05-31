@@ -20,6 +20,59 @@
     };
 
     $webOficialUrl = ProgramasTableColumns::webOficialUrl($record->web_oficial);
+
+    $categoryBadgeClass = match ($record->category) {
+        'diseño grafico' => 'cliente-producto-detalle__badge--pink',
+        'kontakt' => 'cliente-producto-detalle__badge--violet',
+        'arquitectura' => 'cliente-producto-detalle__badge--orange',
+        'aplicaciones' => 'cliente-producto-detalle__badge--blue',
+        'video' => 'cliente-producto-detalle__badge--fuchsia',
+        'music' => 'cliente-producto-detalle__badge--amber',
+        'office-pdf' => 'cliente-producto-detalle__badge--emerald',
+        default => 'cliente-producto-detalle__badge--gray',
+    };
+
+    $osBadgeClass = match ($record->os_required) {
+        'windows' => 'cliente-producto-detalle__badge--blue',
+        'mac' => 'cliente-producto-detalle__badge--rose',
+        'win-mac' => 'cliente-producto-detalle__badge--gray',
+        default => 'cliente-producto-detalle__badge--gray',
+    };
+
+    $metaFields = [
+        ['label' => 'Código', 'value' => $codigo, 'badge' => 'cliente-producto-detalle__badge--blue'],
+        ['label' => 'Tamaño', 'value' => $record->size, 'badge' => 'cliente-producto-detalle__badge--green'],
+        ['label' => 'Sistema operativo', 'value' => $osLabel, 'badge' => $osBadgeClass],
+        ['label' => 'Categoría', 'value' => ProgramaCategories::label($record->category), 'badge' => $categoryBadgeClass],
+    ];
+
+    if ($record->year_prog) {
+        $metaFields[] = ['label' => 'Año', 'value' => $record->year_prog, 'badge' => 'cliente-producto-detalle__badge--fuchsia'];
+    }
+
+    if ($record->working) {
+        $metaFields[] = [
+            'label' => 'Subcategoría',
+            'value' => ProgramaCategories::subcategoryLabel($record->category, $record->working),
+            'badge' => 'cliente-producto-detalle__badge--violet',
+        ];
+    }
+
+    if (filled($record->idioma)) {
+        $metaFields[] = ['label' => 'Idioma', 'value' => strtoupper($record->idioma), 'badge' => 'cliente-producto-detalle__badge--orange'];
+    }
+
+    if (filled($record->required)) {
+        $metaFields[] = ['label' => 'Requerido', 'value' => $record->required, 'badge' => 'cliente-producto-detalle__badge--teal'];
+    }
+
+    if (filled($record->company)) {
+        $metaFields[] = ['label' => 'Marca', 'value' => strtoupper($record->company), 'badge' => 'cliente-producto-detalle__badge--cyan'];
+    }
+
+    if (filled($record->level_inst)) {
+        $metaFields[] = ['label' => 'Tipo / archivo', 'value' => $record->level_inst, 'badge' => 'cliente-producto-detalle__badge--violet'];
+    }
 @endphp
 
 <div class="cliente-producto-detalle">
@@ -47,61 +100,22 @@
             <h2 class="text-2xl font-bold text-gray-950 dark:text-white">{{ $record->progname }}</h2>
         </div>
 
-        <dl class="grid grid-cols-2 gap-3 text-sm sm:grid-cols-3 lg:grid-cols-4">
-            <div>
-                <dt class="text-gray-500 dark:text-gray-400">Código</dt>
-                <dd class="font-medium text-gray-950 dark:text-white">{{ $codigo }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500 dark:text-gray-400">Tamaño</dt>
-                <dd class="font-medium text-gray-950 dark:text-white">{{ $record->size }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500 dark:text-gray-400">Sistema operativo</dt>
-                <dd class="font-medium text-gray-950 dark:text-white">{{ $osLabel }}</dd>
-            </div>
-            <div>
-                <dt class="text-gray-500 dark:text-gray-400">Categoría</dt>
-                <dd class="font-medium text-gray-950 dark:text-white">{{ ProgramaCategories::label($record->category) }}</dd>
-            </div>
-            @if ($record->year_prog)
-                <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Año</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ $record->year_prog }}</dd>
+        <dl class="cliente-producto-detalle__meta">
+            @foreach ($metaFields as $field)
+                <div class="cliente-producto-detalle__meta-item">
+                    <dt>{{ $field['label'] }}</dt>
+                    <dd>
+                        <span @class(['cliente-producto-detalle__badge', $field['badge']])>
+                            {{ $field['value'] }}
+                        </span>
+                    </dd>
                 </div>
-            @endif
-            @if ($record->working)
+            @endforeach
+        </dl>
+
+        @if ($webOficialUrl)
+            <dl class="cliente-producto-detalle__web">
                 <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Subcategoría</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ ProgramaCategories::subcategoryLabel($record->category, $record->working) }}</dd>
-                </div>
-            @endif
-            @if (filled($record->idioma))
-                <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Idioma</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ strtoupper($record->idioma) }}</dd>
-                </div>
-            @endif
-            @if (filled($record->required))
-                <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Requerido</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ $record->required }}</dd>
-                </div>
-            @endif
-            @if (filled($record->company))
-                <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Marca</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ strtoupper($record->company) }}</dd>
-                </div>
-            @endif
-            @if (filled($record->level_inst))
-                <div>
-                    <dt class="text-gray-500 dark:text-gray-400">Tipo / archivo</dt>
-                    <dd class="font-medium text-gray-950 dark:text-white">{{ $record->level_inst }}</dd>
-                </div>
-            @endif
-            @if ($webOficialUrl)
-                <div class="col-span-2 sm:col-span-3 lg:col-span-4">
                     <dt class="text-gray-500 dark:text-gray-400">Web oficial</dt>
                     <dd>
                         <a
@@ -114,8 +128,8 @@
                         </a>
                     </dd>
                 </div>
-            @endif
-        </dl>
+            </dl>
+        @endif
 
         <div class="border-t border-gray-200 pt-4 dark:border-gray-700">
             <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
