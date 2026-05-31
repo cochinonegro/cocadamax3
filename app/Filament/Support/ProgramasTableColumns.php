@@ -3,6 +3,7 @@
 namespace App\Filament\Support;
 
 use App\Models\Programas;
+use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
 
@@ -159,7 +160,19 @@ class ProgramasTableColumns
             ]);
         }
 
-        return $columns;
+        return self::withToggleableColumns($columns);
+    }
+
+    /**
+     * @param  array<int, Column>  $columns
+     * @return array<int, Column>
+     */
+    private static function withToggleableColumns(array $columns): array
+    {
+        return array_map(
+            fn (Column $column): Column => $column->toggleable(),
+            $columns,
+        );
     }
 
     public static function osRequiredLabel(?string $state): string

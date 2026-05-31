@@ -44,6 +44,7 @@ class ProgramasResource extends Resource
     {
         return $table
             ->columns(ProgramasTableColumns::make(withStatus: true))
+            ->reorderableColumns()
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
