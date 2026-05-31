@@ -4,6 +4,7 @@ namespace App\Filament\Support;
 
 use App\Models\Programas;
 use App\Support\PedidosVisibility;
+use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
@@ -16,7 +17,25 @@ class ProgramasTableColumns
         bool $withDirectDownloadUrl = false,
         bool $withDownloadColumn = true,
         bool $copyDownloadUrlOnly = false,
+        bool $clientProgramNameStyle = false,
     ): array {
+        $prognameColumn = TextColumn::make('progname')
+            ->label('Programa')
+            ->sortable()
+            ->searchable()
+            ->limit(35);
+
+        if ($clientProgramNameStyle) {
+            $prognameColumn
+                ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
+                ->color('amber')
+                ->weight(FontWeight::Bold);
+        } else {
+            $prognameColumn
+                ->badge()
+                ->color('amber');
+        }
+
         $columns = [
             TextColumn::make('id')
                 ->label('ID')
@@ -24,13 +43,7 @@ class ProgramasTableColumns
                 ->badge()
                 ->color('blue'),
 
-            TextColumn::make('progname')
-                ->label('Programa')
-                ->sortable()
-                ->searchable()
-                ->limit(35)
-                ->badge()
-                ->color('amber'),
+            $prognameColumn,
         ];
 
         if ($withDownloadColumn) {

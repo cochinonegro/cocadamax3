@@ -53,9 +53,12 @@ class PedidosResource extends Resource
                     ->label('DESCARGAS')
                     ->badge()
                     ->color(fn (Programas $record) => filled($record->url) ? 'success' : 'gray')
-                    ->state(fn (Programas $record) => filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
+                    ->state(fn (Programas $record) => filled($record->url)
+                        ? 'Descarga aquí el programa'
+                        : 'Sin enlace')
                     ->url(fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url))
                     ->openUrlInNewTab()
+                    ->wrap()
                     ->alignCenter(),
 
                 TextColumn::make('os_required')
