@@ -8,7 +8,7 @@ Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::post('/registro', [WelcomeController::class, 'register'])->name('welcome.register');
 Route::post('/iniciar-sesion', [WelcomeController::class, 'login'])->name('welcome.login');
 
-Route::redirect('/login', '/')->name('login');
+Route::redirect('/login', '/admin/login')->name('login');
 
 // =============================================================================
 // RUTA DE DESCARGA SEGURA (MODO OCULTO / PROXY)
