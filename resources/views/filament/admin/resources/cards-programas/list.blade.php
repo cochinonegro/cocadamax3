@@ -113,11 +113,18 @@
                             @if (filled($programa->category))
                                 {!! $labeledBadge('Categoría', ucfirst($programa->category), $categoryColor($programa->category)) !!}
                             @endif
+
+                            {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}
                         </div>
                     </div>
 
-                    <div class="flex flex-wrap items-center gap-2 border-t border-gray-800 pt-3 sm:pt-2">
-                        {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}
+                    <div class="grid grid-cols-3 gap-2 border-t border-gray-800 pt-3 sm:pt-2">
+                        <a
+                            href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
+                            class="inline-flex items-center justify-center rounded-md bg-amber-500/15 px-2 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                        >
+                            Editar
+                        </a>
 
                         <button
                             type="button"
@@ -129,17 +136,19 @@
                             @else
                                 x-on:click="$wire.notifyNoLink()"
                             @endif
-                            class="inline-flex cursor-pointer items-center rounded-md bg-rose-500/15 px-3 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                            class="inline-flex cursor-pointer items-center justify-center rounded-md bg-rose-500/15 px-2 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
-                            DESCARGAR
+                            CopyLink
                         </button>
 
-                        <a
-                            href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
-                            class="inline-flex items-center rounded-md bg-amber-500/15 px-3 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                        <button
+                            type="button"
+                            wire:click="deletePrograma({{ $programa->id }})"
+                            wire:confirm="¿Eliminar este programa? Esta acción no se puede deshacer."
+                            class="inline-flex cursor-pointer items-center justify-center rounded-md bg-red-500/15 px-2 py-1.5 text-sm font-semibold text-red-300 ring-1 ring-inset ring-red-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
-                            Editar
-                        </a>
+                            Borrar
+                        </button>
                     </div>
                 </article>
             @empty

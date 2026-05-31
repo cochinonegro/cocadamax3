@@ -62,4 +62,17 @@ class ListCardsProgramas extends Page
             ->warning()
             ->send();
     }
+
+    public function deletePrograma(int $id): void
+    {
+        $programa = Programas::query()->findOrFail($id);
+        $nombre = $programa->progname;
+        $programa->delete();
+
+        Notification::make()
+            ->title('Programa eliminado')
+            ->body("«{$nombre}» se eliminó correctamente.")
+            ->success()
+            ->send();
+    }
 }
