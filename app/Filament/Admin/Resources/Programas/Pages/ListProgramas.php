@@ -17,6 +17,11 @@ class ListProgramas extends ListRecords
 
     protected static string $resource = ProgramasResource::class;
 
+    protected function shouldIncludeProgramasTodosTab(): bool
+    {
+        return true;
+    }
+
     protected function getHeaderActions(): array
     {
         return [

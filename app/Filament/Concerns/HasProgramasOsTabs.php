@@ -10,7 +10,34 @@ trait HasProgramasOsTabs
 {
     public function getTabs(): array
     {
-        return [
+        return $this->buildProgramasOsTabs(
+            includeTodos: $this->shouldIncludeProgramasTodosTab(),
+        );
+    }
+
+    protected function shouldIncludeProgramasTodosTab(): bool
+    {
+        return false;
+    }
+
+    /**
+     * @return array<string, Tab>
+     */
+    protected function buildProgramasOsTabs(bool $includeTodos = false): array
+    {
+        $tabs = [];
+
+        if ($includeTodos) {
+            $tabs['todos'] = Tab::make('Todos')
+                ->icon('heroicon-o-squares-2x2')
+                ->extraAttributes([
+                    'class' => 'programas-os-tab programas-os-tab--todos',
+                ])
+                ->badge(fn (): int => $this->countAllProgramasForTabs())
+                ->badgeColor('gray');
+        }
+
+        return array_merge($tabs, [
             'windows' => $this->makeProgramasOsTab(
                 label: 'Windows',
                 icon: 'heroicon-o-computer-desktop',
@@ -26,7 +53,13 @@ trait HasProgramasOsTabs
                 osValues: ['mac', 'win-mac'],
                 badgeColor: 'danger',
             ),
-        ];
+        ]);
+    }
+
+    protected function countAllProgramasForTabs(): int
+    {
+        /** @var ListRecords $this */
+        return static::getResource()::getEloquentQuery()->count();
     }
 
     /**
