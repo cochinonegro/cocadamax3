@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Programas\Schemas;
 
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramaImageUpload;
+use App\Filament\Support\ProgramasTableColumns;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\MarkdownEditor;
@@ -66,10 +67,11 @@ class ProgramasForm
 
                                 TextInput::make('url')
                                     ->label('Link descarga')
-                                    ->placeholder('https://mega.nz/...')
-                                    ->url()
+                                    ->placeholder('amazon.com')
+                                    ->helperText('Solo el dominio o enlace. No hace falta escribir https://')
                                     ->required()
                                     ->maxLength(255)
+                                    ->dehydrateStateUsing(fn (?string $state): ?string => ProgramasTableColumns::downloadUrl($state))
                                     ->columnSpanFull(),
                             ])
                             ->columns(2)
