@@ -23,7 +23,7 @@ class VentasUltimos10DiasChart extends ChartWidget
         $conteos = Venta::query()
             ->whereDate('fecha_venta', '>=', $inicio)
             ->selectRaw('DATE(fecha_venta) as dia, COUNT(*) as total')
-            ->groupBy('dia')
+            ->groupByRaw('DATE(fecha_venta)')
             ->pluck('total', 'dia');
 
         $etiquetas = [];
