@@ -293,6 +293,15 @@ class ProgramasForm
                 MarkdownEditor::make('description')
                     ->label('Descripción')
                     ->columnSpanFull(),
+
+                Section::make('Imágenes de la descripción')
+                    ->description('Opcional. Se muestran debajo del texto en la ficha del cliente.')
+                    ->schema([
+                        ProgramaImageUpload::descrPhoto1(),
+                        ProgramaImageUpload::descrPhoto2(),
+                    ])
+                    ->columns(2)
+                    ->columnSpanFull(),
             ]);
     }
 

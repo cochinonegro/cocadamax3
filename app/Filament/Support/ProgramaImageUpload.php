@@ -97,6 +97,18 @@ class ProgramaImageUpload
             ->label('Foto del instalador');
     }
 
+    public static function descrPhoto1(): FileUpload
+    {
+        return self::make('foto_descr1', 'programas/descr')
+            ->label('Foto descripción 1');
+    }
+
+    public static function descrPhoto2(): FileUpload
+    {
+        return self::make('foto_descr2', 'programas/descr')
+            ->label('Foto descripción 2');
+    }
+
     public static function normalizeStoredPath(?string $path, string $directory): ?string
     {
         if (blank($path)) {
@@ -200,15 +212,19 @@ class ProgramaImageUpload
         }
 
         if (filled($data['foto_instalador'] ?? null)) {
-            $fotoInstalador = self::normalizeStoredPath(
+            $data['foto_instalador'] = self::normalizeExistingSinglePath(
                 (string) $data['foto_instalador'],
                 'programas/instalador',
             );
+        }
 
-            $data['foto_instalador'] = filled($fotoInstalador)
-                && Storage::disk('public')->exists($fotoInstalador)
-                ? $fotoInstalador
-                : null;
+        foreach (['foto_descr1', 'foto_descr2'] as $field) {
+            if (filled($data[$field] ?? null)) {
+                $data[$field] = self::normalizeExistingSinglePath(
+                    (string) $data[$field],
+                    'programas/descr',
+                );
+            }
         }
 
         if (isset($data['installation_steps']) && is_array($data['installation_steps'])) {
@@ -231,5 +247,29 @@ class ProgramaImageUpload
         }
 
         return $data;
+    }
+
+    public static function normalizeExistingSinglePath(?string $path, string $directory): ?string
+    {
+        $path = self::normalizeStoredPath($path, $directory);
+
+        if (blank($path)) {
+            return null;
+        }
+
+        try {
+            return Storage::disk('public')->exists($path) ? $path : null;
+        } catch (Throwable) {
+            return null;
+        }
+    }
+
+    public static function existingSinglePath(?string $path, string $directory): ?string
+    {
+        if (blank($path) || str_starts_with($path, 'livewire-file:')) {
+            return null;
+        }
+
+        return self::normalizeExistingSinglePath($path, $directory);
     }
 }

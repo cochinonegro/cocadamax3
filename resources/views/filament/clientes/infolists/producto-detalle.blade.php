@@ -75,6 +75,18 @@
     if (filled($record->level_inst)) {
         $metaFields[] = ['label' => 'Tipo / archivo', 'value' => $record->level_inst, 'badge' => "{$badgeBase} bg-violet-500/15 text-violet-300 ring-violet-500/30"];
     }
+
+    $fotoDescr1Url = ProgramaImageUpload::publicUrl(
+        ProgramaImageUpload::existingSinglePath($record->foto_descr1, 'programas/descr'),
+        'programas/descr',
+    );
+
+    $fotoDescr2Url = ProgramaImageUpload::publicUrl(
+        ProgramaImageUpload::existingSinglePath($record->foto_descr2, 'programas/descr'),
+        'programas/descr',
+    );
+
+    $hasFotosDescripcion = filled($fotoDescr1Url) || filled($fotoDescr2Url);
 @endphp
 
 <div id="cliente-producto-detalle">
@@ -152,6 +164,42 @@
             border-top: 1px solid rgb(63 63 70);
         }
 
+        #cliente-producto-detalle .cp-full {
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgb(63 63 70);
+        }
+
+        #cliente-producto-detalle .cp-fotos-descr {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+            gap: 1rem;
+            margin-top: 1.25rem;
+            width: 100%;
+        }
+
+        #cliente-producto-detalle .cp-foto-descr-item {
+            display: flex;
+            min-height: 12rem;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            border: 1px solid rgb(63 63 70);
+            background: rgb(24 24 27 / 0.55);
+            padding: 0.5rem;
+            box-sizing: border-box;
+        }
+
+        #cliente-producto-detalle .cp-foto-descr-item img {
+            display: block;
+            width: 100%;
+            height: auto;
+            max-height: 28rem;
+            object-fit: contain;
+            object-position: center;
+        }
+
         @media (max-width: 767px) {
             #cliente-producto-detalle .cp-layout {
                 grid-template-columns: 1fr !important;
@@ -159,6 +207,10 @@
 
             #cliente-producto-detalle .cp-meta {
                 grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
+
+            #cliente-producto-detalle .cp-fotos-descr {
+                grid-template-columns: 1fr !important;
             }
         }
     </style>
@@ -206,17 +258,35 @@
                     </a>
                 </div>
             @endif
+        </div>
+    </div>
 
-            <div class="cp-descripcion">
-                <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
-                @if (filled($record->description))
-                    <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
-                        {!! Str::markdown($record->description) !!}
+    <div class="cp-full">
+        <div class="cp-descripcion" style="margin-top:0;padding-top:0;border-top:none;">
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
+            @if (filled($record->description))
+                <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
+                    {!! Str::markdown($record->description) !!}
+                </div>
+            @else
+                <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción disponible.</p>
+            @endif
+        </div>
+
+        @if ($hasFotosDescripcion)
+            <div class="cp-fotos-descr">
+                @if ($fotoDescr1Url)
+                    <div class="cp-foto-descr-item">
+                        <img src="{{ $fotoDescr1Url }}" alt="{{ $record->progname }} — imagen 1" />
                     </div>
-                @else
-                    <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción disponible.</p>
+                @endif
+
+                @if ($fotoDescr2Url)
+                    <div class="cp-foto-descr-item">
+                        <img src="{{ $fotoDescr2Url }}" alt="{{ $record->progname }} — imagen 2" />
+                    </div>
                 @endif
             </div>
-        </div>
+        @endif
     </div>
 </div>

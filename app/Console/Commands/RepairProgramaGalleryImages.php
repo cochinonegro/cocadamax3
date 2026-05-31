@@ -53,6 +53,7 @@ class RepairProgramaGalleryImages extends Command
             'programas/gallery',
             'programas/instalacion',
             'programas/instalador',
+            'programas/descr',
         ];
 
         foreach ($directories as $directory) {

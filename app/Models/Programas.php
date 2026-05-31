@@ -15,6 +15,8 @@ class Programas extends Model
         'os_required',
         'level_inst',
         'description',
+        'foto_descr1',
+        'foto_descr2',
         'working',
         'date_add',
         'program_id',
