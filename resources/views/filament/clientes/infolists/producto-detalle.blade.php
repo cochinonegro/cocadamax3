@@ -122,8 +122,8 @@
 
         #cliente-producto-detalle .cp-meta {
             display: grid !important;
-            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
-            gap: 0.875rem 1.25rem;
+            grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+            gap: 0.75rem 1rem;
         }
 
         #cliente-producto-detalle .cp-meta-label {
@@ -158,7 +158,7 @@
             }
 
             #cliente-producto-detalle .cp-meta {
-                grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
             }
         }
     </style>
