@@ -28,7 +28,6 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('CocadaMax Admin')
-            ->locale('es')
             ->homeUrl(fn (): string => Device::isMobile()
                 ? CardsProgramasResource::getUrl()
                 : ProgramasResource::getUrl())
