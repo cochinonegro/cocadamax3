@@ -1,9 +1,11 @@
 #!/bin/bash
+# Script de despliegue para Laravel Forge
+# Site path: /home/forge/programas.space (sin /current)
+# Pegar en: Forge > programas.space > Deployment Script
+
 set -euo pipefail
 
-if [ -n "${FORGE_SITE_PATH:-}" ]; then
-    cd "$FORGE_SITE_PATH"
-fi
+cd /home/forge/programas.space
 
 echo "==> Deploy en: $(pwd)"
 
@@ -18,4 +20,4 @@ php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
 php artisan config:cache
 
-echo "Deploy OK — verifica /deploy-check y /deploy-marker.txt"
+echo "Deploy OK — https://programas.space/deploy-check"

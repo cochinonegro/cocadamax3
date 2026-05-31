@@ -1,19 +1,24 @@
 #!/bin/bash
-# Ejecutar en el servidor Forge por SSH si el deploy automático no actualiza:
-#   bash scripts/forge-fix-deploy.sh
+# Forzar deploy en Forge (proyecto en raíz, sin carpeta /current)
+#
+# Por SSH:
+#   cd /home/forge/programas.space && bash scripts/forge-fix-deploy.sh
 
 set -euo pipefail
 
-SITE="${FORGE_SITE_PATH:-$(pwd)}"
+SITE="/home/forge/programas.space"
 cd "$SITE"
 
-echo "==> Directorio: $SITE"
-echo "==> Commit actual:"
-git log -1 --oneline || true
+echo "==> Directorio: $(pwd)"
+echo "==> Commit ANTES:"
+git log -1 --oneline
 
-echo "==> git pull..."
+echo "==> Actualizando desde GitHub..."
 git fetch origin main
 git reset --hard origin/main
+
+echo "==> Commit DESPUÉS:"
+git log -1 --oneline
 
 echo "==> Composer..."
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader
@@ -25,8 +30,12 @@ php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
 php artisan config:cache
 
-echo "==> Verificación:"
+echo "==> Verificación archivos:"
 head -3 resources/views/welcome.blade.php
-test -f public/deploy-marker.txt && cat public/deploy-marker.txt || echo "FALTA deploy-marker.txt"
+cat public/deploy-marker.txt 2>/dev/null || echo "AVISO: falta public/deploy-marker.txt"
 
-echo "==> LISTO. Prueba: /deploy-check y /"
+echo ""
+echo "LISTO. Comprueba en el navegador:"
+echo "  https://programas.space/deploy-marker.txt"
+echo "  https://programas.space/deploy-check"
+echo "  https://programas.space/"
