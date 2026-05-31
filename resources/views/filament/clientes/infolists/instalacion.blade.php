@@ -1,4 +1,5 @@
 @php
+    use App\Filament\Support\ProgramasTableColumns;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
@@ -9,8 +10,10 @@
     $installerPhotoUrl = filled($record->foto_instalador)
         ? Storage::disk('public')->url($record->foto_instalador)
         : null;
+    $videoInstaladorUrl = ProgramasTableColumns::downloadUrl($record->video_instalador);
 
     $hasContent = filled($record->info_install)
+        || $videoInstaladorUrl
         || $installerPhotoUrl
         || count($steps) > 0;
 @endphp
@@ -96,6 +99,22 @@
                         </div>
                     </div>
                 @endforeach
+            </div>
+        @endif
+
+        @if ($videoInstaladorUrl)
+            <div class="mb-8">
+                <h4 class="mb-3 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">
+                    Video de instalación
+                </h4>
+                <a
+                    href="{{ $videoInstaladorUrl }}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="inline-flex items-center gap-2 rounded-lg bg-amber-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-amber-500 dark:bg-amber-500 dark:hover:bg-amber-400"
+                >
+                    Ver video de instalación
+                </a>
             </div>
         @endif
     @endif

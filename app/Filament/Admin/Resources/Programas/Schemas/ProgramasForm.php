@@ -315,6 +315,7 @@ class ProgramasForm
                             ->label('Instalador visible para clientes')
                             ->default(false)
                             ->dehydrated()
+                            ->live()
                             ->columnSpanFull(),
 
                         MarkdownEditor::make('info_install')
@@ -349,6 +350,15 @@ class ProgramasForm
                                     ->columnSpanFull(),
                             ])
                             ->columns(1)
+                            ->columnSpanFull(),
+
+                        TextInput::make('video_instalador')
+                            ->label('Video instalador')
+                            ->placeholder('youtube.com/watch?v=... o amazon.com')
+                            ->helperText('Enlace al video de instalación. No hace falta escribir https://')
+                            ->maxLength(255)
+                            ->dehydrateStateUsing(fn (?string $state): ?string => ProgramasTableColumns::downloadUrl($state))
+                            ->visible(fn (Get $get): bool => (bool) $get('show_instalador'))
                             ->columnSpanFull(),
                     ]),
             ]);
