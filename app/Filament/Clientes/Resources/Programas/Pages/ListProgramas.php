@@ -26,12 +26,14 @@ class ListProgramas extends ListRecords
                 $this->getTabsContentComponent(),
                 Text::make('Estás viendo sólo programas de Windows ')
                     ->color(null)
+                    ->weight('bold')
                     ->visible(fn (): bool => $this->activeTab === 'windows')
                     ->extraAttributes([
                         'class' => 'programas-os-tab-notice programas-os-tab-notice--windows',
                     ]),
                 Text::make('Estás viendo sólo programas para Mac ')
                     ->color(null)
+                    ->weight('bold')
                     ->visible(fn (): bool => $this->activeTab === 'mac')
                     ->extraAttributes([
                         'class' => 'programas-os-tab-notice programas-os-tab-notice--mac',
