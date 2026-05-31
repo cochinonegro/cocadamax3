@@ -43,7 +43,10 @@ class ProgramasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(ProgramasTableColumns::make(withStatus: true))
+            ->columns(ProgramasTableColumns::make(
+                withStatus: true,
+                copyDownloadUrlOnly: true,
+            ))
             ->reorderableColumns()
             ->filters([
                 SelectFilter::make('category')

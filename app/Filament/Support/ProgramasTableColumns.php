@@ -14,6 +14,7 @@ class ProgramasTableColumns
         bool $withWebOficial = false,
         bool $withDirectDownloadUrl = false,
         bool $withDownloadColumn = true,
+        bool $copyDownloadUrlOnly = false,
     ): array {
         $columns = [
             TextColumn::make('id')
@@ -32,18 +33,31 @@ class ProgramasTableColumns
         ];
 
         if ($withDownloadColumn) {
-            $columns[] = TextColumn::make('descargar')
+            $downloadColumn = TextColumn::make('descargar')
                 ->label($withDirectDownloadUrl ? 'DESCARGAS' : 'DESCARGAR')
                 ->badge()
-                ->color(fn (Programas $record) => $withDirectDownloadUrl && ! filled($record->url) ? 'gray' : 'rose')
-                ->state(fn (Programas $record) => $withDirectDownloadUrl
-                    ? (filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
-                    : 'DESCARGAR')
-                ->url(fn (Programas $record): ?string => $withDirectDownloadUrl
-                    ? self::downloadUrl($record->url)
-                    : route('invitado.descarga', $record))
-                ->openUrlInNewTab()
                 ->alignCenter();
+
+            if ($copyDownloadUrlOnly) {
+                $downloadColumn
+                    ->color(fn (Programas $record): string => filled($record->url) ? 'rose' : 'gray')
+                    ->state(fn (Programas $record): string => filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
+                    ->copyable(fn (Programas $record): bool => filled(self::downloadUrl($record->url)))
+                    ->copyableState(fn (Programas $record): ?string => self::downloadUrl($record->url))
+                    ->copyMessage('Enlace copiado al portapapeles');
+            } else {
+                $downloadColumn
+                    ->color(fn (Programas $record) => $withDirectDownloadUrl && ! filled($record->url) ? 'gray' : 'rose')
+                    ->state(fn (Programas $record) => $withDirectDownloadUrl
+                        ? (filled($record->url) ? 'DESCARGAR' : 'Sin enlace')
+                        : 'DESCARGAR')
+                    ->url(fn (Programas $record): ?string => $withDirectDownloadUrl
+                        ? self::downloadUrl($record->url)
+                        : route('invitado.descarga', $record))
+                    ->openUrlInNewTab();
+            }
+
+            $columns[] = $downloadColumn;
         }
 
         $columns = array_merge($columns, [
