@@ -3,6 +3,7 @@
 namespace App\Filament\Clientes\Resources\Pedidos;
 
 use App\Filament\Clientes\Resources\Pedidos\Pages\ListPedidos;
+use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -47,39 +48,6 @@ class PedidosResource extends Resource
                     ->sortable()
                     ->limit(40),
 
-                TextColumn::make('company')
-                    ->label('Marca')
-                    ->placeholder('-')
-                    ->sortable()
-                    ->toggleable(),
-
-                TextColumn::make('os_required')
-                    ->label('Sistema')
-                    ->badge()
-                    ->colors([
-                        'info' => 'windows',
-                        'danger' => 'mac',
-                        'gray' => 'win-mac',
-                    ])
-                    ->formatStateUsing(fn (?string $state) => match ($state) {
-                        'windows' => 'Windows',
-                        'mac' => 'Mac',
-                        'win-mac' => 'Win & Mac',
-                        default => $state,
-                    })
-                    ->sortable(),
-
-                TextColumn::make('size')
-                    ->label('Tamaño')
-                    ->sortable()
-                    ->toggleable(),
-
-                TextColumn::make('category')
-                    ->label('Categoría')
-                    ->formatStateUsing(fn (?string $state) => ucfirst($state ?? '-'))
-                    ->sortable()
-                    ->toggleable(),
-
                 TextColumn::make('descargas')
                     ->label('DESCARGAS')
                     ->badge()
@@ -88,6 +56,29 @@ class PedidosResource extends Resource
                     ->url(fn (Programas $record): ?string => filled($record->url) ? $record->url : null)
                     ->openUrlInNewTab()
                     ->alignCenter(),
+
+                TextColumn::make('os_required')
+                    ->label('Sistema operativo')
+                    ->badge()
+                    ->colors([
+                        'info' => 'windows',
+                        'danger' => 'mac',
+                        'gray' => 'win-mac',
+                    ])
+                    ->formatStateUsing(fn (?string $state) => ProgramasTableColumns::osRequiredLabel($state))
+                    ->sortable(),
+
+                TextColumn::make('required')
+                    ->label('SO requerido')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->wrap(),
+
+                TextColumn::make('year_prog')
+                    ->label('Año')
+                    ->badge()
+                    ->color('fuchsia')
+                    ->sortable(),
             ])
             ->filters([
                 SelectFilter::make('category')

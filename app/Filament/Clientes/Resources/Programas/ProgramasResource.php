@@ -5,7 +5,6 @@ namespace App\Filament\Clientes\Resources\Programas;
 use App\Filament\Clientes\Resources\Programas\Pages\ListProgramas;
 use App\Filament\Clientes\Resources\Programas\Pages\ViewProgramas;
 use App\Models\Programas;
-use Filament\Actions\ViewAction;
 use Filament\Infolists\Components\ViewEntry;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -60,7 +59,10 @@ class ProgramasResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->columns(ProgramasTableColumns::make(withStatus: false, withWebOficial: true, withDirectDownloadUrl: true))
+            ->columns(ProgramasTableColumns::make(
+                withWebOficial: true,
+                withDownloadColumn: false,
+            ))
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
@@ -75,13 +77,7 @@ class ProgramasResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->recordUrl(
-                fn (Programas $record): ?string => filled($record->url) ? $record->url : null,
-                shouldOpenInNewTab: true,
-            )
-            ->recordActions([
-                ViewAction::make(),
-            ])
+            ->recordUrl(fn (Programas $record): string => static::getUrl('view', ['record' => $record]))
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay programas disponibles')
             ->emptyStateDescription('Los programas aparecerán aquí cuando el STATUS esté activo en administración.');

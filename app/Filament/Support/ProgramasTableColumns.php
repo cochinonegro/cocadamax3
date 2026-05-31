@@ -8,8 +8,12 @@ use Filament\Tables\Columns\ToggleColumn;
 
 class ProgramasTableColumns
 {
-    public static function make(bool $withStatus = false, bool $withWebOficial = false, bool $withDirectDownloadUrl = false): array
-    {
+    public static function make(
+        bool $withStatus = false,
+        bool $withWebOficial = false,
+        bool $withDirectDownloadUrl = false,
+        bool $withDownloadColumn = true,
+    ): array {
         $columns = [
             TextColumn::make('id')
                 ->label('ID')
@@ -24,8 +28,10 @@ class ProgramasTableColumns
                 ->limit(35)
                 ->badge()
                 ->color('amber'),
+        ];
 
-            TextColumn::make('descargar')
+        if ($withDownloadColumn) {
+            $columns[] = TextColumn::make('descargar')
                 ->label($withDirectDownloadUrl ? 'DESCARGAS' : 'DESCARGAR')
                 ->badge()
                 ->color(fn (Programas $record) => $withDirectDownloadUrl && ! filled($record->url) ? 'gray' : 'rose')
@@ -36,8 +42,10 @@ class ProgramasTableColumns
                     ? (filled($record->url) ? $record->url : null)
                     : route('invitado.descarga', $record))
                 ->openUrlInNewTab()
-                ->alignCenter(),
+                ->alignCenter();
+        }
 
+        $columns = array_merge($columns, [
             TextColumn::make('os_required')
                 ->label('Sistema')
                 ->badge()
@@ -129,7 +137,7 @@ class ProgramasTableColumns
                     ]),
                 ])
                 ->sortable(),
-        ];
+        ]);
 
         if ($withStatus) {
             array_splice($columns, 1, 0, [
@@ -147,6 +155,16 @@ class ProgramasTableColumns
         }
 
         return $columns;
+    }
+
+    public static function osRequiredLabel(?string $state): string
+    {
+        return match ($state) {
+            'windows' => 'Windows',
+            'mac' => 'Mac',
+            'win-mac' => 'Win & Mac',
+            default => (string) $state,
+        };
     }
 
     public static function webOficialUrl(?string $web): ?string
