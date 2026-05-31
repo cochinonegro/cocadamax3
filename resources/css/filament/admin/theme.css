@@ -142,7 +142,56 @@
   color: rgb(220 38 38);
 }
 
-/* Infolist producto — galería + ficha */
+/* Infolist producto — layout compacto (no depende de utilidades Tailwind) */
+.cliente-producto-layout {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 1rem 1.5rem;
+  align-items: start;
+}
+
+.cliente-producto-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: auto;
+}
+
+.fi-panel-clientes .cliente-producto-thumb {
+  display: block;
+  width: 4.5rem !important;
+  height: 4.5rem !important;
+  max-width: 4.5rem !important;
+  min-width: 0;
+  flex-shrink: 0;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(63 63 70);
+  object-fit: cover;
+}
+
+.fi-panel-clientes .cliente-producto-thumb--secondary {
+  width: 3.5rem !important;
+  height: 2.625rem !important;
+  max-width: 3.5rem !important;
+}
+
+.cliente-producto-placeholder {
+  display: flex;
+  width: 4.5rem;
+  height: 4.5rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem;
+  border: 1px dashed rgb(82 82 91);
+  background: rgb(24 24 27 / 0.5);
+  padding: 0.5rem;
+  text-align: center;
+  font-size: 0.625rem;
+  line-height: 1.2;
+  color: rgb(161 161 170);
+}
+
+/* Infolist producto — galería + ficha (legacy) */
 .cliente-producto-detalle {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
