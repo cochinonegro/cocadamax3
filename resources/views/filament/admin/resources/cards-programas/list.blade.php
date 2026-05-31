@@ -145,8 +145,8 @@
                                         aria-checked="{{ $programa->show_instalador ? 'true' : 'false' }}"
                                         title="{{ $programa->show_instalador ? 'Instalador visible para clientes' : 'Instalador oculto para clientes' }}"
                                         @class([
-                                            'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50',
-                                            'bg-violet-500' => $programa->show_instalador,
+                                            'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50',
+                                            'card-pedidos-switch--on' => $programa->show_instalador,
                                             'bg-gray-600' => ! $programa->show_instalador,
                                         ])
                                     >
@@ -169,7 +169,7 @@
                                         title="{{ $programa->isPedidosTimerActive() ? 'Visible en Pedidos (30 min)' : 'Oculto en Pedidos' }}"
                                         @class([
                                             'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50',
-                                            'bg-amber-500' => $programa->isPedidosTimerActive(),
+                                            'card-pedidos-switch--on' => $programa->isPedidosTimerActive(),
                                             'bg-gray-600' => ! $programa->isPedidosTimerActive(),
                                         ])
                                     >

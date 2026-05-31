@@ -326,6 +326,10 @@
   transform: translateX(1.75rem);
 }
 
+.card-pedidos-switch.card-pedidos-switch--on {
+  background-color: rgb(245 158 11) !important;
+}
+
 @media (min-width: 640px) {
   .card-pedidos-switch {
     width: 3.25rem;
