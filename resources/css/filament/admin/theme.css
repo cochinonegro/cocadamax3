@@ -159,3 +159,47 @@
 .fi-panel-clientes .fi-resource-view-record-page .fi-page-main {
   max-width: none;
 }
+
+/* Admin — barra lateral colapsable y tablas a ancho completo */
+.fi-panel-admin .fi-main,
+.fi-panel-admin .fi-page,
+.fi-panel-admin .fi-page-main,
+.fi-panel-admin .fi-schemas,
+.fi-panel-admin .fi-ta-ctn,
+.fi-panel-admin .fi-ta-content {
+  max-width: none !important;
+  width: 100%;
+}
+
+.fi-panel-admin .fi-ta-ctn {
+  overflow-x: auto;
+}
+
+@media (min-width: 1024px) {
+  .fi-panel-admin .fi-main {
+    padding-inline: 0.375rem 0.75rem !important;
+  }
+
+  .fi-panel-admin .fi-main-ctn-sidebar-open .fi-main {
+    padding-inline-start: 0.25rem !important;
+  }
+
+  .fi-panel-admin .fi-main-ctn:not(.fi-main-ctn-sidebar-open) .fi-main {
+    padding-inline: 0.75rem !important;
+  }
+
+  .fi-panel-admin .fi-page-header-main-ctn {
+    padding-block: 0.75rem !important;
+    gap: 0.75rem !important;
+  }
+}
+
+.fi-panel-admin .fi-page-main {
+  padding-inline: 0.25rem !important;
+}
+
+@media (min-width: 1024px) {
+  .fi-panel-admin .fi-page-main {
+    padding-inline: 0.375rem !important;
+  }
+}

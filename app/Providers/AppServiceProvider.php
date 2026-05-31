@@ -2,8 +2,10 @@
 
 namespace App\Providers;
 
+use App\Http\Responses\Filament\AdminLoginResponse;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Carbon\Carbon;
+use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Filament\Support\Facades\FilamentView;
@@ -15,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        $this->app->bind(LoginResponseContract::class, AdminLoginResponse::class);
     }
 
     public function boot(): void

@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\CardsProgramas\Pages;
 
 use App\Filament\Admin\Resources\CardsProgramas\CardsProgramasResource;
+use App\Filament\Concerns\HasInstallOffAction;
 use App\Models\Programas;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
@@ -10,6 +11,7 @@ use Livewire\WithPagination;
 
 class ListCardsProgramas extends Page
 {
+    use HasInstallOffAction;
     use WithPagination;
 
     protected static string $resource = CardsProgramasResource::class;
@@ -17,6 +19,13 @@ class ListCardsProgramas extends Page
     protected string $view = 'filament.admin.resources.cards-programas.list';
 
     protected static ?string $title = 'Cards Programas';
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            $this->makeInstallOffAction(),
+        ];
+    }
 
     public ?string $search = '';
 
