@@ -79,22 +79,10 @@ class ListCardsProgramas extends Page
         if ($programa->isPedidosTimerActive()) {
             PedidosVisibility::disableFor($programa);
 
-            Notification::make()
-                ->title('Oculto en Pedidos')
-                ->body("«{$programa->progname}» ya no aparece en la tabla Pedidos.")
-                ->success()
-                ->send();
-
             return;
         }
 
         PedidosVisibility::enableForMinutes($programa);
-
-        Notification::make()
-            ->title('Visible en Pedidos')
-            ->body("«{$programa->progname}» estará en Pedidos durante 30 minutos.")
-            ->success()
-            ->send();
     }
 
     public function notifyLinkCopied(): void
