@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\PedidosVisibility;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -28,6 +29,7 @@ class Programas extends Model
         'url',
         'show',
         'show_until',
+        'pedidos_visible_until',
         'company',
         'web_oficial',
         'required',
@@ -40,6 +42,7 @@ class Programas extends Model
         'show'               => 'boolean',
         'show_instalador'    => 'boolean',
         'show_until'         => 'datetime',
+        'pedidos_visible_until' => 'datetime',
         'date_add'           => 'date',
         'gallery_images'     => 'array',
         'installation_steps' => 'array',
@@ -77,11 +80,35 @@ class Programas extends Model
         return (bool) $this->show_instalador;
     }
 
+    public function isPedidosTimerActive(): bool
+    {
+        return filled($this->pedidos_visible_until)
+            && $this->pedidos_visible_until->isFuture();
+    }
+
+    public function isVisibleInPedidos(): bool
+    {
+        if (PedidosVisibility::isGlobalOff()) {
+            return false;
+        }
+
+        return $this->isPedidosTimerActive();
+    }
+
     /**
      * Programas con STATUS activo en admin (mismo criterio que la columna STATUS).
      */
     public function scopeActive(Builder $query): Builder
     {
         return $query->where('show', true);
+    }
+
+    public function scopeVisibleInPedidos(Builder $query): Builder
+    {
+        if (PedidosVisibility::isGlobalOff()) {
+            return $query->whereRaw('0 = 1');
+        }
+
+        return $query->where('pedidos_visible_until', '>', now());
     }
 }

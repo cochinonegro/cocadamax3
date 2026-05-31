@@ -1,4 +1,5 @@
 @php
+    use App\Filament\Support\ProgramaCategories;
     use Illuminate\Support\Facades\Storage;
     use Illuminate\Support\Str;
 
@@ -53,7 +54,7 @@
             </div>
             <div>
                 <dt class="text-gray-400">Categoría</dt>
-                <dd class="font-medium text-white">{{ ucfirst($record->category) }}</dd>
+                <dd class="font-medium text-white">{{ ProgramaCategories::label($record->category) }}</dd>
             </div>
             @if ($record->year_prog)
                 <div>
@@ -64,7 +65,7 @@
             @if ($record->working)
                 <div>
                     <dt class="text-gray-400">Subcategoría</dt>
-                    <dd class="font-medium text-white">{{ $record->working }}</dd>
+                    <dd class="font-medium text-white">{{ ProgramaCategories::subcategoryLabel($record->category, $record->working) }}</dd>
                 </div>
             @endif
         </dl>

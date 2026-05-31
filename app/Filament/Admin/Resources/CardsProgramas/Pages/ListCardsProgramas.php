@@ -4,7 +4,9 @@ namespace App\Filament\Admin\Resources\CardsProgramas\Pages;
 
 use App\Filament\Admin\Resources\CardsProgramas\CardsProgramasResource;
 use App\Filament\Concerns\HasInstallOffAction;
+use App\Filament\Concerns\HasPedidosOffAction;
 use App\Models\Programas;
+use App\Support\PedidosVisibility;
 use Filament\Notifications\Notification;
 use Filament\Resources\Pages\Page;
 use Livewire\WithPagination;
@@ -12,6 +14,7 @@ use Livewire\WithPagination;
 class ListCardsProgramas extends Page
 {
     use HasInstallOffAction;
+    use HasPedidosOffAction;
     use WithPagination;
 
     protected static string $resource = CardsProgramasResource::class;
@@ -24,6 +27,7 @@ class ListCardsProgramas extends Page
     {
         return [
             $this->makeInstallOffAction(),
+            $this->makePedidosOffAction(),
         ];
     }
 
@@ -66,6 +70,31 @@ class ListCardsProgramas extends Page
             })
             ->latest('id')
             ->paginate(24);
+    }
+
+    public function togglePedidosVisibility(int $id): void
+    {
+        $programa = Programas::query()->findOrFail($id);
+
+        if ($programa->isPedidosTimerActive()) {
+            PedidosVisibility::disableFor($programa);
+
+            Notification::make()
+                ->title('Oculto en Pedidos')
+                ->body("«{$programa->progname}» ya no aparece en la tabla Pedidos.")
+                ->success()
+                ->send();
+
+            return;
+        }
+
+        PedidosVisibility::enableForMinutes($programa);
+
+        Notification::make()
+            ->title('Visible en Pedidos')
+            ->body("«{$programa->progname}» estará en Pedidos durante 30 minutos.")
+            ->success()
+            ->send();
     }
 
     public function notifyLinkCopied(): void

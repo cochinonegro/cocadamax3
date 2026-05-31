@@ -124,7 +124,7 @@ class ProgramasTableColumns
             TextColumn::make('category')
                 ->label('Categoría')
                 ->badge()
-                ->formatStateUsing(fn (?string $state) => ucfirst($state ?? '-'))
+                ->formatStateUsing(fn (?string $state) => ProgramaCategories::label($state))
                 ->colors([
                     'pink' => 'diseño grafico',
                     'violet' => 'kontakt',
@@ -132,8 +132,9 @@ class ProgramasTableColumns
                     'blue' => 'aplicaciones',
                     'fuchsia' => 'video',
                     'amber' => 'music',
+                    'emerald' => 'office-pdf',
                     'gray' => fn ($state) => ! in_array($state, [
-                        'diseño grafico', 'kontakt', 'arquitectura', 'aplicaciones', 'video', 'music',
+                        'diseño grafico', 'kontakt', 'arquitectura', 'aplicaciones', 'video', 'music', 'office-pdf',
                     ]),
                 ])
                 ->sortable(),

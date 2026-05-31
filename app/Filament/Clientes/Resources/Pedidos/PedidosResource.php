@@ -3,6 +3,7 @@
 namespace App\Filament\Clientes\Resources\Pedidos;
 
 use App\Filament\Clientes\Resources\Pedidos\Pages\ListPedidos;
+use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
 use Filament\Resources\Resource;
@@ -35,7 +36,7 @@ class PedidosResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->active();
+        return parent::getEloquentQuery()->active()->visibleInPedidos();
     }
 
     public static function table(Table $table): Table
@@ -83,14 +84,7 @@ class PedidosResource extends Resource
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
-                    ->options([
-                        'aplicaciones' => 'Aplicaciones',
-                        'diseño grafico' => 'Diseño gráfico',
-                        'arquitectura' => 'Arquitectura',
-                        'music' => 'Música',
-                        'video' => 'Video',
-                        'kontakt' => 'Kontakt',
-                    ])
+                    ->options(ProgramaCategories::options())
                     ->searchable()
                     ->preload(),
             ])
@@ -100,7 +94,7 @@ class PedidosResource extends Resource
             )
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay pedidos disponibles')
-            ->emptyStateDescription('Los programas aparecerán aquí cuando el STATUS esté activo en administración.');
+            ->emptyStateDescription('Los programas aparecerán aquí cuando un administrador los active en Cards Programas (30 minutos) o cuando no esté activo el botón OFF.');
     }
 
     public static function getPages(): array

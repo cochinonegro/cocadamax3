@@ -10,6 +10,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use App\Filament\Support\ProgramasTableColumns;
+use App\Filament\Support\ProgramaCategories;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -71,14 +72,7 @@ class ProgramasResource extends Resource
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
-                    ->options([
-                        'aplicaciones' => 'Aplicaciones',
-                        'diseño grafico' => 'Diseño gráfico',
-                        'arquitectura' => 'Arquitectura',
-                        'music' => 'Música',
-                        'video' => 'Video',
-                        'kontakt' => 'Kontakt',
-                    ])
+                    ->options(ProgramaCategories::options())
                     ->searchable()
                     ->preload(),
             ])

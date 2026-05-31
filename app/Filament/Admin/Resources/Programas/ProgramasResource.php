@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Resources\Programas;
 use Filament\Schemas\Schema;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
+use Filament\Schemas\Components\Utilities\Set;
 use Filament\Actions\EditAction;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\Action;
@@ -23,6 +24,7 @@ use App\Filament\Admin\Resources\ProgramasResource\Pages;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use App\Filament\Support\ProgramasTableColumns;
+use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramaImageUpload;
 use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Repeater;
@@ -103,19 +105,22 @@ class ProgramasResource extends Resource
                         Select::make('category')
                             ->label('Categoría')
                             ->required()
-                            ->options([
-                                'aplicaciones' => 'Aplicaciones',
-                                'diseño grafico' => 'Diseño gráfico',
-                                'arquitectura' => 'Arquitectura',
-                                'music' => 'Música',
-                                'video' => 'Video',
-                                'kontakt' => 'Kontakt',
-                            ])
+                            ->options(ProgramaCategories::options())
+                            ->live()
+                            ->afterStateUpdated(fn (Set $set) => $set('working', null))
+                            ->native(false),
+
+                        Select::make('working')
+                            ->label('Subcategoría')
+                            ->options(fn (Get $get): array => ProgramaCategories::subcategoryOptions($get('category')) ?? [])
+                            ->visible(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
+                            ->required(fn (Get $get): bool => ProgramaCategories::hasSubcategories($get('category')))
                             ->native(false),
 
                         TextInput::make('working')
                             ->label('Subcategoría')
-                            ->required()
+                            ->visible(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
+                            ->required(fn (Get $get): bool => ! ProgramaCategories::hasSubcategories($get('category')))
                             ->maxLength(255),
 
                         Select::make('os_required')
@@ -259,14 +264,7 @@ class ProgramasResource extends Resource
             ->filters([
                 SelectFilter::make('category')
                     ->label('Categoría')
-                    ->options([
-                        'aplicaciones' => 'Aplicaciones',
-                        'diseño grafico' => 'Diseño gráfico',
-                        'arquitectura' => 'Arquitectura',
-                        'music' => 'Música',
-                        'video' => 'Video',
-                        'kontakt' => 'Kontakt',
-                    ])
+                    ->options(ProgramaCategories::options())
                     ->searchable()
                     ->preload(),
             ])

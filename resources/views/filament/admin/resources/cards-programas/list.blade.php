@@ -1,5 +1,6 @@
 @php
     use App\Filament\Admin\Resources\Programas\ProgramasResource;
+    use App\Filament\Support\ProgramaCategories;
     use Illuminate\Support\Str;
 
     $osLabel = fn (?string $state) => match ($state) {
@@ -23,6 +24,7 @@
         'aplicaciones' => 'bg-blue-500/15 text-blue-300 ring-blue-500/30',
         'video' => 'bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30',
         'music' => 'bg-amber-500/15 text-amber-300 ring-amber-500/30',
+        'office-pdf' => 'bg-emerald-500/15 text-emerald-300 ring-emerald-500/30',
         default => 'bg-gray-500/15 text-gray-300 ring-gray-500/30',
     };
 
@@ -130,8 +132,32 @@
                             @endif
 
                             @if (filled($programa->category))
-                                {!! $labeledBadge('Categoría', ucfirst($programa->category), $categoryColor($programa->category)) !!}
+                                {!! $labeledBadge('Categoría', ProgramaCategories::label($programa->category), $categoryColor($programa->category)) !!}
                             @endif
+
+                            <div class="ml-auto inline-flex items-center gap-2">
+                                <span class="text-xs font-medium text-gray-400 sm:text-[10px]">Pedidos</span>
+                                <button
+                                    type="button"
+                                    role="switch"
+                                    wire:click="togglePedidosVisibility({{ $programa->id }})"
+                                    aria-checked="{{ $programa->isPedidosTimerActive() ? 'true' : 'false' }}"
+                                    title="{{ $programa->isPedidosTimerActive() ? 'Visible en Pedidos (30 min)' : 'Oculto en Pedidos' }}"
+                                    @class([
+                                        'relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/40',
+                                        'bg-amber-500' => $programa->isPedidosTimerActive(),
+                                        'bg-gray-700' => ! $programa->isPedidosTimerActive(),
+                                    ])
+                                >
+                                    <span
+                                        @class([
+                                            'pointer-events-none inline-block h-4 w-4 transform rounded-full bg-white shadow ring-0 transition duration-200',
+                                            'translate-x-4' => $programa->isPedidosTimerActive(),
+                                            'translate-x-0' => ! $programa->isPedidosTimerActive(),
+                                        ])
+                                    ></span>
+                                </button>
+                            </div>
 
                             {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}
                         </div>
