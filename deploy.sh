@@ -22,6 +22,10 @@ echo "==> composer install..."
 composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader --no-scripts
 composer dump-autoload --optimize
 
+echo "==> npm build (Vite / Filament theme)..."
+npm ci --no-audit --no-fund
+npm run build
+
 echo "==> Laravel..."
 php artisan migrate --force
 php artisan optimize:clear
