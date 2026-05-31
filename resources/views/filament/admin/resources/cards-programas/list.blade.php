@@ -135,27 +135,52 @@
                                 {!! $labeledBadge('Categoría', ProgramaCategories::label($programa->category), $categoryColor($programa->category)) !!}
                             @endif
 
-                            <div class="ml-auto inline-flex items-center gap-2.5">
-                                <span class="text-sm font-medium text-gray-300 sm:text-xs">Pedidos</span>
-                                <button
-                                    type="button"
-                                    role="switch"
-                                    wire:click="togglePedidosVisibility({{ $programa->id }})"
-                                    aria-checked="{{ $programa->isPedidosTimerActive() ? 'true' : 'false' }}"
-                                    title="{{ $programa->isPedidosTimerActive() ? 'Visible en Pedidos (30 min)' : 'Oculto en Pedidos' }}"
-                                    @class([
-                                        'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50',
-                                        'bg-amber-500' => $programa->isPedidosTimerActive(),
-                                        'bg-gray-600' => ! $programa->isPedidosTimerActive(),
-                                    ])
-                                >
-                                    <span
+                            <div class="ml-auto inline-flex flex-wrap items-center justify-end gap-x-3 gap-y-1.5">
+                                <div class="inline-flex items-center gap-2.5">
+                                    <span class="text-sm font-medium text-gray-300 sm:text-xs">Instalador</span>
+                                    <button
+                                        type="button"
+                                        role="switch"
+                                        wire:click="toggleInstaladorVisibility({{ $programa->id }})"
+                                        aria-checked="{{ $programa->show_instalador ? 'true' : 'false' }}"
+                                        title="{{ $programa->show_instalador ? 'Instalador visible para clientes' : 'Instalador oculto para clientes' }}"
                                         @class([
-                                            'card-pedidos-switch-knob pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out',
-                                            'is-on' => $programa->isPedidosTimerActive(),
+                                            'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-violet-500/50',
+                                            'bg-violet-500' => $programa->show_instalador,
+                                            'bg-gray-600' => ! $programa->show_instalador,
                                         ])
-                                    ></span>
-                                </button>
+                                    >
+                                        <span
+                                            @class([
+                                                'card-pedidos-switch-knob pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out',
+                                                'is-on' => $programa->show_instalador,
+                                            ])
+                                        ></span>
+                                    </button>
+                                </div>
+
+                                <div class="inline-flex items-center gap-2.5">
+                                    <span class="text-sm font-medium text-gray-300 sm:text-xs">Pedidos</span>
+                                    <button
+                                        type="button"
+                                        role="switch"
+                                        wire:click="togglePedidosVisibility({{ $programa->id }})"
+                                        aria-checked="{{ $programa->isPedidosTimerActive() ? 'true' : 'false' }}"
+                                        title="{{ $programa->isPedidosTimerActive() ? 'Visible en Pedidos (30 min)' : 'Oculto en Pedidos' }}"
+                                        @class([
+                                            'card-pedidos-switch relative inline-flex shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500/50',
+                                            'bg-amber-500' => $programa->isPedidosTimerActive(),
+                                            'bg-gray-600' => ! $programa->isPedidosTimerActive(),
+                                        ])
+                                    >
+                                        <span
+                                            @class([
+                                                'card-pedidos-switch-knob pointer-events-none inline-block rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out',
+                                                'is-on' => $programa->isPedidosTimerActive(),
+                                            ])
+                                        ></span>
+                                    </button>
+                                </div>
                             </div>
 
                             {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}

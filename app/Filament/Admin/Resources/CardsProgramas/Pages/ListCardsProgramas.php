@@ -85,6 +85,15 @@ class ListCardsProgramas extends Page
         PedidosVisibility::enableForMinutes($programa);
     }
 
+    public function toggleInstaladorVisibility(int $id): void
+    {
+        $programa = Programas::query()->findOrFail($id);
+
+        $programa->update([
+            'show_instalador' => ! $programa->show_instalador,
+        ]);
+    }
+
     public function notifyLinkCopied(): void
     {
         Notification::make()
