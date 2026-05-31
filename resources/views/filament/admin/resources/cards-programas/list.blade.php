@@ -89,48 +89,9 @@
                         {!! $labeledBadge('ID', '#'.$programa->id, 'bg-blue-500/15 text-blue-300 ring-blue-500/30 shrink-0') !!}
                     </div>
 
-                    @php
-                        $descripcionPlano = filled($programa->description)
-                            ? Str::of(strip_tags(Str::markdown($programa->description)))->squish()
-                            : null;
-                    @endphp
-                    <div x-data="{ open: false }" class="mb-2 rounded-lg border border-gray-800/80 bg-gray-950/40">
-                        <button
-                            type="button"
-                            x-on:click="open = ! open"
-                            class="flex w-full items-center justify-between gap-2 px-3 py-2 text-left text-sm font-semibold text-gray-300 transition hover:text-white sm:px-2 sm:py-1.5 sm:text-xs"
-                        >
-                            <span>Descripción</span>
-                            <svg
-                                class="size-4 shrink-0 text-gray-500 transition-transform sm:size-3"
-                                x-bind:class="open && 'rotate-180'"
-                                xmlns="http://www.w3.org/2000/svg"
-                                viewBox="0 0 20 20"
-                                fill="currentColor"
-                                aria-hidden="true"
-                            >
-                                <path fill-rule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd" />
-                            </svg>
-                        </button>
-                        <div
-                            x-show="open"
-                            x-collapse
-                            x-cloak
-                            class="border-t border-gray-800/80 px-3 pb-3 pt-2 sm:px-2 sm:pb-2 sm:pt-1.5"
-                        >
-                            @if (filled($descripcionPlano))
-                                <p class="break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
-                                    {{ $descripcionPlano }}
-                                </p>
-                            @else
-                                <p class="text-sm italic text-gray-500 sm:text-[10px]">Sin descripción.</p>
-                            @endif
-                        </div>
-                    </div>
-
                     <div class="mb-2 space-y-2 sm:space-y-1">
                         {{-- Fila 1 --}}
-                        <div class="flex min-h-[1.5rem] flex-wrap items-center gap-x-2 gap-y-1.5 sm:min-h-[1.125rem] sm:gap-y-1">
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-y-1">
                             @if ($programa->show && $programa->show_until?->isFuture())
                                 {!! $labeledBadge('Estado', 'ACTIVO', 'bg-green-500/15 text-green-300 ring-green-500/30') !!}
                             @else
@@ -155,7 +116,7 @@
                         </div>
 
                         {{-- Fila 2 --}}
-                        <div class="flex min-h-[1.5rem] flex-wrap items-center gap-x-2 gap-y-1.5 sm:min-h-[1.125rem] sm:gap-y-1">
+                        <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-y-1">
                             @if (filled($programa->year_prog))
                                 {!! $labeledBadge('Año', $programa->year_prog, 'bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30') !!}
                             @endif
@@ -176,10 +137,43 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-3 gap-2 border-t border-gray-800 pt-3 sm:pt-2">
+                    @php
+                        $descripcionPlano = filled($programa->description)
+                            ? Str::of(strip_tags(Str::markdown($programa->description)))->squish()
+                            : null;
+                    @endphp
+                    <div x-data="{ open: false }" class="mb-2">
+                        <button
+                            type="button"
+                            x-on:click="open = ! open"
+                            class="flex w-full items-center justify-between gap-2 rounded-md border border-gray-700/80 bg-gray-950/50 px-2.5 py-1.5 text-left text-sm font-medium text-gray-400 transition hover:border-gray-600 hover:text-gray-200 sm:px-2 sm:py-1 sm:text-xs"
+                        >
+                            <span>Descripción</span>
+                            <span
+                                class="shrink-0 text-[10px] leading-none text-gray-500 transition-transform"
+                                x-bind:class="open && 'rotate-180'"
+                            >▼</span>
+                        </button>
+                        <div
+                            x-show="open"
+                            x-cloak
+                            style="display: none;"
+                            class="mt-1 rounded-md border border-gray-800/60 bg-gray-950/30 px-2.5 py-2 sm:px-2 sm:py-1.5"
+                        >
+                            @if (filled($descripcionPlano))
+                                <p class="break-words text-sm leading-relaxed text-gray-400 sm:text-[10px] sm:leading-snug">
+                                    {{ $descripcionPlano }}
+                                </p>
+                            @else
+                                <p class="text-sm italic text-gray-500 sm:text-[10px]">Sin descripción.</p>
+                            @endif
+                        </div>
+                    </div>
+
+                    <div class="flex gap-2 border-t border-gray-800 pt-3 sm:pt-2">
                         <a
                             href="{{ ProgramasResource::getUrl('edit', ['record' => $programa]) }}"
-                            class="inline-flex items-center justify-center rounded-md bg-amber-500/15 px-2 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                            class="inline-flex flex-1 items-center justify-center rounded-md bg-amber-500/15 px-1 py-1.5 text-sm font-semibold text-amber-300 ring-1 ring-inset ring-amber-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
                             Editar
                         </a>
@@ -194,7 +188,7 @@
                             @else
                                 x-on:click="$wire.notifyNoLink()"
                             @endif
-                            class="inline-flex cursor-pointer items-center justify-center rounded-md bg-rose-500/15 px-2 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                            class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-rose-500/15 px-1 py-1.5 text-sm font-semibold text-rose-300 ring-1 ring-inset ring-rose-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
                             CopyLink
                         </button>
@@ -203,7 +197,7 @@
                             type="button"
                             wire:click="deletePrograma({{ $programa->id }})"
                             wire:confirm="¿Eliminar este programa? Esta acción no se puede deshacer."
-                            class="inline-flex cursor-pointer items-center justify-center rounded-md bg-red-500/15 px-2 py-1.5 text-sm font-semibold text-red-300 ring-1 ring-inset ring-red-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
+                            class="inline-flex flex-1 cursor-pointer items-center justify-center rounded-md bg-red-500/15 px-1 py-1.5 text-sm font-semibold text-red-300 ring-1 ring-inset ring-red-500/30 sm:px-2 sm:py-1 sm:text-[10px]"
                         >
                             Borrar
                         </button>
