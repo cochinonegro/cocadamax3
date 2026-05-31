@@ -23,8 +23,8 @@ use App\Filament\Admin\Resources\ProgramasResource\Pages;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Select;
 use App\Filament\Support\ProgramasTableColumns;
+use App\Filament\Support\ProgramaImageUpload;
 use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Tables\Filters\SelectFilter;
@@ -179,7 +179,6 @@ class ProgramasResource extends Resource
                             ->default(now()->addYear())
                             ->required(fn (Get $get) => (bool) $get('show'))
                             ->visible(fn (Get $get) => (bool) $get('show'))
-                            ->minDate(now())
                             ->columnSpanFull(),
                     ])->columns(3),
 
@@ -193,17 +192,9 @@ class ProgramasResource extends Resource
 
                 Section::make('Galería del producto')
                     ->columnSpanFull()
-                    ->description('Hasta 4 imágenes que verá el cliente a la izquierda de la ficha.')
+                    ->description('Hasta 4 imágenes que verá el cliente a la izquierda de la ficha. Desde el móvil, espera a que termine la subida antes de guardar.')
                     ->schema([
-                        FileUpload::make('gallery_images')
-                            ->label('Imágenes')
-                            ->image()
-                            ->multiple()
-                            ->maxFiles(4)
-                            ->reorderable()
-                            ->disk('public')
-                            ->directory('programas/gallery')
-                            ->columnSpanFull(),
+                        ProgramaImageUpload::gallery(),
                     ]),
 
                 Section::make('INSTALACION')
@@ -220,11 +211,7 @@ class ProgramasResource extends Resource
                             ->defaultItems(0)
                             ->addActionLabel('Agregar paso')
                             ->schema([
-                                FileUpload::make('image')
-                                    ->label('Foto')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('programas/instalacion')
+                                ProgramaImageUpload::installationStep()
                                     ->required(),
                                 Textarea::make('text')
                                     ->label('Instrucciones')

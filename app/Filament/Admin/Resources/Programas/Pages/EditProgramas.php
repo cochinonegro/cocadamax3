@@ -21,7 +21,13 @@ class EditProgramas extends EditRecord
 
     protected function mutateFormDataBeforeSave(array $data): array
     {
-        return $this->normalizeProgramaVisibility($data);
+        $data = $this->normalizeProgramaVisibility($data);
+
+        if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
+            $data['gallery_images'] = array_values(array_filter($data['gallery_images']));
+        }
+
+        return $data;
     }
 
     protected function getHeaderActions(): array

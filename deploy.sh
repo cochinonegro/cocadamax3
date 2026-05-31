@@ -28,6 +28,7 @@ npm run build
 
 echo "==> Laravel..."
 php artisan migrate --force
+php artisan storage:link --force 2>/dev/null || true
 php artisan optimize:clear
 php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
