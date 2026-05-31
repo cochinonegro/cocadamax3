@@ -3,8 +3,10 @@
 namespace App\Services;
 
 use App\Enums\UserRole;
+use App\Models\Clientes;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
@@ -12,16 +14,54 @@ class GuestAuthService
 {
     public function register(string $name, string $phone, string $email): User
     {
-        $user = User::create([
-            'name' => $name,
-            'phone' => $phone,
-            'email' => $email,
-            'password' => Hash::make($phone),
+        return DB::transaction(function () use ($name, $phone, $email): User {
+            $user = User::create([
+                'name' => $name,
+                'phone' => $phone,
+                'email' => $email,
+                'password' => Hash::make($phone),
+            ]);
+
+            $user->assignRole(UserRole::Invitado->value);
+
+            $this->createClienteRecordForUser($user, 'Registro bienvenida');
+
+            return $user;
+        });
+    }
+
+    public function createClienteRecordForUser(User $user, string $publicidad = 'Registro bienvenida'): ?Clientes
+    {
+        if ($this->clienteRecordExistsForUser($user)) {
+            return null;
+        }
+
+        return Clientes::query()->create([
+            'name' => $user->name,
+            'phone' => $user->phone,
+            'email' => $user->email,
+            'date' => $user->created_at ?? now(),
+            'publicidad' => $publicidad,
         ]);
+    }
 
-        $user->assignRole(UserRole::Invitado->value);
+    public function clienteRecordExistsForUser(User $user): bool
+    {
+        if (blank($user->email) && blank($user->phone)) {
+            return false;
+        }
 
-        return $user;
+        return Clientes::query()
+            ->where(function ($query) use ($user): void {
+                if (filled($user->email)) {
+                    $query->where('email', $user->email);
+                }
+
+                if (filled($user->phone)) {
+                    $query->orWhere('phone', $user->phone);
+                }
+            })
+            ->exists();
     }
 
     public function login(string $login, string $password, bool $remember = false): User
