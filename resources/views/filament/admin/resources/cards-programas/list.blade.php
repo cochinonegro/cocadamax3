@@ -73,24 +73,23 @@
             </x-filament::input.wrapper>
         </div>
 
-        <div class="cards-programas-grid grid grid-cols-1 gap-1 sm:grid-cols-2 sm:gap-1.5 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">
+        <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
             @forelse ($this->programas as $programa)
                 <article
                     wire:key="card-programa-{{ $programa->id }}"
                     x-data="{ expanded: false }"
-                    x-bind:class="expanded ? 'cards-programa cards-programa--expanded' : 'cards-programa cards-programa--collapsed'"
-                    class="rounded-lg border border-gray-700/80 bg-gray-900/60"
+                    class="rounded-xl border border-gray-700/80 bg-gray-900/60 p-4 shadow-sm sm:p-3"
                 >
                     <button
                         type="button"
                         x-on:click="expanded = ! expanded"
-                        class="flex w-full cursor-pointer items-center justify-between gap-1.5 text-left"
+                        class="flex w-full cursor-pointer items-center justify-between gap-2 text-left"
                     >
-                        <h3 class="cards-programa-title min-w-0 flex-1 font-semibold uppercase tracking-wide text-white transition hover:text-amber-300">
+                        <h3 class="min-w-0 flex-1 text-base font-semibold uppercase leading-snug tracking-wide text-white transition hover:text-amber-300 sm:text-xs">
                             {{ mb_strtoupper($programa->progname) }}
                         </h3>
                         <span
-                            class="cards-programa-chevron shrink-0 leading-none text-gray-500 transition-transform"
+                            class="shrink-0 text-[10px] leading-none text-gray-500 transition-transform"
                             x-bind:class="expanded && 'rotate-180'"
                         >▼</span>
                     </button>
@@ -101,10 +100,6 @@
                         style="display: none;"
                         class="mt-3 space-y-2 border-t border-gray-800 pt-3 sm:mt-2 sm:pt-2"
                     >
-                        <div class="flex items-start justify-end gap-2">
-                            {!! $labeledBadge('ID', '#'.$programa->id, 'bg-blue-500/15 text-blue-300 ring-blue-500/30 shrink-0') !!}
-                        </div>
-
                         <div class="space-y-2 sm:space-y-1">
                             {{-- Fila 1 --}}
                             <div class="flex flex-wrap items-center gap-x-2 gap-y-1.5 sm:gap-y-1">
@@ -192,6 +187,8 @@
                                 </div>
 
                                 {!! $labeledBadge('Sistema', $osLabel($programa->os_required), $osColor($programa->os_required)) !!}
+
+                                {!! $labeledBadge('ID', '#'.$programa->id, 'bg-blue-500/15 text-blue-300 ring-blue-500/30 shrink-0') !!}
                             </div>
                         </div>
 
