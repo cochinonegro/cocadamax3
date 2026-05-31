@@ -58,11 +58,17 @@ class TiendaProgramas
     {
         $images = $programa->gallery_images ?? [];
 
-        if (! is_array($images) || blank($images[0] ?? null)) {
+        if (! is_array($images)) {
             return null;
         }
 
-        return ProgramaImageUpload::publicUrl($images[0], 'programas/gallery');
+        $paths = ProgramaImageUpload::existingStoredPaths($images, 'programas/gallery');
+
+        if (blank($paths[0] ?? null)) {
+            return null;
+        }
+
+        return ProgramaImageUpload::publicUrl($paths[0], 'programas/gallery');
     }
 
     public static function plainDescription(Programas $programa, int $limit = 160): ?string

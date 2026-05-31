@@ -70,7 +70,7 @@ class ProgramaImageUpload
                         : $storedFileNames) ?? basename($file),
                     'size' => max($size, 1),
                     'type' => $type,
-                    'url' => $storage->url($file),
+                    'url' => self::storageUrl($file, $directory),
                 ];
             });
     }
@@ -133,7 +133,34 @@ class ProgramaImageUpload
         )));
     }
 
-    public static function publicUrl(?string $path, string $directory): ?string
+    /**
+     * @param  list<string|null>|null  $paths
+     * @return list<string>
+     */
+    public static function existingStoredPaths(?array $paths, string $directory): array
+    {
+        return array_values(array_filter(
+            self::normalizeStoredPaths($paths, $directory),
+            static function (string $path): bool {
+                if (str_starts_with($path, 'livewire-file:')) {
+                    return false;
+                }
+
+                try {
+                    return Storage::disk('public')->exists($path);
+                } catch (Throwable) {
+                    return false;
+                }
+            },
+        ));
+    }
+
+    public static function storagePath(?string $path, string $directory): ?string
+    {
+        return self::normalizeStoredPath($path, $directory);
+    }
+
+    public static function storageUrl(?string $path, string $directory): ?string
     {
         $path = self::normalizeStoredPath($path, $directory);
 
@@ -141,7 +168,12 @@ class ProgramaImageUpload
             return null;
         }
 
-        return Storage::disk('public')->url($path);
+        return '/storage/'.ltrim($path, '/');
+    }
+
+    public static function publicUrl(?string $path, string $directory): ?string
+    {
+        return self::storageUrl($path, $directory);
     }
 
     public static function mimeTypeFromPath(string $path): ?string
@@ -164,14 +196,19 @@ class ProgramaImageUpload
     public static function normalizeFormImagePaths(array $data): array
     {
         if (isset($data['gallery_images']) && is_array($data['gallery_images'])) {
-            $data['gallery_images'] = self::normalizeStoredPaths($data['gallery_images'], 'programas/gallery');
+            $data['gallery_images'] = self::existingStoredPaths($data['gallery_images'], 'programas/gallery');
         }
 
         if (filled($data['foto_instalador'] ?? null)) {
-            $data['foto_instalador'] = self::normalizeStoredPath(
+            $fotoInstalador = self::normalizeStoredPath(
                 (string) $data['foto_instalador'],
                 'programas/instalador',
             );
+
+            $data['foto_instalador'] = filled($fotoInstalador)
+                && Storage::disk('public')->exists($fotoInstalador)
+                ? $fotoInstalador
+                : null;
         }
 
         if (isset($data['installation_steps']) && is_array($data['installation_steps'])) {
@@ -179,10 +216,14 @@ class ProgramaImageUpload
                 $step = is_array($step) ? $step : [];
 
                 if (filled($step['image'] ?? null)) {
-                    $step['image'] = self::normalizeStoredPath(
+                    $image = self::normalizeStoredPath(
                         (string) $step['image'],
                         'programas/instalacion',
                     );
+
+                    $step['image'] = filled($image) && Storage::disk('public')->exists($image)
+                        ? $image
+                        : null;
                 }
 
                 return $step;

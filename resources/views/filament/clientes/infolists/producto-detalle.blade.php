@@ -1,12 +1,13 @@
 @php
     use App\Filament\Support\ProgramaCategories;
+    use App\Filament\Support\ProgramaImageUpload;
     use App\Filament\Support\ProgramasTableColumns;
     use Illuminate\Support\Str;
 
     /** @var \App\Models\Programas $record */
     $record = $record ?? $schemaComponent?->getRecord();
 
-    $images = $record->gallery_images ?? [];
+    $images = ProgramaImageUpload::existingStoredPaths($record->gallery_images ?? [], 'programas/gallery');
 
     $codigo = str_pad($record->id, 4, '0', STR_PAD_LEFT);
     $codigo = substr($codigo, 0, 2) . ' ' . substr($codigo, 2, 2);
@@ -25,7 +26,7 @@
     <div class="space-y-3">
         @forelse ($images as $image)
             <img
-                src="{{ \App\Filament\Support\ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
+                src="{{ ProgramaImageUpload::publicUrl($image, 'programas/gallery') }}"
                 alt="{{ $record->progname }}"
                 class="w-full rounded-xl border border-gray-200 object-cover dark:border-gray-700"
             />

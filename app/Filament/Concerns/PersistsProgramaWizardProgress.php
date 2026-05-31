@@ -42,8 +42,10 @@ trait PersistsProgramaWizardProgress
 
     public function persistProgramaWizardStep(): void
     {
+        $this->form->callBeforeStateDehydrated();
+
         /** @var array<string, mixed> $state */
-        $state = $this->form->getState();
+        $state = $this->form->getState(shouldCallHooksBefore: false);
 
         if ($this instanceof CreateRecord && ! $this->record?->exists) {
             $data = $this->prepareProgramaPersistenceData($state);
@@ -69,6 +71,7 @@ trait PersistsProgramaWizardProgress
             $this->record->update($data);
             $this->form->model($this->record)->saveRelationships();
             $this->record->refresh();
+            $this->fillForm();
 
             Notification::make()
                 ->title('Paso guardado')
@@ -80,9 +83,7 @@ trait PersistsProgramaWizardProgress
 
     public function persistProgramaWizardDraft(): void
     {
-        $state = $this->form->getState();
-
-        if (blank($state['progname'] ?? null)) {
+        if (blank($this->form->getRawState()['progname'] ?? null)) {
             Notification::make()
                 ->title('Indica al menos el nombre del programa')
                 ->warning()

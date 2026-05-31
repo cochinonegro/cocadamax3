@@ -28,7 +28,9 @@ npm run build
 
 echo "==> Laravel..."
 php artisan migrate --force
+mkdir -p storage/app/public/programas/gallery storage/app/public/programas/instalacion storage/app/public/programas/instalador
 php artisan storage:link --force 2>/dev/null || true
+php artisan programas:repair-gallery-images
 php artisan optimize:clear
 php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
