@@ -47,40 +47,11 @@ class PedidosResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail')
-                    ->label('')
-                    ->disk('public')
-                    ->visibility('public')
-                    ->getStateUsing(fn (Programas $record): ?string => TiendaProgramas::coverStoragePath($record))
-                    ->imageSize(36)
-                    ->square()
-                    ->extraImgAttributes([
-                        'class' => 'rounded-md object-cover ring-1 ring-zinc-600/40',
-                    ])
-                    ->alignCenter(),
-
                 TextColumn::make('progname')
                     ->label('Programa')
                     ->searchable()
                     ->sortable()
                     ->limit(40),
-
-                TextColumn::make('size')
-                    ->label('Tamaño')
-                    ->badge()
-                    ->color('warning')
-                    ->placeholder('-')
-                    ->sortable(),
-
-                TextColumn::make('company')
-                    ->label('Marca')
-                    ->badge()
-                    ->color('cyan')
-                    ->formatStateUsing(fn (?string $state): string => filled($state)
-                        ? mb_strtoupper($state)
-                        : '-')
-                    ->placeholder('-')
-                    ->sortable(),
 
                 PedidosDescargaTableColumn::make(),
 
@@ -95,17 +66,48 @@ class PedidosResource extends Resource
                     ->formatStateUsing(fn (?string $state) => ProgramasTableColumns::osRequiredLabel($state))
                     ->sortable(),
 
-                TextColumn::make('required')
-                    ->label('SO requerido')
+                TextColumn::make('size')
+                    ->label('Tamaño')
+                    ->badge()
+                    ->color('warning')
                     ->placeholder('-')
-                    ->sortable()
-                    ->wrap(),
+                    ->sortable(),
 
                 TextColumn::make('year_prog')
                     ->label('Año')
                     ->badge()
                     ->color('fuchsia')
                     ->sortable(),
+
+                ImageColumn::make('thumbnail')
+                    ->label('Foto')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->getStateUsing(fn (Programas $record): ?string => TiendaProgramas::coverStoragePath($record))
+                    ->imageSize(36)
+                    ->square()
+                    ->extraImgAttributes([
+                        'class' => 'rounded-md object-cover ring-1 ring-zinc-600/40',
+                    ])
+                    ->alignCenter(),
+
+                TextColumn::make('company')
+                    ->label('Marca')
+                    ->badge()
+                    ->color('cyan')
+                    ->formatStateUsing(fn (?string $state): string => filled($state)
+                        ? mb_strtoupper($state)
+                        : '-')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('required')
+                    ->label('SO requerido')
+                    ->placeholder('-')
+                    ->sortable()
+                    ->wrap()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
                 SelectFilter::make('category')

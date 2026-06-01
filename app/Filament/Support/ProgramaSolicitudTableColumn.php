@@ -8,6 +8,7 @@ use App\Support\ProgramaSolicitudSubmitter;
 use Filament\Actions\Action;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
+use Livewire\Component;
 
 class ProgramaSolicitudTableColumn
 {
@@ -23,7 +24,15 @@ class ProgramaSolicitudTableColumn
             ->disabledClick(fn (Programas $record): bool => self::status($record) !== 'disponible')
             ->action(
                 Action::make('solicitarTelegram')
-                    ->action(fn (Programas $record) => ProgramaSolicitudSubmitter::submit($record))
+                    ->action(function (Programas $record, Component $livewire): void {
+                        if (! ProgramaSolicitudSubmitter::submit($record, notifyOnSuccess: false)) {
+                            return;
+                        }
+
+                        if (method_exists($livewire, 'mountAction')) {
+                            $livewire->mountAction('solicitudSolicitada');
+                        }
+                    })
                     ->visible(fn (Programas $record): bool => self::status($record) === 'disponible'),
             );
     }

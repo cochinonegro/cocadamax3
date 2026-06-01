@@ -3,6 +3,7 @@
 namespace App\Filament\Clientes\Resources\Programas\Pages;
 
 use App\Filament\Clientes\Pages\Tienda\TiendaElegirOs;
+use App\Filament\Clientes\Resources\Pedidos\PedidosResource;
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\HasProgramasOsTabs;
 use Filament\Actions\Action;
@@ -53,5 +54,16 @@ class ListProgramas extends ListRecords
                 ->color('primary')
                 ->url(TiendaElegirOs::getUrl()),
         ];
+    }
+
+    public function solicitudSolicitadaAction(): Action
+    {
+        return Action::make('solicitudSolicitada')
+            ->modalHeading('Solicitud enviada')
+            ->modalDescription('Una vez te hayan confirmado aceptar la descarga dale al botón aquí abajo:')
+            ->modalSubmitActionLabel('IR A PEDIDOS')
+            ->modalCancelActionLabel('Cerrar')
+            ->color('success')
+            ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true));
     }
 }

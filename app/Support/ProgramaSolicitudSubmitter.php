@@ -10,7 +10,7 @@ use Illuminate\Validation\ValidationException;
 
 class ProgramaSolicitudSubmitter
 {
-    public static function submit(Programas $programa, ?User $user = null): void
+    public static function submit(Programas $programa, ?User $user = null, bool $notifyOnSuccess = true): bool
     {
         $user ??= auth()->user();
 
@@ -20,7 +20,7 @@ class ProgramaSolicitudSubmitter
                 ->danger()
                 ->send();
 
-            return;
+            return false;
         }
 
         $programa = Programas::query()->active()->find($programa->getKey());
@@ -31,17 +31,21 @@ class ProgramaSolicitudSubmitter
                 ->danger()
                 ->send();
 
-            return;
+            return false;
         }
 
         try {
             app(ProgramaSolicitudService::class)->submit($user, $programa);
 
-            Notification::make()
-                ->title('Solicitud enviada')
-                ->body('Recibirás el programa en Pedidos cuando sea aceptada.')
-                ->success()
-                ->send();
+            if ($notifyOnSuccess) {
+                Notification::make()
+                    ->title('Solicitud enviada')
+                    ->body('Recibirás el programa en Pedidos cuando sea aceptada.')
+                    ->success()
+                    ->send();
+            }
+
+            return true;
         } catch (ValidationException $exception) {
             $message = collect($exception->errors())->flatten()->first()
                 ?? 'No se pudo enviar la solicitud.';
@@ -50,6 +54,8 @@ class ProgramaSolicitudSubmitter
                 ->title($message)
                 ->warning()
                 ->send();
+
+            return false;
         }
     }
 }
