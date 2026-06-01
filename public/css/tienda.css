@@ -452,6 +452,24 @@
   color: rgb(253 224 71);
 }
 
+.tienda-solicitar-btn {
+  border: 1px solid rgb(239 68 68 / 0.55);
+  background: rgb(220 38 38);
+  color: rgb(255 255 255);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tienda-solicitar-btn:hover:not(:disabled) {
+  background: rgb(185 28 28);
+  border-color: rgb(239 68 68 / 0.75);
+}
+
+.tienda-solicitar-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(239 68 68 / 0.45);
+}
+
 .tienda-catalogo__empty {
   grid-column: 1 / -1;
   display: flex;

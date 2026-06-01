@@ -27,7 +27,11 @@ class SolicitarProgramaButton extends Component
             return;
         }
 
-        ProgramaSolicitudSubmitter::submit($programa);
+        if (! ProgramaSolicitudSubmitter::submit($programa, notifyOnSuccess: false)) {
+            return;
+        }
+
+        $this->dispatch('solicitud-enviada');
     }
 
     public function statusLabel(ProgramaSolicitudService $solicitudes): string

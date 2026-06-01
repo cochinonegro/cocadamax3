@@ -3,6 +3,7 @@
 namespace App\Filament\Clientes\Pages\Tienda;
 
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
+use App\Filament\Concerns\HasSolicitudPedidosCountdownModal;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\TiendaProgramas;
 use App\Models\Programas;
@@ -12,6 +13,7 @@ use Livewire\WithPagination;
 
 class TiendaCatalogo extends Page
 {
+    use HasSolicitudPedidosCountdownModal;
     use WithPagination;
 
     protected static ?string $slug = 'tienda/catalogo';
