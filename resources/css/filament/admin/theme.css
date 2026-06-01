@@ -142,6 +142,24 @@
   color: rgb(220 38 38);
 }
 
+.fi-panel-clientes .programas-os-tab-notice--todos {
+  color: rgb(161 161 170);
+}
+
+/* Clientes Programas — mostrar Windows, Mac y Todos sin ocultar el tercer tab */
+.fi-panel-clientes .fi-resource-list-records-page .fi-tabs {
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow-x: visible;
+  gap: 0.375rem;
+}
+
+.fi-panel-clientes .fi-resource-list-records-page .fi-tabs-item {
+  flex: 1 1 calc(33.333% - 0.5rem);
+  min-width: 5.5rem;
+  max-width: 100%;
+}
+
 /* Infolist producto — layout compacto (no depende de utilidades Tailwind) */
 .cliente-producto-layout {
   display: grid;

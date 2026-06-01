@@ -23,9 +23,9 @@ class ListProgramas extends ListRecords
 
     public bool $solicitudPedidosModalHabilitado = false;
 
-    protected function shouldIncludeProgramasTodosTab(): bool
+    public function getTabs(): array
     {
-        return true;
+        return $this->buildProgramasOsTabs(includeTodos: true);
     }
 
     public function content(Schema $schema): Schema
@@ -46,6 +46,13 @@ class ListProgramas extends ListRecords
                     ->visible(fn (): bool => $this->activeTab === 'mac')
                     ->extraAttributes([
                         'class' => 'programas-os-tab-notice programas-os-tab-notice--mac',
+                    ]),
+                Text::make('Estás viendo todos los programas disponibles ')
+                    ->color(null)
+                    ->weight('bold')
+                    ->visible(fn (): bool => $this->activeTab === 'todos')
+                    ->extraAttributes([
+                        'class' => 'programas-os-tab-notice programas-os-tab-notice--todos',
                     ]),
                 RenderHook::make(PanelsRenderHook::RESOURCE_PAGES_LIST_RECORDS_TABLE_BEFORE),
                 EmbeddedTable::make(),
