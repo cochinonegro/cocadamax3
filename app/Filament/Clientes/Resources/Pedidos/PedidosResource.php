@@ -7,9 +7,11 @@ use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Support\PedidosDescargaTableColumn;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
+use App\Filament\Support\TiendaProgramas;
 use App\Models\Programas;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -45,11 +47,40 @@ class PedidosResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('thumbnail')
+                    ->label('')
+                    ->disk('public')
+                    ->visibility('public')
+                    ->getStateUsing(fn (Programas $record): ?string => TiendaProgramas::coverStoragePath($record))
+                    ->imageSize(36)
+                    ->square()
+                    ->extraImgAttributes([
+                        'class' => 'rounded-md object-cover ring-1 ring-zinc-600/40',
+                    ])
+                    ->alignCenter(),
+
                 TextColumn::make('progname')
                     ->label('Programa')
                     ->searchable()
                     ->sortable()
                     ->limit(40),
+
+                TextColumn::make('size')
+                    ->label('Tamaño')
+                    ->badge()
+                    ->color('warning')
+                    ->placeholder('-')
+                    ->sortable(),
+
+                TextColumn::make('company')
+                    ->label('Marca')
+                    ->badge()
+                    ->color('cyan')
+                    ->formatStateUsing(fn (?string $state): string => filled($state)
+                        ? mb_strtoupper($state)
+                        : '-')
+                    ->placeholder('-')
+                    ->sortable(),
 
                 PedidosDescargaTableColumn::make(),
 

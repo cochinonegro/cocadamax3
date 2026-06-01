@@ -54,21 +54,31 @@ class TiendaProgramas
             ->when(filled($working), fn (Builder $query) => $query->where('working', $working));
     }
 
-    public static function coverUrl(Programas $programa): ?string
+    public static function coverStoragePath(Programas $programa): ?string
     {
         $images = $programa->gallery_images ?? [];
 
-        if (! is_array($images)) {
+        if (is_array($images)) {
+            $paths = ProgramaImageUpload::existingStoredPaths($images, 'programas/gallery');
+
+            if (filled($paths[0] ?? null)) {
+                return $paths[0];
+            }
+        }
+
+        return ProgramaImageUpload::existingSinglePath($programa->foto, 'programas')
+            ?? ProgramaImageUpload::existingSinglePath($programa->foto, 'programas/gallery');
+    }
+
+    public static function coverUrl(Programas $programa): ?string
+    {
+        $path = self::coverStoragePath($programa);
+
+        if (blank($path)) {
             return null;
         }
 
-        $paths = ProgramaImageUpload::existingStoredPaths($images, 'programas/gallery');
-
-        if (blank($paths[0] ?? null)) {
-            return null;
-        }
-
-        return ProgramaImageUpload::publicUrl($paths[0], 'programas/gallery');
+        return ProgramaImageUpload::storageUrl($path, 'programas/gallery');
     }
 
     public static function plainDescription(Programas $programa, int $limit = 160): ?string
