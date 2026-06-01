@@ -3,6 +3,7 @@
 namespace App\Filament\Admin\Resources\Pedidos;
 
 use App\Filament\Admin\Resources\Pedidos\Pages\ListPedidos;
+use App\Filament\Support\PedidosDescargaTableColumn;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
@@ -21,7 +22,7 @@ class PedidosResource extends Resource
 {
     protected static ?string $model = Programas::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?string $navigationLabel = 'Pedidos';
 
@@ -53,17 +54,7 @@ class PedidosResource extends Resource
                     ->sortable()
                     ->limit(40),
 
-                TextColumn::make('descargas')
-                    ->label('DESCARGAS')
-                    ->badge()
-                    ->color(fn (Programas $record): string => filled($record->url) ? 'success' : 'gray')
-                    ->state(fn (Programas $record): string => filled($record->url)
-                        ? 'Descarga aquí el programa'
-                        : 'Sin enlace')
-                    ->url(fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url))
-                    ->openUrlInNewTab()
-                    ->wrap()
-                    ->alignCenter(),
+                PedidosDescargaTableColumn::make(),
 
                 TextColumn::make('os_required')
                     ->label('Sistema operativo')
@@ -120,10 +111,7 @@ class PedidosResource extends Resource
                             ->send();
                     }),
             ])
-            ->recordUrl(
-                fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url),
-                shouldOpenInNewTab: true,
-            )
+            ->recordUrl(null)
             ->defaultSort('pedidos_visible_until', 'desc')
             ->emptyStateHeading('No hay programas visibles en Pedidos')
             ->emptyStateDescription('Activa programas desde Cards o Programas, o acepta solicitudes por Telegram.');

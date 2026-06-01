@@ -3,6 +3,8 @@
 namespace App\Filament\Clientes\Resources\Pedidos;
 
 use App\Filament\Clientes\Resources\Pedidos\Pages\ListPedidos;
+use App\Filament\Clientes\Resources\Programas\ProgramasResource;
+use App\Filament\Support\PedidosDescargaTableColumn;
 use App\Filament\Support\ProgramaCategories;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
@@ -17,7 +19,7 @@ class PedidosResource extends Resource
 {
     protected static ?string $model = Programas::class;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-shopping-bag';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-shopping-bag';
 
     protected static ?string $navigationLabel = 'Pedidos';
 
@@ -49,17 +51,7 @@ class PedidosResource extends Resource
                     ->sortable()
                     ->limit(40),
 
-                TextColumn::make('descargas')
-                    ->label('DESCARGAS')
-                    ->badge()
-                    ->color(fn (Programas $record) => filled($record->url) ? 'success' : 'gray')
-                    ->state(fn (Programas $record) => filled($record->url)
-                        ? 'Descarga aquí el programa'
-                        : 'Sin enlace')
-                    ->url(fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url))
-                    ->openUrlInNewTab()
-                    ->wrap()
-                    ->alignCenter(),
+                PedidosDescargaTableColumn::make(),
 
                 TextColumn::make('os_required')
                     ->label('Sistema operativo')
@@ -91,10 +83,7 @@ class PedidosResource extends Resource
                     ->searchable()
                     ->preload(),
             ])
-            ->recordUrl(
-                fn (Programas $record): ?string => ProgramasTableColumns::downloadUrl($record->url),
-                shouldOpenInNewTab: true,
-            )
+            ->recordUrl(fn (Programas $record): string => ProgramasResource::getUrl('view', ['record' => $record]))
             ->defaultSort('id', 'desc')
             ->emptyStateHeading('No hay pedidos disponibles')
             ->emptyStateDescription('Los programas aparecerán aquí cuando un administrador los active en Cards (30 minutos) o cuando no esté activo el botón OFF.');
