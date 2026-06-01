@@ -28,6 +28,17 @@ class ListProgramas extends ListRecords
         return $this->buildProgramasOsTabs(includeTodos: true);
     }
 
+    public function getDefaultActiveTab(): string|int|null
+    {
+        $tabs = $this->getCachedTabs();
+
+        if (array_key_exists('todos', $tabs)) {
+            return 'todos';
+        }
+
+        return array_key_first($tabs);
+    }
+
     public function content(Schema $schema): Schema
     {
         return $schema
