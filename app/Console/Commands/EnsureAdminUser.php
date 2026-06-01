@@ -2,30 +2,25 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\UserRole;
-use App\Models\User;
+use App\Services\AdminUserService;
 use Illuminate\Console\Command;
-use Spatie\Permission\Models\Role;
 
 class EnsureAdminUser extends Command
 {
     protected $signature = 'app:ensure-admin';
 
-    protected $description = 'Crea o restablece el usuario admin@gmail.com (clave: 123456) con rol administrador';
+    protected $description = 'Crea o restablece el usuario administrador por defecto (config/admin.php)';
 
     public function handle(): int
     {
-        Role::firstOrCreate(['name' => UserRole::Administrador->value, 'guard_name' => 'web']);
-        Role::firstOrCreate(['name' => UserRole::Invitado->value, 'guard_name' => 'web']);
+        AdminUserService::ensureExists();
 
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@gmail.com'],
-            ['name' => 'Admin', 'password' => '123456'],
-        );
-
-        $admin->syncRoles([UserRole::Administrador->value]);
-
-        $this->components->info('Admin listo: admin@gmail.com / 123456');
+        $this->components->info(sprintf(
+            'Admin listo: %s / %s → %s',
+            AdminUserService::email(),
+            AdminUserService::password(),
+            url('/admin/login'),
+        ));
 
         return self::SUCCESS;
     }
