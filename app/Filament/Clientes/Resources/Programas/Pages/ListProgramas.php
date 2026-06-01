@@ -99,16 +99,22 @@ class ListProgramas extends ListRecords
             ->modalHeading('Solicitud enviada, ESPERA LA CONFIRMACIÓN')
             ->modalContent(fn () => view('filament.clientes.modals.solicitud-pedidos-countdown'))
             ->modalSubmitAction(
-                fn (): Action|bool => $this->solicitudPedidosModalHabilitado
-                    ? Action::make('irPedidos')
+                fn (Action $action): Action|bool => $this->solicitudPedidosModalHabilitado
+                    ? $action
                         ->label('DESCARGAR')
                         ->color('success')
-                        ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true))
                     : false,
             )
             ->modalCancelAction(false)
             ->closeModalByClickingAway(false)
             ->closeModalByEscaping(false)
-            ->modalWidth('md');
+            ->modalWidth('md')
+            ->action(function (): void {
+                if (! $this->solicitudPedidosModalHabilitado) {
+                    return;
+                }
+
+                $this->redirect(PedidosResource::getUrl(), navigate: true);
+            });
     }
 }
