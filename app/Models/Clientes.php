@@ -30,6 +30,7 @@ class Clientes extends Model
     {
         return [
             'date' => 'date',
+            
         ];
     }
 }
