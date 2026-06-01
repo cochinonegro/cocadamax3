@@ -31,4 +31,15 @@ final class DisplayTimezone
     {
         return self::format($dateTime, 'H:i');
     }
+
+    public static function formatDateTime(?CarbonInterface $dateTime): ?string
+    {
+        if ($dateTime === null) {
+            return null;
+        }
+
+        $formatted = self::format($dateTime, 'd/m/Y H:i');
+
+        return $formatted ?? '—';
+    }
 }
