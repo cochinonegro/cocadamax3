@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
+use Filament\Enums\ThemeMode;
 use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -31,6 +32,7 @@ class ClientesPanelProvider extends PanelProvider
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->defaultThemeMode(ThemeMode::Dark)
             ->topNavigation()
             ->userMenu(position: UserMenuPosition::Topbar)
             ->maxContentWidth(Width::Full)
