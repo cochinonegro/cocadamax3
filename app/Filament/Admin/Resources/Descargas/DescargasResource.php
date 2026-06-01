@@ -12,11 +12,15 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\TextInputColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -68,6 +72,17 @@ class DescargasResource extends Resource
                             ->seconds(false)
                             ->native(false)
                             ->default(now()),
+
+                        TextInput::make('precio')
+                            ->label('Precio')
+                            ->numeric()
+                            ->minValue(0)
+                            ->step(0.01)
+                            ->suffix('€'),
+
+                        Toggle::make('pagado')
+                            ->label('Pago / No pago')
+                            ->default(false),
                     ]),
             ]);
     }
@@ -106,6 +121,23 @@ class DescargasResource extends Resource
                     ->color('danger')
                     ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
                     ->placeholder('—'),
+
+                TextInputColumn::make('precio')
+                    ->label('Precio')
+                    ->type('number')
+                    ->inputMode('decimal')
+                    ->step('0.01')
+                    ->rules(['nullable', 'numeric', 'min:0'])
+                    ->suffix('€')
+                    ->alignCenter()
+                    ->extraCellAttributes(['class' => 'descarga-precio-cell']),
+
+                ToggleColumn::make('pagado')
+                    ->label('Pago/NoPago')
+                    ->sortable()
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->alignCenter(),
             ])
             ->defaultSort('downloaded_at', 'desc')
             ->recordActions([

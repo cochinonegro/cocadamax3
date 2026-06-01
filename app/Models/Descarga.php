@@ -11,12 +11,16 @@ class Descarga extends Model
         'user_id',
         'programas_id',
         'downloaded_at',
+        'precio',
+        'pagado',
     ];
 
     protected function casts(): array
     {
         return [
             'downloaded_at' => 'datetime',
+            'precio' => 'decimal:2',
+            'pagado' => 'boolean',
         ];
     }
 
