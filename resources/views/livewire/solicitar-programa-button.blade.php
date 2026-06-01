@@ -30,21 +30,33 @@
             Pendiente
         </span>
     @else
-        <button
-            type="button"
-            wire:click="solicitar"
-            wire:loading.attr="disabled"
-            wire:target="solicitar"
-            @class([
-                'inline-flex items-center justify-center gap-1 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-amber-500/40 disabled:opacity-60',
-                'px-2.5 py-1 text-xs' => $isTable,
-                'px-3 py-1.5 text-sm w-full' => $isCard,
-                'px-4 py-2 text-sm' => $isDetail,
-                'border border-amber-500/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25' => true,
-            ])
-        >
-            <span wire:loading.remove wire:target="solicitar">Solicitar</span>
-            <span wire:loading wire:target="solicitar">Enviando…</span>
-        </button>
+        @if ($isTable)
+            <button
+                type="button"
+                wire:click="solicitar"
+                wire:loading.attr="disabled"
+                wire:target="solicitar"
+                class="fi-badge fi-color-success cursor-pointer border-0 font-bold uppercase tracking-wide transition hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-success-500/40 disabled:cursor-not-allowed disabled:opacity-60"
+            >
+                <span wire:loading.remove wire:target="solicitar">DESCARGAR YA</span>
+                <span wire:loading wire:target="solicitar">ENVIANDO…</span>
+            </button>
+        @else
+            <button
+                type="button"
+                wire:click="solicitar"
+                wire:loading.attr="disabled"
+                wire:target="solicitar"
+                @class([
+                    'inline-flex items-center justify-center gap-1 rounded-lg font-semibold transition focus:outline-none focus:ring-2 focus:ring-amber-500/40 disabled:opacity-60',
+                    'px-3 py-1.5 text-sm w-full' => $isCard,
+                    'px-4 py-2 text-sm' => $isDetail,
+                    'border border-amber-500/50 bg-amber-500/15 text-amber-300 hover:bg-amber-500/25',
+                ])
+            >
+                <span wire:loading.remove wire:target="solicitar">Solicitar</span>
+                <span wire:loading wire:target="solicitar">Enviando…</span>
+            </button>
+        @endif
     @endif
 </div>
