@@ -5,11 +5,14 @@ namespace App\Filament\Admin\Resources\Clientes;
 use App\Filament\Admin\Resources\Clientes\Pages\CreateClientes;
 use App\Filament\Admin\Resources\Clientes\Pages\EditClientes;
 use App\Filament\Admin\Resources\Clientes\Pages\ListClientes;
+use App\Filament\Admin\Resources\Clientes\Schemas\ClientesInfolist;
+use App\Filament\Support\ClienteFormatting;
 use App\Models\Clientes;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -17,6 +20,7 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Support\Enums\Width;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -130,6 +134,11 @@ class ClientesResource extends Resource
             ]);
     }
 
+    public static function infolist(Schema $schema): Schema
+    {
+        return ClientesInfolist::configure($schema);
+    }
+
     public static function table(Table $table): Table
     {
         return $table
@@ -145,7 +154,17 @@ class ClientesResource extends Resource
 
                 TextColumn::make('phone')
                     ->label('Teléfono')
-                    ->searchable(),
+                    ->searchable(query: function ($query, string $search) {
+                        $digits = ClienteFormatting::phoneDigits($search);
+
+                        if ($digits === '') {
+                            return $query;
+                        }
+
+                        return $query->where('phone', 'like', "%{$digits}%");
+                    })
+                    ->html()
+                    ->formatStateUsing(fn (?string $state) => ClienteFormatting::phoneHtml($state)),
 
                 TextColumn::make('email')
                     ->label('Correo')
@@ -177,16 +196,20 @@ class ClientesResource extends Resource
                     ->label('Categoría')
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('date')
-                    ->label('Fecha')
+                TextColumn::make('created_at')
+                    ->label('Fecha registro')
                     ->date('d/m/Y')
                     ->sortable(),
 
-                TextColumn::make('created_at')
-                    ->label('Alta')
-                    ->dateTime('d/m/Y H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                TextColumn::make('registration_time')
+                    ->label('Hora')
+                    ->state(
+                        fn (Clientes $record): ?string => $record->created_at
+                            ?->timezone(config('app.timezone'))
+                            ->format('H:i'),
+                    )
+                    ->badge()
+                    ->color('success'),
             ])
             ->defaultSort('id', 'desc')
             ->filters([
@@ -199,6 +222,12 @@ class ClientesResource extends Resource
                     ]),
             ])
             ->recordActions([
+                ViewAction::make()
+                    ->label('Ver')
+                    ->icon('heroicon-o-eye')
+                    ->modalHeading(fn (Clientes $record): string => $record->name)
+                    ->modalWidth(Width::ThreeExtraLarge),
+
                 EditAction::make(),
                 DeleteAction::make(),
             ])
