@@ -5,11 +5,10 @@ namespace App\Filament\Clientes\Resources\Programas\Pages;
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Models\Programas;
 use App\Services\ProgramaSolicitudService;
+use App\Support\ProgramaSolicitudSubmitter;
 use Filament\Actions\Action;
-use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Contracts\Support\Htmlable;
-use Illuminate\Validation\ValidationException;
 
 class ViewProgramas extends ViewRecord
 {
@@ -47,7 +46,7 @@ class ViewProgramas extends ViewRecord
         ];
     }
 
-    public function getTitle(): string | Htmlable
+    public function getTitle(): string|Htmlable
     {
         /** @var Programas $record */
         $record = $this->getRecord();
@@ -71,31 +70,9 @@ class ViewProgramas extends ViewRecord
 
     protected function submitSolicitud(): void
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            return;
-        }
-
         /** @var Programas $record */
         $record = $this->getRecord();
 
-        try {
-            app(ProgramaSolicitudService::class)->submit($user, $record);
-
-            Notification::make()
-                ->title('Solicitud enviada')
-                ->body('Recibirás el programa en Pedidos cuando sea aceptada.')
-                ->success()
-                ->send();
-        } catch (ValidationException $exception) {
-            $message = collect($exception->errors())->flatten()->first()
-                ?? 'No se pudo enviar la solicitud.';
-
-            Notification::make()
-                ->title($message)
-                ->warning()
-                ->send();
-        }
+        ProgramaSolicitudSubmitter::submit($record);
     }
 }

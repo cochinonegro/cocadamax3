@@ -4,8 +4,7 @@ namespace App\Livewire;
 
 use App\Models\Programas;
 use App\Services\ProgramaSolicitudService;
-use Filament\Notifications\Notification;
-use Illuminate\Validation\ValidationException;
+use App\Support\ProgramaSolicitudSubmitter;
 use Livewire\Component;
 
 class SolicitarProgramaButton extends Component
@@ -20,47 +19,15 @@ class SolicitarProgramaButton extends Component
         $this->variant = $variant;
     }
 
-    public function solicitar(ProgramaSolicitudService $solicitudes): void
+    public function solicitar(): void
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            Notification::make()
-                ->title('Debes iniciar sesión')
-                ->danger()
-                ->send();
-
-            return;
-        }
-
         $programa = Programas::query()->active()->find($this->programaId);
 
         if (! $programa) {
-            Notification::make()
-                ->title('Programa no disponible')
-                ->danger()
-                ->send();
-
             return;
         }
 
-        try {
-            $solicitudes->submit($user, $programa);
-
-            Notification::make()
-                ->title('Solicitud enviada')
-                ->body('Recibirás el programa en Pedidos cuando sea aceptada.')
-                ->success()
-                ->send();
-        } catch (ValidationException $exception) {
-            $message = collect($exception->errors())->flatten()->first()
-                ?? 'No se pudo enviar la solicitud.';
-
-            Notification::make()
-                ->title($message)
-                ->warning()
-                ->send();
-        }
+        ProgramaSolicitudSubmitter::submit($programa);
     }
 
     public function statusLabel(ProgramaSolicitudService $solicitudes): string
