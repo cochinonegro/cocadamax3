@@ -57,4 +57,25 @@ class PedidosDescargaTest extends TestCase
         $this->assertNull(PedidosDescargaHandler::consume($programa));
         $this->assertTrue($programa->fresh()->isVisibleInPedidos());
     }
+
+    public function test_pedidos_download_route_redirects_to_external_url(): void
+    {
+        $user = User::factory()->create();
+        $user->assignRole(UserRole::Invitado->value);
+
+        $programa = Programas::factory()->create([
+            'show' => true,
+            'url' => 'example.com/archivo.zip',
+            'pedidos_visible_until' => now()->addMinutes(30),
+        ]);
+
+        $response = $this->actingAs($user)->get(route('pedidos.descarga', $programa));
+
+        $response->assertRedirect('https://example.com/archivo.zip');
+        $this->assertFalse($programa->fresh()->isVisibleInPedidos());
+        $this->assertDatabaseHas('descargas', [
+            'user_id' => $user->id,
+            'programas_id' => $programa->id,
+        ]);
+    }
 }

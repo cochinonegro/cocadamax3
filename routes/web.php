@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\PedidosDownloadController;
 use App\Http\Controllers\ProgramaDownloadController;
 use App\Http\Controllers\WelcomeController;
 use App\Support\DescargaRegistrar;
@@ -51,3 +52,6 @@ Route::get('/descarga-segura/{id}', function ($id) {
 
 Route::middleware(['auth'])->get('/clientes/descarga/{programas}', [ProgramaDownloadController::class, 'download'])
     ->name('invitado.descarga');
+
+Route::middleware(['auth'])->get('/clientes/pedidos/descarga/{programas}', [PedidosDownloadController::class, 'download'])
+    ->name('pedidos.descarga');
