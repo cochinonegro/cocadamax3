@@ -3,9 +3,9 @@
 namespace App\Filament\Clientes\Resources\Programas\Pages;
 
 use App\Filament\Clientes\Pages\Tienda\TiendaElegirOs;
-use App\Filament\Clientes\Resources\Pedidos\PedidosResource;
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
 use App\Filament\Concerns\HasProgramasOsTabs;
+use App\Filament\Concerns\HasSolicitudPedidosCountdownModal;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ListRecords;
 use Filament\Schemas\Components\EmbeddedTable;
@@ -13,15 +13,13 @@ use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\View\PanelsRenderHook;
-use Livewire\Attributes\On;
 
 class ListProgramas extends ListRecords
 {
     use HasProgramasOsTabs;
+    use HasSolicitudPedidosCountdownModal;
 
     protected static string $resource = ProgramasResource::class;
-
-    public bool $solicitudPedidosModalHabilitado = false;
 
     public function getTabs(): array
     {
@@ -79,42 +77,5 @@ class ListProgramas extends ListRecords
                 ->color('primary')
                 ->url(TiendaElegirOs::getUrl()),
         ];
-    }
-
-    #[On('solicitud-enviada')]
-    public function abrirModalSolicitudPedidos(): void
-    {
-        $this->solicitudPedidosModalHabilitado = false;
-        $this->mountAction('solicitudSolicitada');
-    }
-
-    public function habilitarBotonPedidosModal(): void
-    {
-        $this->solicitudPedidosModalHabilitado = true;
-    }
-
-    public function solicitudSolicitadaAction(): Action
-    {
-        return Action::make('solicitudSolicitada')
-            ->modalHeading('Solicitud enviada, ESPERA LA CONFIRMACIÓN')
-            ->modalContent(fn () => view('filament.clientes.modals.solicitud-pedidos-countdown'))
-            ->modalSubmitAction(
-                fn (Action $action): Action|bool => $this->solicitudPedidosModalHabilitado
-                    ? $action
-                        ->label('DESCARGAR')
-                        ->color('success')
-                    : false,
-            )
-            ->modalCancelAction(false)
-            ->closeModalByClickingAway(false)
-            ->closeModalByEscaping(false)
-            ->modalWidth('md')
-            ->action(function (): void {
-                if (! $this->solicitudPedidosModalHabilitado) {
-                    return;
-                }
-
-                $this->redirect(PedidosResource::getUrl(), navigate: true);
-            });
     }
 }

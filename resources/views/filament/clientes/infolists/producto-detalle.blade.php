@@ -1,6 +1,7 @@
 @php
     use App\Filament\Support\ProgramaCategories;
     use App\Filament\Support\ProgramaImageUpload;
+    use App\Filament\Support\ProgramaSolicitudTableColumn;
     use App\Filament\Support\ProgramasTableColumns;
     use Illuminate\Support\Str;
 
@@ -87,6 +88,8 @@
     );
 
     $hasFotosDescripcion = filled($fotoDescr1Url) || filled($fotoDescr2Url);
+
+    $solicitarStatus = ProgramaSolicitudTableColumn::status($record);
 @endphp
 
 <div id="cliente-producto-detalle">
@@ -168,6 +171,53 @@
             margin-top: 1.25rem;
             padding-top: 1rem;
             border-top: 1px solid rgb(63 63 70);
+        }
+
+        #cliente-producto-detalle .cp-solicitar-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 11rem;
+            padding: 0.625rem 1.25rem;
+            border-radius: 0.5rem;
+            border: 1px solid rgb(234 88 12);
+            background: rgb(234 88 12);
+            font-size: 0.875rem;
+            font-weight: 700;
+            letter-spacing: 0.025em;
+            color: rgb(255 255 255);
+            transition: background-color 150ms, border-color 150ms;
+        }
+
+        #cliente-producto-detalle .cp-solicitar-btn:hover:not(:disabled) {
+            background: rgb(194 65 12);
+            border-color: rgb(194 65 12);
+        }
+
+        #cliente-producto-detalle .cp-solicitar-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #cliente-producto-detalle .cp-solicitar-estado {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 0.375rem;
+            padding: 0.375rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        #cliente-producto-detalle .cp-solicitar-estado--pedidos {
+            background: rgb(34 197 94 / 0.15);
+            color: rgb(134 239 172);
+            border: 1px solid rgb(34 197 94 / 0.3);
+        }
+
+        #cliente-producto-detalle .cp-solicitar-estado--pendiente {
+            background: rgb(245 158 11 / 0.15);
+            color: rgb(252 211 77);
+            border: 1px solid rgb(245 158 11 / 0.3);
         }
 
         #cliente-producto-detalle .cp-full {
@@ -268,7 +318,22 @@
     </div>
 
     <div class="cp-solicitar">
-        @livewire('solicitar-programa-button', ['programaId' => $record->id, 'variant' => 'detail'], key('solicitar-detail-'.$record->id))
+        @if ($solicitarStatus === 'en_pedidos')
+            <span class="cp-solicitar-estado cp-solicitar-estado--pedidos">En Pedidos</span>
+        @elseif ($solicitarStatus === 'pendiente')
+            <span class="cp-solicitar-estado cp-solicitar-estado--pendiente">Pendiente</span>
+        @else
+            <button
+                type="button"
+                class="cp-solicitar-btn"
+                wire:click="solicitarPrograma"
+                wire:loading.attr="disabled"
+                wire:target="solicitarPrograma"
+            >
+                <span wire:loading.remove wire:target="solicitarPrograma">SOLICITAR YA</span>
+                <span wire:loading wire:target="solicitarPrograma">Enviando…</span>
+            </button>
+        @endif
     </div>
 
     <div class="cp-full">

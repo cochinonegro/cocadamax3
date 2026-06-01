@@ -3,8 +3,9 @@
 namespace App\Filament\Clientes\Resources\Programas\Pages;
 
 use App\Filament\Clientes\Resources\Programas\ProgramasResource;
+use App\Filament\Concerns\HasSolicitudPedidosCountdownModal;
+use App\Filament\Support\ProgramaSolicitudTableColumn;
 use App\Models\Programas;
-use App\Services\ProgramaSolicitudService;
 use App\Support\ProgramaSolicitudSubmitter;
 use Filament\Actions\Action;
 use Filament\Resources\Pages\ViewRecord;
@@ -12,32 +13,13 @@ use Illuminate\Contracts\Support\Htmlable;
 
 class ViewProgramas extends ViewRecord
 {
+    use HasSolicitudPedidosCountdownModal;
+
     protected static string $resource = ProgramasResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
-            Action::make('solicitar')
-                ->label('Solicitar')
-                ->icon('heroicon-o-paper-airplane')
-                ->color('warning')
-                ->visible(fn (): bool => $this->solicitarStatus() === 'disponible')
-                ->action(fn () => $this->submitSolicitud()),
-
-            Action::make('solicitud_pendiente')
-                ->label('Solicitud pendiente')
-                ->icon('heroicon-o-clock')
-                ->color('gray')
-                ->disabled()
-                ->visible(fn (): bool => $this->solicitarStatus() === 'pendiente'),
-
-            Action::make('en_pedidos')
-                ->label('Disponible en Pedidos')
-                ->icon('heroicon-o-check-circle')
-                ->color('success')
-                ->disabled()
-                ->visible(fn (): bool => $this->solicitarStatus() === 'en_pedidos'),
-
             Action::make('back')
                 ->label('Volver al listado')
                 ->icon('heroicon-o-arrow-left')
@@ -54,25 +36,27 @@ class ViewProgramas extends ViewRecord
         return $record->progname;
     }
 
-    protected function solicitarStatus(): string
+    public function solicitarPrograma(): void
     {
-        $user = auth()->user();
-
-        if (! $user) {
-            return 'disponible';
+        if ($this->solicitarStatus() !== 'disponible') {
+            return;
         }
 
         /** @var Programas $record */
         $record = $this->getRecord();
 
-        return app(ProgramaSolicitudService::class)->statusFor($user, $record);
+        if (! ProgramaSolicitudSubmitter::submit($record, notifyOnSuccess: false)) {
+            return;
+        }
+
+        $this->abrirModalSolicitudPedidos();
     }
 
-    protected function submitSolicitud(): void
+    public function solicitarStatus(): string
     {
         /** @var Programas $record */
         $record = $this->getRecord();
 
-        ProgramaSolicitudSubmitter::submit($record);
+        return ProgramaSolicitudTableColumn::status($record);
     }
 }
