@@ -2,14 +2,12 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Admin\Resources\CardsProgramas\CardsProgramasResource;
 use App\Filament\Admin\Resources\Programas\ProgramasResource;
-use App\Support\Device;
+use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Enums\UserMenuPosition;
 use Filament\Panel;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
@@ -30,9 +28,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('CocadaMax Admin')
-            ->homeUrl(fn (): string => Device::isMobile()
-                ? CardsProgramasResource::getUrl()
-                : ProgramasResource::getUrl())
+            ->homeUrl(fn (): string => ProgramasResource::getUrl())
             ->colors([
                 'primary' => Color::Amber,
             ])

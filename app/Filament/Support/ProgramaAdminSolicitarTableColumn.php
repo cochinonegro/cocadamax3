@@ -19,7 +19,9 @@ class ProgramaAdminSolicitarTableColumn
             ->color(fn (Programas $record): string => self::color($record))
             ->weight(FontWeight::Bold)
             ->tooltip(fn (Programas $record): string => self::tooltip($record))
-            ->action(fn (Programas $record): void => self::cycle($record));
+            ->action(function (Programas $record): void {
+                self::cycle($record);
+            });
     }
 
     public static function status(Programas $record): string

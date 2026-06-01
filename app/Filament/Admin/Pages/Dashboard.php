@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Pages;
 
+use App\Filament\Admin\Resources\Programas\ProgramasResource;
 use App\Filament\Admin\Widgets\QuickAccessWidget;
 use App\Filament\Admin\Widgets\UserInfoWidget;
 use App\Filament\Admin\Widgets\VentasMesPasadoChart;
@@ -16,7 +17,12 @@ class Dashboard extends BaseDashboard
 
     protected static ?int $navigationSort = 5;
 
-    protected static string | \BackedEnum | null $navigationIcon = 'heroicon-o-home';
+    protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-home';
+
+    public function mount(): void
+    {
+        $this->redirect(ProgramasResource::getUrl(), navigate: true);
+    }
 
     public function getWidgets(): array
     {
@@ -28,7 +34,7 @@ class Dashboard extends BaseDashboard
         ];
     }
 
-    public function getColumns(): int | array
+    public function getColumns(): int|array
     {
         return 2;
     }
