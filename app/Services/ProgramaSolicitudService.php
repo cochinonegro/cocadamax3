@@ -9,6 +9,7 @@ use App\Models\Programas;
 use App\Models\User;
 use App\Services\Telegram\TelegramBotService;
 use App\Support\PedidosVisibility;
+use App\Exceptions\TelegramException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -38,27 +39,31 @@ class ProgramaSolicitudService
             ]);
         }
 
-        return DB::transaction(function () use ($user, $programa): ProgramaSolicitud {
-            $solicitud = ProgramaSolicitud::query()->create([
-                'user_id' => $user->id,
-                'programas_id' => $programa->id,
-                'status' => ProgramaSolicitudStatus::Pending,
-                'telegram_chat_id' => (string) config('telegram.admin_chat_id'),
-            ]);
+        try {
+            return DB::transaction(function () use ($user, $programa): ProgramaSolicitud {
+                $solicitud = ProgramaSolicitud::query()->create([
+                    'user_id' => $user->id,
+                    'programas_id' => $programa->id,
+                    'status' => ProgramaSolicitudStatus::Pending,
+                    'telegram_chat_id' => (string) config('telegram.admin_chat_id'),
+                ]);
 
-            $message = $this->telegram->sendMessage(
-                $this->buildTelegramMessage($solicitud),
-                $this->inlineKeyboard($solicitud),
-            );
+                $message = $this->telegram->sendMessage(
+                    $this->buildTelegramMessage($solicitud),
+                    $this->inlineKeyboard($solicitud),
+                );
 
-            if ($message) {
                 $solicitud->update([
                     'telegram_message_id' => $message['message_id'] ?? null,
                 ]);
-            }
 
-            return $solicitud->fresh(['user', 'programa']);
-        });
+                return $solicitud->fresh(['user', 'programa']);
+            });
+        } catch (TelegramException $exception) {
+            throw ValidationException::withMessages([
+                'solicitar' => $exception->getMessage(),
+            ]);
+        }
     }
 
     public function accept(ProgramaSolicitud $solicitud): void

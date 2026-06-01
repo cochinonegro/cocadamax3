@@ -15,6 +15,7 @@ return [
 
     'bot_token' => env('TELEGRAM_BOT_TOKEN'),
 
+    // ID numérico del chat (NO el teléfono). Obtenerlo con @userinfobot o: php artisan telegram:test --discover
     'admin_chat_id' => env('TELEGRAM_ADMIN_CHAT_ID'),
 
     'webhook_secret' => env('TELEGRAM_WEBHOOK_SECRET'),
