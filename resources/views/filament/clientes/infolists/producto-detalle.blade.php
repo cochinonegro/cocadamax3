@@ -24,57 +24,73 @@
 
     $badgeBase = 'inline-flex max-w-full items-center rounded-md px-2 py-1 text-xs font-semibold ring-1 ring-inset';
 
+    $badge = fn (string $tone): string => match ($tone) {
+        'blue' => "{$badgeBase} bg-blue-600/22 text-blue-950 ring-blue-800/35 dark:bg-blue-500/15 dark:text-blue-300 dark:ring-blue-500/30",
+        'green' => "{$badgeBase} bg-emerald-600/22 text-emerald-950 ring-emerald-800/35 dark:bg-green-500/15 dark:text-green-300 dark:ring-green-500/30",
+        'rose' => "{$badgeBase} bg-rose-600/22 text-rose-950 ring-rose-800/35 dark:bg-rose-500/15 dark:text-rose-300 dark:ring-rose-500/30",
+        'pink' => "{$badgeBase} bg-pink-600/22 text-pink-950 ring-pink-800/35 dark:bg-pink-500/15 dark:text-pink-300 dark:ring-pink-500/30",
+        'violet' => "{$badgeBase} bg-violet-600/22 text-violet-950 ring-violet-800/35 dark:bg-violet-500/15 dark:text-violet-300 dark:ring-violet-500/30",
+        'orange' => "{$badgeBase} bg-orange-600/22 text-orange-950 ring-orange-800/35 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-500/30",
+        'fuchsia' => "{$badgeBase} bg-fuchsia-600/22 text-fuchsia-950 ring-fuchsia-800/35 dark:bg-fuchsia-500/15 dark:text-fuchsia-300 dark:ring-fuchsia-500/30",
+        'amber' => "{$badgeBase} bg-amber-600/22 text-amber-950 ring-amber-800/35 dark:bg-amber-500/15 dark:text-amber-300 dark:ring-amber-500/30",
+        'emerald' => "{$badgeBase} bg-emerald-600/22 text-emerald-950 ring-emerald-800/35 dark:bg-emerald-500/15 dark:text-emerald-300 dark:ring-emerald-500/30",
+        'teal' => "{$badgeBase} bg-teal-600/22 text-teal-950 ring-teal-800/35 dark:bg-teal-500/15 dark:text-teal-300 dark:ring-teal-500/30",
+        'cyan' => "{$badgeBase} bg-cyan-600/22 text-cyan-950 ring-cyan-800/35 dark:bg-cyan-500/15 dark:text-cyan-300 dark:ring-cyan-500/30",
+        'zinc' => "{$badgeBase} bg-zinc-600/22 text-zinc-950 ring-zinc-700/35 dark:bg-zinc-500/15 dark:text-zinc-300 dark:ring-zinc-500/30",
+        default => "{$badgeBase} bg-indigo-600/22 text-indigo-950 ring-indigo-800/35 dark:bg-zinc-500/15 dark:text-zinc-300 dark:ring-zinc-500/30",
+    };
+
     $categoryBadgeClass = match ($record->category) {
-        'diseño grafico' => "{$badgeBase} bg-pink-500/15 text-pink-300 ring-pink-500/30",
-        'kontakt' => "{$badgeBase} bg-violet-500/15 text-violet-300 ring-violet-500/30",
-        'arquitectura' => "{$badgeBase} bg-orange-500/15 text-orange-300 ring-orange-500/30",
-        'aplicaciones' => "{$badgeBase} bg-blue-500/15 text-blue-300 ring-blue-500/30",
-        'video' => "{$badgeBase} bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30",
-        'music' => "{$badgeBase} bg-amber-500/15 text-amber-300 ring-amber-500/30",
-        'office-pdf' => "{$badgeBase} bg-emerald-500/15 text-emerald-300 ring-emerald-500/30",
-        default => "{$badgeBase} bg-zinc-500/15 text-zinc-300 ring-zinc-500/30",
+        'diseño grafico' => $badge('pink'),
+        'kontakt' => $badge('violet'),
+        'arquitectura' => $badge('orange'),
+        'aplicaciones' => $badge('blue'),
+        'video' => $badge('fuchsia'),
+        'music' => $badge('amber'),
+        'office-pdf' => $badge('emerald'),
+        default => $badge('zinc'),
     };
 
     $osBadgeClass = match ($record->os_required) {
-        'windows' => "{$badgeBase} bg-blue-500/15 text-blue-300 ring-blue-500/30",
-        'mac' => "{$badgeBase} bg-rose-500/15 text-rose-300 ring-rose-500/30",
-        'win-mac' => "{$badgeBase} bg-zinc-500/15 text-zinc-300 ring-zinc-500/30",
-        default => "{$badgeBase} bg-zinc-500/15 text-zinc-300 ring-zinc-500/30",
+        'windows' => $badge('blue'),
+        'mac' => $badge('rose'),
+        'win-mac' => $badge('zinc'),
+        default => $badge('zinc'),
     };
 
     $metaFields = [
-        ['label' => 'Código', 'value' => $codigo, 'badge' => "{$badgeBase} bg-blue-500/15 text-blue-300 ring-blue-500/30"],
-        ['label' => 'Tamaño', 'value' => $record->size, 'badge' => "{$badgeBase} bg-green-500/15 text-green-300 ring-green-500/30"],
+        ['label' => 'Código', 'value' => $codigo, 'badge' => $badge('blue')],
+        ['label' => 'Tamaño', 'value' => $record->size, 'badge' => $badge('green')],
         ['label' => 'Sistema operativo', 'value' => $osLabel, 'badge' => $osBadgeClass],
         ['label' => 'Categoría', 'value' => ProgramaCategories::label($record->category), 'badge' => $categoryBadgeClass],
     ];
 
     if ($record->year_prog) {
-        $metaFields[] = ['label' => 'Año', 'value' => $record->year_prog, 'badge' => "{$badgeBase} bg-fuchsia-500/15 text-fuchsia-300 ring-fuchsia-500/30"];
+        $metaFields[] = ['label' => 'Año', 'value' => $record->year_prog, 'badge' => $badge('fuchsia')];
     }
 
     if ($record->working) {
         $metaFields[] = [
             'label' => 'Subcategoría',
             'value' => ProgramaCategories::subcategoryLabel($record->category, $record->working),
-            'badge' => "{$badgeBase} bg-violet-500/15 text-violet-300 ring-violet-500/30",
+            'badge' => $badge('violet'),
         ];
     }
 
     if (filled($record->idioma)) {
-        $metaFields[] = ['label' => 'Idioma', 'value' => strtoupper($record->idioma), 'badge' => "{$badgeBase} bg-orange-500/15 text-orange-300 ring-orange-500/30"];
+        $metaFields[] = ['label' => 'Idioma', 'value' => strtoupper($record->idioma), 'badge' => $badge('orange')];
     }
 
     if (filled($record->required)) {
-        $metaFields[] = ['label' => 'Requerido', 'value' => $record->required, 'badge' => "{$badgeBase} bg-teal-500/15 text-teal-300 ring-teal-500/30"];
+        $metaFields[] = ['label' => 'Requerido', 'value' => $record->required, 'badge' => $badge('teal')];
     }
 
     if (filled($record->company)) {
-        $metaFields[] = ['label' => 'Marca', 'value' => strtoupper($record->company), 'badge' => "{$badgeBase} bg-cyan-500/15 text-cyan-300 ring-cyan-500/30"];
+        $metaFields[] = ['label' => 'Marca', 'value' => strtoupper($record->company), 'badge' => $badge('cyan')];
     }
 
     if (filled($record->level_inst)) {
-        $metaFields[] = ['label' => 'Tipo / archivo', 'value' => $record->level_inst, 'badge' => "{$badgeBase} bg-violet-500/15 text-violet-300 ring-violet-500/30"];
+        $metaFields[] = ['label' => 'Tipo / archivo', 'value' => $record->level_inst, 'badge' => $badge('violet')];
     }
 
     $fotoDescr1Url = ProgramaImageUpload::publicUrl(
@@ -93,184 +109,6 @@
 @endphp
 
 <div id="cliente-producto-detalle">
-    <style>
-        #cliente-producto-detalle .cp-layout {
-            display: grid !important;
-            grid-template-columns: 9rem minmax(0, 1fr) !important;
-            gap: 1.5rem 2rem;
-            align-items: start;
-        }
-
-        #cliente-producto-detalle .cp-gallery {
-            display: flex;
-            flex-direction: column;
-            gap: 0.625rem;
-        }
-
-        #cliente-producto-detalle .cp-frame {
-            display: flex;
-            width: 9rem;
-            height: 9rem;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            border: 1px solid rgb(63 63 70);
-            background: rgb(24 24 27 / 0.55);
-            padding: 0.625rem;
-            box-sizing: border-box;
-        }
-
-        #cliente-producto-detalle .cp-frame img {
-            display: block;
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            object-position: center;
-        }
-
-        #cliente-producto-detalle .cp-content {
-            min-width: 0;
-        }
-
-        #cliente-producto-detalle .cp-meta {
-            display: grid !important;
-            grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
-            gap: 0.75rem 1rem;
-        }
-
-        #cliente-producto-detalle .cp-meta-label {
-            font-size: 0.75rem;
-            line-height: 1rem;
-            color: rgb(161 161 170);
-        }
-
-        #cliente-producto-detalle .cp-meta-value {
-            margin-top: 0.375rem;
-        }
-
-        #cliente-producto-detalle .cp-web {
-            margin-top: 1rem;
-            font-size: 0.875rem;
-        }
-
-        #cliente-producto-detalle .cp-web-label {
-            font-size: 0.75rem;
-            color: rgb(161 161 170);
-        }
-
-        #cliente-producto-detalle .cp-descripcion {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgb(63 63 70);
-        }
-
-        #cliente-producto-detalle .cp-solicitar {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgb(63 63 70);
-        }
-
-        #cliente-producto-detalle .cp-solicitar-btn {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 11rem;
-            padding: 0.625rem 1.25rem;
-            border-radius: 0.5rem;
-            border: 1px solid rgb(234 88 12);
-            background: rgb(234 88 12);
-            font-size: 0.875rem;
-            font-weight: 700;
-            letter-spacing: 0.025em;
-            color: rgb(255 255 255);
-            transition: background-color 150ms, border-color 150ms;
-        }
-
-        #cliente-producto-detalle .cp-solicitar-btn:hover:not(:disabled) {
-            background: rgb(194 65 12);
-            border-color: rgb(194 65 12);
-        }
-
-        #cliente-producto-detalle .cp-solicitar-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
-        #cliente-producto-detalle .cp-solicitar-estado {
-            display: inline-flex;
-            align-items: center;
-            border-radius: 0.375rem;
-            padding: 0.375rem 0.75rem;
-            font-size: 0.75rem;
-            font-weight: 600;
-        }
-
-        #cliente-producto-detalle .cp-solicitar-estado--pedidos {
-            background: rgb(34 197 94 / 0.15);
-            color: rgb(134 239 172);
-            border: 1px solid rgb(34 197 94 / 0.3);
-        }
-
-        #cliente-producto-detalle .cp-solicitar-estado--pendiente {
-            background: rgb(245 158 11 / 0.15);
-            color: rgb(252 211 77);
-            border: 1px solid rgb(245 158 11 / 0.3);
-        }
-
-        #cliente-producto-detalle .cp-full {
-            margin-top: 1.25rem;
-            padding-top: 1rem;
-            border-top: 1px solid rgb(63 63 70);
-        }
-
-        #cliente-producto-detalle .cp-fotos-descr {
-            display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            gap: 1rem;
-            margin-top: 1.25rem;
-            width: 100%;
-        }
-
-        #cliente-producto-detalle .cp-foto-descr-item {
-            display: flex;
-            min-height: 12rem;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            border: 1px solid rgb(63 63 70);
-            background: rgb(24 24 27 / 0.55);
-            padding: 0.5rem;
-            box-sizing: border-box;
-        }
-
-        #cliente-producto-detalle .cp-foto-descr-item img {
-            display: block;
-            width: 100%;
-            height: auto;
-            max-height: 28rem;
-            object-fit: contain;
-            object-position: center;
-        }
-
-        @media (max-width: 767px) {
-            #cliente-producto-detalle .cp-layout {
-                grid-template-columns: 1fr !important;
-            }
-
-            #cliente-producto-detalle .cp-meta {
-                grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            }
-
-            #cliente-producto-detalle .cp-fotos-descr {
-                grid-template-columns: 1fr !important;
-            }
-        }
-    </style>
-
     <div class="cp-layout">
         <div class="cp-gallery">
             @forelse ($images as $image)
@@ -308,7 +146,7 @@
                         href="{{ $webOficialUrl }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="mt-1 inline-block font-medium text-amber-600 hover:text-amber-500 dark:text-amber-400 dark:hover:text-amber-300"
+                        class="mt-1 inline-block font-medium text-indigo-800 hover:text-indigo-600 dark:text-amber-400 dark:hover:text-amber-300"
                     >
                         {{ $record->web_oficial }}
                     </a>
@@ -338,13 +176,13 @@
 
     <div class="cp-full">
         <div class="cp-descripcion" style="margin-top:0;padding-top:0;border-top:none;">
-            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-amber-600 dark:text-amber-400">Descripción</h3>
+            <h3 class="mb-2 text-sm font-semibold uppercase tracking-wide text-indigo-800 dark:text-amber-400">Descripción</h3>
             @if (filled($record->description))
-                <div class="prose prose-sm max-w-none text-gray-700 dark:prose-invert dark:text-gray-200">
+                <div class="prose prose-sm max-w-none text-indigo-950 dark:prose-invert dark:text-gray-200">
                     {!! Str::markdown($record->description) !!}
                 </div>
             @else
-                <p class="text-sm text-gray-500 dark:text-gray-400">Sin descripción disponible.</p>
+                <p class="text-sm text-indigo-900/80 dark:text-gray-400">Sin descripción disponible.</p>
             @endif
         </div>
 

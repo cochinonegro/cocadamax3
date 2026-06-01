@@ -508,6 +508,249 @@ html:not(.dark) .fi-sc-tabs .fi-tabs:not(.fi-contained) {
   box-shadow: inset 0 0 0 1px rgb(6 182 212 / 0.3);
 }
 
+/* Infolist producto clientes — contenedor índigo claro (modo claro) */
+html:not(.dark) #cliente-producto-detalle {
+  margin-block: 0.25rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.875rem;
+  border: 1px solid rgb(99 102 241 / 0.28);
+  background: linear-gradient(145deg, #c8d4f5 0%, #b8c5ef 48%, #adbde9 100%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.45),
+    0 2px 8px rgb(49 46 129 / 0.1);
+}
+
+.dark #cliente-producto-detalle {
+  padding: 0.25rem 0;
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-meta-label,
+html:not(.dark) #cliente-producto-detalle .cp-web-label {
+  color: rgb(49 46 129);
+  font-weight: 600;
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-descripcion,
+html:not(.dark) #cliente-producto-detalle .cp-full,
+html:not(.dark) #cliente-producto-detalle .cp-solicitar {
+  border-top-color: rgb(99 102 241 / 0.22);
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-frame,
+html:not(.dark) #cliente-producto-detalle .cp-foto-descr-item {
+  border-color: rgb(99 102 241 / 0.28);
+  background: rgb(255 255 255 / 0.42);
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-descripcion h3 {
+  color: rgb(67 56 202) !important;
+}
+
+html:not(.dark) #cliente-producto-detalle .prose,
+html:not(.dark) #cliente-producto-detalle .cp-descripcion p {
+  color: rgb(30 27 75) !important;
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-web a {
+  color: rgb(67 56 202) !important;
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-web a:hover {
+  color: rgb(79 70 229) !important;
+}
+
+#cliente-producto-detalle .cp-layout {
+  display: grid !important;
+  grid-template-columns: 9rem minmax(0, 1fr) !important;
+  gap: 1.5rem 2rem;
+  align-items: start;
+}
+
+#cliente-producto-detalle .cp-gallery {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+#cliente-producto-detalle .cp-frame {
+  display: flex;
+  width: 9rem;
+  height: 9rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(63 63 70);
+  background: rgb(24 24 27 / 0.55);
+  padding: 0.625rem;
+  box-sizing: border-box;
+}
+
+#cliente-producto-detalle .cp-frame img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  object-position: center;
+}
+
+#cliente-producto-detalle .cp-content {
+  min-width: 0;
+}
+
+#cliente-producto-detalle .cp-meta {
+  display: grid !important;
+  grid-template-columns: repeat(6, minmax(0, 1fr)) !important;
+  gap: 0.75rem 1rem;
+}
+
+#cliente-producto-detalle .cp-meta-label {
+  font-size: 0.75rem;
+  line-height: 1rem;
+  color: rgb(161 161 170);
+}
+
+#cliente-producto-detalle .cp-meta-value {
+  margin-top: 0.375rem;
+}
+
+#cliente-producto-detalle .cp-web {
+  margin-top: 1rem;
+  font-size: 0.875rem;
+}
+
+#cliente-producto-detalle .cp-web-label {
+  font-size: 0.75rem;
+  color: rgb(161 161 170);
+}
+
+#cliente-producto-detalle .cp-descripcion {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(63 63 70);
+}
+
+#cliente-producto-detalle .cp-solicitar {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(63 63 70);
+}
+
+#cliente-producto-detalle .cp-solicitar-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 11rem;
+  padding: 0.625rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(234 88 12);
+  background: rgb(234 88 12);
+  font-size: 0.875rem;
+  font-weight: 700;
+  letter-spacing: 0.025em;
+  color: rgb(255 255 255);
+  transition: background-color 150ms, border-color 150ms;
+}
+
+#cliente-producto-detalle .cp-solicitar-btn:hover:not(:disabled) {
+  background: rgb(194 65 12);
+  border-color: rgb(194 65 12);
+}
+
+#cliente-producto-detalle .cp-solicitar-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+#cliente-producto-detalle .cp-solicitar-estado {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.375rem;
+  padding: 0.375rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+#cliente-producto-detalle .cp-solicitar-estado--pedidos {
+  background: rgb(34 197 94 / 0.15);
+  color: rgb(134 239 172);
+  border: 1px solid rgb(34 197 94 / 0.3);
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pedidos {
+  background: rgb(255 255 255 / 0.55);
+  color: rgb(21 128 61);
+  border-color: rgb(34 197 94 / 0.45);
+}
+
+#cliente-producto-detalle .cp-solicitar-estado--pendiente {
+  background: rgb(245 158 11 / 0.15);
+  color: rgb(252 211 77);
+  border: 1px solid rgb(245 158 11 / 0.3);
+}
+
+html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pendiente {
+  background: rgb(255 255 255 / 0.55);
+  color: rgb(180 83 9);
+  border-color: rgb(245 158 11 / 0.45);
+}
+
+#cliente-producto-detalle .cp-full {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgb(63 63 70);
+}
+
+#cliente-producto-detalle .cp-fotos-descr {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  width: 100%;
+}
+
+#cliente-producto-detalle .cp-foto-descr-item {
+  display: flex;
+  min-height: 12rem;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(63 63 70);
+  background: rgb(24 24 27 / 0.55);
+  padding: 0.5rem;
+  box-sizing: border-box;
+}
+
+#cliente-producto-detalle .cp-foto-descr-item img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 28rem;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 767px) {
+  #cliente-producto-detalle .cp-layout {
+    grid-template-columns: 1fr !important;
+  }
+
+  #cliente-producto-detalle .cp-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+
+  #cliente-producto-detalle .cp-fotos-descr {
+    grid-template-columns: 1fr !important;
+  }
+
+  html:not(.dark) #cliente-producto-detalle {
+    padding: 1rem;
+  }
+}
+
 /* Nombre de usuario visible en la barra superior (admin y clientes) */
 .fi-topbar-end {
   gap: 0.75rem;
