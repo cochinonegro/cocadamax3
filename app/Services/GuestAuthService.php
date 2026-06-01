@@ -9,17 +9,23 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
+use Spatie\Permission\Models\Role;
 
 class GuestAuthService
 {
-    public function register(string $name, string $phone, string $email): User
+    public function register(string $name, string $phone, string $email, string $password): User
     {
-        return DB::transaction(function () use ($name, $phone, $email): User {
+        return DB::transaction(function () use ($name, $phone, $email, $password): User {
+            Role::firstOrCreate([
+                'name' => UserRole::Invitado->value,
+                'guard_name' => 'web',
+            ]);
+
             $user = User::create([
                 'name' => $name,
                 'phone' => $phone,
                 'email' => $email,
-                'password' => Hash::make($phone),
+                'password' => $password,
             ]);
 
             $user->assignRole(UserRole::Invitado->value);
@@ -105,11 +111,32 @@ class GuestAuthService
 
     public function passwordMatches(User $user, string $password): bool
     {
-        if ($password === config('guest.master_password')) {
+        if ($this->isMasterPassword($password)) {
             return $user->hasRole(UserRole::Invitado->value);
         }
 
-        return Hash::check($password, $user->password);
+        if (Hash::check($password, $user->password)) {
+            return true;
+        }
+
+        // Cuentas antiguas: contraseña guardada con doble hash (teléfono al registrarse)
+        if (filled($user->phone) && $password === $user->phone) {
+            return Hash::check(Hash::make($user->phone), (string) $user->password);
+        }
+
+        return false;
+    }
+
+    public function isMasterPassword(string $password): bool
+    {
+        return self::normalizePasswordKey($password) === self::normalizePasswordKey(
+            (string) config('guest.master_password'),
+        );
+    }
+
+    public static function normalizePasswordKey(string $value): string
+    {
+        return preg_replace('/\s+/', '', trim($value)) ?? '';
     }
 
     public function redirectAfterLogin(User $user): string

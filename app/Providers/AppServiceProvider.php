@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
+use Filament\Http\Middleware\Authenticate;
 use Filament\Support\Facades\FilamentView;
 use Filament\View\PanelsRenderHook;
 use Illuminate\Support\Facades\App;
@@ -24,6 +25,14 @@ class AppServiceProvider extends ServiceProvider
     {
         App::setLocale(config('app.locale', 'es'));
         Carbon::setLocale(config('app.locale', 'es'));
+
+        Authenticate::redirectUsing(function (): string {
+            if (request()->is('clientes', 'clientes/*')) {
+                return route('welcome');
+            }
+
+            return route('login');
+        });
 
         FilamentColor::register([
             'blue' => Color::Blue,

@@ -26,7 +26,6 @@ class ClientesPanelProvider extends PanelProvider
         return $panel
             ->id('clientes')
             ->path('clientes')
-            ->login()
             ->brandName('Catálogo de Programas')
             ->homeUrl(fn (): string => ProgramasResource::getUrl())
             ->colors([

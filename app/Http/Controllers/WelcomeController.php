@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\GuestAuthService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 
 class WelcomeController extends Controller
@@ -26,19 +27,22 @@ class WelcomeController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'phone' => ['required', 'string', 'max:20'],
             'email' => ['required', 'email', 'max:255', 'unique:users,email'],
+            'password' => ['required', 'string', 'min:4', 'max:255', 'confirmed'],
         ]);
 
         $user = $guestAuth->register(
             $data['name'],
             $data['phone'],
             $data['email'],
+            $data['password'],
         );
 
-        $guestAuth->login($data['email'], $data['phone']);
+        Auth::login($user, remember: true);
+        $request->session()->regenerate();
 
         return redirect()
             ->to($guestAuth->redirectAfterLogin($user))
-            ->with('success', 'Cuenta creada. Puedes entrar con tu correo o teléfono. Tu clave es tu número de teléfono.');
+            ->with('success', 'Cuenta creada. Entra con tu correo o teléfono y tu clave personal (o la clave general de acceso).');
     }
 
     public function login(Request $request): RedirectResponse
@@ -56,6 +60,8 @@ class WelcomeController extends Controller
             $data['password'],
             (bool) ($data['remember'] ?? false),
         );
+
+        $request->session()->regenerate();
 
         return redirect()->to($guestAuth->redirectAfterLogin($user));
     }

@@ -4,6 +4,8 @@
     if ($errors->any()) {
         if ($errors->has('login') || $errors->has('password') || filled(old('login'))) {
             $initialMode = 'login';
+        } elseif ($errors->has('password_confirmation') || filled(old('password'))) {
+            $initialMode = 'register';
         } else {
             $initialMode = 'register';
         }
@@ -97,7 +99,7 @@
             </button>
 
             <h2 class="mb-1 text-lg font-semibold text-white">Ingresar por primera vez</h2>
-            <p class="mb-5 text-sm text-zinc-400">Regístrate para acceder al catálogo. Tu clave será tu teléfono.</p>
+            <p class="mb-5 text-sm text-zinc-400">Elige una clave personal para tu cuenta (mínimo 4 caracteres).</p>
 
             <form action="{{ route('welcome.register') }}" method="POST" class="space-y-4">
                 @csrf
@@ -141,6 +143,34 @@
                     >
                 </div>
 
+                <div>
+                    <label for="register_password" class="mb-1 block text-sm font-medium text-zinc-300">Clave personal <span class="text-rose-400">*</span></label>
+                    <input
+                        id="register_password"
+                        name="password"
+                        type="password"
+                        required
+                        minlength="4"
+                        autocomplete="new-password"
+                        class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30"
+                        placeholder="Tu clave personal"
+                    >
+                </div>
+
+                <div>
+                    <label for="password_confirmation" class="mb-1 block text-sm font-medium text-zinc-300">Confirmar clave <span class="text-rose-400">*</span></label>
+                    <input
+                        id="password_confirmation"
+                        name="password_confirmation"
+                        type="password"
+                        required
+                        minlength="4"
+                        autocomplete="new-password"
+                        class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30"
+                        placeholder="Repite tu clave"
+                    >
+                </div>
+
                 <button
                     type="submit"
                     class="w-full rounded-lg bg-amber-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-amber-400"
@@ -166,8 +196,8 @@
 
             <h2 class="mb-1 text-lg font-semibold text-white">Iniciar sesión</h2>
             <p class="mb-5 text-sm text-zinc-400">
-                Introduce tu <strong class="text-zinc-300">correo</strong> o tu <strong class="text-zinc-300">teléfono</strong> como usuario,
-                y tu clave personal para acceder.
+                Introduce tu <strong class="text-zinc-300">correo</strong> o tu <strong class="text-zinc-300">teléfono</strong> como usuario.
+                Puedes usar tu <strong class="text-zinc-300">clave personal</strong> o la <strong class="text-zinc-300">clave general de acceso</strong>.
             </p>
 
             <form action="{{ route('welcome.login') }}" method="POST" class="space-y-4">
