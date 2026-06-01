@@ -25,19 +25,7 @@ trait HasProgramasOsTabs
      */
     protected function buildProgramasOsTabs(bool $includeTodos = false): array
     {
-        $tabs = [];
-
-        if ($includeTodos) {
-            $tabs['todos'] = Tab::make('Todos')
-                ->icon('heroicon-o-squares-2x2')
-                ->extraAttributes([
-                    'class' => 'programas-os-tab programas-os-tab--todos',
-                ])
-                ->badge(fn (): int => $this->countAllProgramasForTabs())
-                ->badgeColor('gray');
-        }
-
-        return array_merge($tabs, [
+        $tabs = [
             'windows' => $this->makeProgramasOsTab(
                 label: 'Windows',
                 icon: 'heroicon-o-computer-desktop',
@@ -53,7 +41,19 @@ trait HasProgramasOsTabs
                 osValues: ['mac', 'win-mac'],
                 badgeColor: 'danger',
             ),
-        ]);
+        ];
+
+        if ($includeTodos) {
+            $tabs['todos'] = Tab::make('Todos')
+                ->icon('heroicon-o-squares-2x2')
+                ->extraAttributes([
+                    'class' => 'programas-os-tab programas-os-tab--todos',
+                ])
+                ->badge(fn (): int => $this->countAllProgramasForTabs())
+                ->badgeColor('gray');
+        }
+
+        return $tabs;
     }
 
     protected function countAllProgramasForTabs(): int

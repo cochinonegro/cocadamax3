@@ -21,6 +21,13 @@ class ListProgramas extends ListRecords
 
     protected static string $resource = ProgramasResource::class;
 
+    public bool $solicitudPedidosModalHabilitado = false;
+
+    protected function shouldIncludeProgramasTodosTab(): bool
+    {
+        return true;
+    }
+
     public function content(Schema $schema): Schema
     {
         return $schema
@@ -60,18 +67,31 @@ class ListProgramas extends ListRecords
     #[On('solicitud-enviada')]
     public function abrirModalSolicitudPedidos(): void
     {
+        $this->solicitudPedidosModalHabilitado = false;
         $this->mountAction('solicitudSolicitada');
+    }
+
+    public function habilitarBotonPedidosModal(): void
+    {
+        $this->solicitudPedidosModalHabilitado = true;
     }
 
     public function solicitudSolicitadaAction(): Action
     {
         return Action::make('solicitudSolicitada')
             ->modalHeading('Solicitud enviada, ESPERA LA CONFIRMACIÓN')
-            ->modalDescription('Una vez te hayan confirmado aceptar la descarga dale al botón aquí abajo:')
-            ->modalSubmitActionLabel('ACEPTAR')
+            ->modalContent(fn () => view('filament.clientes.modals.solicitud-pedidos-countdown'))
+            ->modalSubmitAction(
+                fn (): Action|bool => $this->solicitudPedidosModalHabilitado
+                    ? Action::make('irPedidos')
+                        ->label('DESCARGAR')
+                        ->color('success')
+                        ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true))
+                    : false,
+            )
             ->modalCancelAction(false)
-            ->color('success')
-            ->modalWidth('md')
-            ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true));
+            ->closeModalByClickingAway(false)
+            ->closeModalByEscaping(false)
+            ->modalWidth('md');
     }
 }
