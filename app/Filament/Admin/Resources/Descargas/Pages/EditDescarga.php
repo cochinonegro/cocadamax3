@@ -1,0 +1,19 @@
+<?php
+
+namespace App\Filament\Admin\Resources\Descargas\Pages;
+
+use App\Filament\Admin\Resources\Descargas\DescargasResource;
+use Filament\Actions\DeleteAction;
+use Filament\Resources\Pages\EditRecord;
+
+class EditDescarga extends EditRecord
+{
+    protected static string $resource = DescargasResource::class;
+
+    protected function getHeaderActions(): array
+    {
+        return [
+            DeleteAction::make(),
+        ];
+    }
+}

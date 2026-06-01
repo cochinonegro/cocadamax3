@@ -6,6 +6,7 @@ use App\Support\PedidosVisibility;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Programas extends Model
 {
@@ -45,12 +46,12 @@ class Programas extends Model
     ];
 
     protected $casts = [
-        'show'               => 'boolean',
-        'show_instalador'    => 'boolean',
-        'show_until'         => 'datetime',
+        'show' => 'boolean',
+        'show_instalador' => 'boolean',
+        'show_until' => 'datetime',
         'pedidos_visible_until' => 'datetime',
-        'date_add'           => 'date',
-        'gallery_images'     => 'array',
+        'date_add' => 'date',
+        'gallery_images' => 'array',
         'installation_steps' => 'array',
     ];
 
@@ -151,6 +152,11 @@ class Programas extends Model
         $duplicate->save();
 
         return $duplicate->fresh();
+    }
+
+    public function descargas(): HasMany
+    {
+        return $this->hasMany(Descarga::class, 'programas_id');
     }
 
     public function duplicateAsCopy(string $suffix = '.copia'): self

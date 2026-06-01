@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProgramaDownloadController;
 use App\Http\Controllers\WelcomeController;
+use App\Support\DescargaRegistrar;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
@@ -33,6 +34,10 @@ Route::get('/descarga-segura/{id}', function ($id) {
 
     if (empty($programa->url)) {
         abort(404, 'No hay enlace configurado para este programa.');
+    }
+
+    if (auth()->check()) {
+        DescargaRegistrar::record($programa, auth()->user());
     }
 
     // 3. MODO STREAMING (Optimizado para DigiStorage)

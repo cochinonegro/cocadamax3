@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\UserRole;
 use App\Filament\Support\ProgramasTableColumns;
 use App\Models\Programas;
+use App\Support\DescargaRegistrar;
 use Illuminate\Http\RedirectResponse;
 
 class ProgramaDownloadController extends Controller
@@ -23,6 +24,8 @@ class ProgramaDownloadController extends Controller
         $url = ProgramasTableColumns::downloadUrl($programas->url);
 
         abort_unless(filled($url), 404, 'No hay enlace configurado para este programa.');
+
+        DescargaRegistrar::record($programas, $user);
 
         return redirect()->away($url);
     }

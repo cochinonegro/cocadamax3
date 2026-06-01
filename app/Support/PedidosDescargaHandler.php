@@ -20,6 +20,8 @@ class PedidosDescargaHandler
             return null;
         }
 
+        DescargaRegistrar::record($programa);
+
         PedidosVisibility::disableFor($programa);
 
         return $url;
