@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use App\Http\Responses\Filament\AdminLoginResponse;
+use App\Http\Responses\Filament\AppLogoutResponse;
 use BezhanSalleh\PanelSwitch\PanelSwitch;
 use Carbon\Carbon;
 use Filament\Auth\Http\Responses\Contracts\LoginResponse as LoginResponseContract;
+use Filament\Auth\Http\Responses\Contracts\LogoutResponse as LogoutResponseContract;
 use Filament\Support\Colors\Color;
 use Filament\Support\Facades\FilamentColor;
 use Filament\Http\Middleware\Authenticate;
@@ -19,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(LoginResponseContract::class, AdminLoginResponse::class);
+        $this->app->bind(LogoutResponseContract::class, AppLogoutResponse::class);
     }
 
     public function boot(): void

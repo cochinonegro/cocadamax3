@@ -54,6 +54,8 @@ return [
 
     'url' => env('APP_URL', 'http://localhost'),
 
+    'client_logout_url' => env('CLIENT_LOGOUT_URL', 'https://www.programas.space'),
+
     /*
     |--------------------------------------------------------------------------
     | Application Timezone
