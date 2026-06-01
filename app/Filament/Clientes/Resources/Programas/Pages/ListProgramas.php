@@ -30,13 +30,12 @@ class ListProgramas extends ListRecords
 
     public function getDefaultActiveTab(): string|int|null
     {
-        $tabs = $this->getCachedTabs();
+        return 'todos';
+    }
 
-        if (array_key_exists('todos', $tabs)) {
-            return 'todos';
-        }
-
-        return array_key_first($tabs);
+    protected function loadDefaultActiveTab(): void
+    {
+        $this->activeTab = $this->getDefaultActiveTab();
     }
 
     public function content(Schema $schema): Schema
