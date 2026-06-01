@@ -5,10 +5,75 @@
 @source '../../../../resources/views/filament/**/*.blade.php';
 @source '../../../../resources/views/components/**/*.blade.php';
 
-/* 1. CONFIGURACIÓN DE COLORES (TUYO) */
+/* 1. CONFIGURACIÓN DE COLORES */
 @theme {
-    --color-fondo-claro: #e4e4f6;
+    --color-fondo-claro: #f3ebe0;
     --color-fondo-oscuro: #09090b;
+
+    /* Superficies cálidas (modo claro) — referencia para utilidades custom */
+    --color-surface-cream: #faf6f1;
+    --color-surface-sand: #f3ebe0;
+    --color-surface-linen: #ebe3d6;
+    --color-surface-taupe: #ddd2c3;
+    --color-surface-cocoa: #2e261f;
+}
+
+/*
+ * Modo claro Filament — beige, marrón suave y pasteles cálidos.
+ * Solo afecta cuando NO está activo .dark (el modo oscuro no cambia).
+ */
+:root:not(.dark) {
+    --color-white: #faf6f1;
+    --color-gray-50: #f3ebe0;
+    --color-gray-100: #ebe3d6;
+    --color-gray-200: #ddd2c3;
+    --color-gray-300: #c9bba8;
+    --color-gray-400: #a8947e;
+    --color-gray-500: #8a7864;
+    --color-gray-600: #6f5f4e;
+    --color-gray-700: #574a3d;
+    --color-gray-800: #40362c;
+    --color-gray-900: #2e261f;
+    --color-gray-950: #1c1712;
+}
+
+html:not(.dark) .fi-body {
+    background-color: var(--color-gray-50);
+    color: var(--color-gray-950);
+}
+
+html:not(.dark) .fi-topbar,
+html:not(.dark) .fi-sidebar-header-ctn {
+    background-color: var(--color-white) !important;
+}
+
+html:not(.dark) .fi-tabs:not(.fi-contained) {
+    background-color: var(--color-white);
+    box-shadow: inset 0 0 0 1px rgb(64 54 44 / 0.06);
+}
+
+html:not(.dark) .fi-section:not(.fi-section-not-contained) > .fi-section-content-ctn {
+    background-color: var(--color-white);
+}
+
+html:not(.dark) .fi-ta-ctn,
+html:not(.dark) .fi-modal-window,
+html:not(.dark) .fi-dropdown-panel,
+html:not(.dark) .fi-simple-main {
+    background-color: var(--color-white);
+}
+
+html:not(.dark) .fi-input-wrp {
+    background-color: var(--color-white);
+}
+
+html:not(.dark) .fi-tabs-item.fi-active {
+    background-color: var(--color-gray-100);
+}
+
+html:not(.dark) .fi-sc-tabs .fi-tabs:not(.fi-contained) {
+    background-color: var(--color-gray-100);
+    box-shadow: inset 0 0 0 1px rgb(64 54 44 / 0.06);
 }
 /*  .fi-ta :where([role="rowgroup"] [role="row"], tbody > tr) { background: #7e8397ff !important; } */
 /*. DESPUES DE ESTA LINEA */

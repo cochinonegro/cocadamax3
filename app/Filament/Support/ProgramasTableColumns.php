@@ -3,7 +3,6 @@
 namespace App\Filament\Support;
 
 use App\Models\Programas;
-use App\Support\PedidosVisibility;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
@@ -191,22 +190,7 @@ class ProgramasTableColumns
                     ->label('Instalador')
                     ->sortable(),
 
-                ToggleColumn::make('pedidos_visible')
-                    ->label('Pedidos')
-                    ->getStateUsing(fn (Programas $record): bool => $record->isPedidosTimerActive())
-                    ->updateStateUsing(function (Programas $record, bool $state): bool {
-                        if ($state) {
-                            PedidosVisibility::enableForMinutes($record);
-                        } else {
-                            PedidosVisibility::disableFor($record);
-                        }
-
-                        return $state;
-                    })
-                    ->onColor('warning')
-                    ->tooltip(fn (Programas $record): string => $record->isPedidosTimerActive()
-                        ? 'Visible en Pedidos (30 min)'
-                        : 'Oculto en Pedidos'),
+                ProgramaAdminSolicitarTableColumn::make(),
             ]);
         }
 

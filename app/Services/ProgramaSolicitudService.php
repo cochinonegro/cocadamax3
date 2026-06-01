@@ -3,13 +3,13 @@
 namespace App\Services;
 
 use App\Enums\ProgramaSolicitudStatus;
+use App\Exceptions\TelegramException;
 use App\Filament\Support\ProgramasTableColumns;
-use App\Models\ProgramaSolicitud;
 use App\Models\Programas;
+use App\Models\ProgramaSolicitud;
 use App\Models\User;
 use App\Services\Telegram\TelegramBotService;
 use App\Support\PedidosVisibility;
-use App\Exceptions\TelegramException;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -183,6 +183,68 @@ class ProgramaSolicitudService
             ->where('programas_id', $programa->id)
             ->where('status', ProgramaSolicitudStatus::Pending)
             ->exists();
+    }
+
+    public function adminSolicitarStatus(Programas $programa): string
+    {
+        if ($programa->isPedidosTimerActive()) {
+            return 'en_pedidos';
+        }
+
+        if ($this->hasPendingSolicitudesForProgram($programa)) {
+            return 'pendiente';
+        }
+
+        return 'inactivo';
+    }
+
+    public function adminCycleSolicitarState(Programas $programa): string
+    {
+        match ($this->adminSolicitarStatus($programa)) {
+            'inactivo' => PedidosVisibility::enableForMinutes(
+                $programa,
+                (int) config('telegram.pedidos_minutes', 30),
+            ),
+            'en_pedidos' => PedidosVisibility::disableFor($programa),
+            'pendiente' => $this->acceptAllPendingForProgram($programa),
+            default => null,
+        };
+
+        $programa->refresh();
+
+        return $this->adminSolicitarStatus($programa);
+    }
+
+    public function hasPendingSolicitudesForProgram(Programas $programa): bool
+    {
+        return ProgramaSolicitud::query()
+            ->where('programas_id', $programa->id)
+            ->where('status', ProgramaSolicitudStatus::Pending)
+            ->exists();
+    }
+
+    private function acceptAllPendingForProgram(Programas $programa): void
+    {
+        $pending = ProgramaSolicitud::query()
+            ->where('programas_id', $programa->id)
+            ->where('status', ProgramaSolicitudStatus::Pending)
+            ->orderBy('id')
+            ->get();
+
+        if ($pending->isEmpty()) {
+            PedidosVisibility::enableForMinutes(
+                $programa,
+                (int) config('telegram.pedidos_minutes', 30),
+            );
+
+            return;
+        }
+
+        foreach ($pending as $solicitud) {
+            if ($solicitud->isPending()) {
+                $this->accept($solicitud);
+            }
+        }
     }
 
     private function buildTelegramMessage(ProgramaSolicitud $solicitud): string

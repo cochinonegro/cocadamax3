@@ -142,4 +142,63 @@ class ProgramaSolicitudTest extends TestCase
     {
         $this->assertTrue(app(TelegramBotService::class)->isConfigured());
     }
+
+    public function test_admin_solicitar_cycle_toggles_pedidos_visibility(): void
+    {
+        Http::fake([
+            'api.telegram.org/*' => Http::response(['ok' => true]),
+        ]);
+
+        $programa = Programas::factory()->create([
+            'show' => true,
+            'pedidos_visible_until' => null,
+        ]);
+
+        $service = app(ProgramaSolicitudService::class);
+
+        $this->assertSame('inactivo', $service->adminSolicitarStatus($programa));
+
+        $service->adminCycleSolicitarState($programa);
+
+        $this->assertTrue($programa->fresh()->isVisibleInPedidos());
+        $this->assertSame('en_pedidos', $service->adminSolicitarStatus($programa->fresh()));
+
+        $service->adminCycleSolicitarState($programa->fresh());
+
+        $this->assertFalse($programa->fresh()->isVisibleInPedidos());
+        $this->assertSame('inactivo', $service->adminSolicitarStatus($programa->fresh()));
+    }
+
+    public function test_admin_solicitar_cycle_accepts_pending_solicitudes(): void
+    {
+        Http::fake([
+            'api.telegram.org/*' => Http::response(['ok' => true]),
+        ]);
+
+        $programa = Programas::factory()->create([
+            'show' => true,
+            'pedidos_visible_until' => null,
+        ]);
+
+        $solicitud = ProgramaSolicitud::query()->create([
+            'user_id' => User::factory()->create()->id,
+            'programas_id' => $programa->id,
+            'status' => ProgramaSolicitudStatus::Pending,
+            'telegram_chat_id' => '123456789',
+            'telegram_message_id' => 1,
+        ]);
+
+        $service = app(ProgramaSolicitudService::class);
+
+        $this->assertSame('pendiente', $service->adminSolicitarStatus($programa));
+
+        $service->adminCycleSolicitarState($programa);
+
+        $programa->refresh();
+        $solicitud->refresh();
+
+        $this->assertTrue($programa->isVisibleInPedidos());
+        $this->assertSame(ProgramaSolicitudStatus::Accepted, $solicitud->status);
+        $this->assertSame('en_pedidos', $service->adminSolicitarStatus($programa));
+    }
 }
