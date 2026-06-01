@@ -8,6 +8,7 @@ use App\Filament\Admin\Resources\Clientes\Pages\ListClientes;
 use App\Filament\Admin\Resources\Clientes\Schemas\ClientesInfolist;
 use App\Filament\Support\ClienteFormatting;
 use App\Models\Clientes;
+use App\Support\DisplayTimezone;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -198,15 +199,15 @@ class ClientesResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Fecha registro')
-                    ->date('d/m/Y')
+                    ->formatStateUsing(
+                        fn (?Clientes $record): string => DisplayTimezone::formatDate($record?->created_at),
+                    )
                     ->sortable(),
 
                 TextColumn::make('registration_time')
                     ->label('Hora')
                     ->state(
-                        fn (Clientes $record): ?string => $record->created_at
-                            ?->timezone(config('app.timezone'))
-                            ->format('H:i'),
+                        fn (Clientes $record): ?string => DisplayTimezone::formatTime($record->created_at),
                     )
                     ->badge()
                     ->color('success'),

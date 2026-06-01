@@ -34,6 +34,7 @@ php artisan programas:repair-gallery-images
 php artisan optimize:clear
 php artisan filament:optimize-clear 2>/dev/null || true
 php artisan app:ensure-admin
+# Zona horaria: APP_TIMEZONE=Europe/Madrid en .env (por defecto en config/app.php)
 php artisan config:cache
 
 echo "$COMMIT-$(date +%Y%m%d-%H%M)" > public/deploy-marker.txt

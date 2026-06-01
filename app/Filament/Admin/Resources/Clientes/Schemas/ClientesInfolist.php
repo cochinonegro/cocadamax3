@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Resources\Clientes\Schemas;
 
 use App\Filament\Support\ClienteFormatting;
 use App\Models\Clientes;
+use App\Support\DisplayTimezone;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
@@ -40,15 +41,14 @@ class ClientesInfolist
 
                         TextEntry::make('created_at')
                             ->label('Fecha de registro')
-                            ->dateTime('d/m/Y')
-                            ->placeholder('—'),
+                            ->formatStateUsing(
+                                fn (?string $state, Clientes $record): string => DisplayTimezone::formatDate($record->created_at),
+                            ),
 
                         TextEntry::make('registration_time')
                             ->label('Hora de registro')
                             ->state(
-                                fn (Clientes $record): ?string => $record->created_at
-                                    ?->timezone(config('app.timezone'))
-                                    ->format('H:i'),
+                                fn (Clientes $record): ?string => DisplayTimezone::formatTime($record->created_at),
                             )
                             ->badge()
                             ->color('success')
