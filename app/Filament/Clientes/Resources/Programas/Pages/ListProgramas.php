@@ -13,6 +13,7 @@ use Filament\Schemas\Components\RenderHook;
 use Filament\Schemas\Components\Text;
 use Filament\Schemas\Schema;
 use Filament\View\PanelsRenderHook;
+use Livewire\Attributes\On;
 
 class ListProgramas extends ListRecords
 {
@@ -56,6 +57,12 @@ class ListProgramas extends ListRecords
         ];
     }
 
+    #[On('solicitud-enviada')]
+    public function abrirModalSolicitudPedidos(): void
+    {
+        $this->mountAction('solicitudSolicitada');
+    }
+
     public function solicitudSolicitadaAction(): Action
     {
         return Action::make('solicitudSolicitada')
@@ -64,6 +71,7 @@ class ListProgramas extends ListRecords
             ->modalSubmitActionLabel('IR A PEDIDOS')
             ->modalCancelActionLabel('Cerrar')
             ->color('success')
+            ->modalWidth('md')
             ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true));
     }
 }

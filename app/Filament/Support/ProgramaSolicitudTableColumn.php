@@ -5,7 +5,6 @@ namespace App\Filament\Support;
 use App\Models\Programas;
 use App\Services\ProgramaSolicitudService;
 use App\Support\ProgramaSolicitudSubmitter;
-use Filament\Actions\Action;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Livewire\Component;
@@ -22,19 +21,17 @@ class ProgramaSolicitudTableColumn
             ->color(fn (Programas $record): string => self::color($record))
             ->weight(FontWeight::Bold)
             ->disabledClick(fn (Programas $record): bool => self::status($record) !== 'disponible')
-            ->action(
-                Action::make('solicitarTelegram')
-                    ->action(function (Programas $record, Component $livewire): void {
-                        if (! ProgramaSolicitudSubmitter::submit($record, notifyOnSuccess: false)) {
-                            return;
-                        }
+            ->action(function (Programas $record, Component $livewire): void {
+                if (self::status($record) !== 'disponible') {
+                    return;
+                }
 
-                        if (method_exists($livewire, 'mountAction')) {
-                            $livewire->mountAction('solicitudSolicitada');
-                        }
-                    })
-                    ->visible(fn (Programas $record): bool => self::status($record) === 'disponible'),
-            );
+                if (! ProgramaSolicitudSubmitter::submit($record, notifyOnSuccess: false)) {
+                    return;
+                }
+
+                $livewire->dispatch('solicitud-enviada')->self();
+            });
     }
 
     public static function status(Programas $record): string
@@ -53,7 +50,7 @@ class ProgramaSolicitudTableColumn
         return match (self::status($record)) {
             'en_pedidos' => 'En Pedidos',
             'pendiente' => 'Pendiente',
-            default => 'DESCARGAR YA',
+            default => 'SOLICITAR YA',
         };
     }
 
