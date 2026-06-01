@@ -66,10 +66,10 @@ class ListProgramas extends ListRecords
     public function solicitudSolicitadaAction(): Action
     {
         return Action::make('solicitudSolicitada')
-            ->modalHeading('Solicitud enviada')
+            ->modalHeading('Solicitud enviada, ESPERA LA CONFIRMACIÓN')
             ->modalDescription('Una vez te hayan confirmado aceptar la descarga dale al botón aquí abajo:')
-            ->modalSubmitActionLabel('IR A PEDIDOS')
-            ->modalCancelActionLabel('Cerrar')
+            ->modalSubmitActionLabel('ACEPTAR')
+            ->modalCancelAction(false)
             ->color('success')
             ->modalWidth('md')
             ->action(fn () => $this->redirect(PedidosResource::getUrl(), navigate: true));
