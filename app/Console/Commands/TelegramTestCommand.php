@@ -15,14 +15,19 @@ class TelegramTestCommand extends Command
     public function handle(TelegramBotService $telegram): int
     {
         if (! $telegram->isConfigured()) {
-            $this->components->error('Faltan TELEGRAM_BOT_TOKEN o TELEGRAM_ADMIN_CHAT_ID en .env');
-            $this->line('Tras cambiar .env en Forge: php artisan config:clear && php artisan config:cache');
+            $this->components->error('Telegram no está bien configurado en .env');
+            $this->line('  Token presente: '.($telegram->botToken() !== '' ? 'sí' : 'no'));
+            $this->line('  Formato token válido: '.($telegram->hasValidTokenFormat() ? 'sí' : 'no'));
+            $this->line('  chat_id presente: '.($telegram->adminChatId() !== '' ? 'sí' : 'no'));
+            $this->line('Tras cambiar Forge → SSH: php artisan config:clear && php artisan config:cache');
 
             return self::FAILURE;
         }
 
+        $maskedToken = substr($telegram->botToken(), 0, 6).'…'.substr($telegram->botToken(), -4);
         $this->components->info('Configuración cargada:');
-        $this->line('  chat_id configurado: '.$telegram->adminChatId());
+        $this->line("  token: {$maskedToken}");
+        $this->line('  chat_id: '.$telegram->adminChatId());
         $this->newLine();
 
         if ($this->option('discover')) {

@@ -23,7 +23,13 @@ class ProgramaSolicitudService
     {
         if (! $this->telegram->isConfigured()) {
             throw ValidationException::withMessages([
-                'solicitar' => 'Las solicitudes por Telegram no están configuradas. Contacta con el administrador.',
+                'solicitar' => 'Telegram no está configurado en el servidor (token o chat_id).',
+            ]);
+        }
+
+        if (! $this->telegram->hasValidTokenFormat()) {
+            throw ValidationException::withMessages([
+                'solicitar' => 'TELEGRAM_BOT_TOKEN tiene un formato incorrecto. Genera uno nuevo en @BotFather.',
             ]);
         }
 

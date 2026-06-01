@@ -11,13 +11,25 @@ class TelegramBotService
 {
     public function isConfigured(): bool
     {
-        return filled(config('telegram.bot_token'))
-            && filled(config('telegram.admin_chat_id'));
+        return $this->hasValidTokenFormat()
+            && filled($this->adminChatId());
+    }
+
+    public function hasValidTokenFormat(): bool
+    {
+        $token = $this->botToken();
+
+        return filled($token) && (bool) preg_match('/^\d+:[A-Za-z0-9_-]{20,}$/', $token);
+    }
+
+    public function botToken(): string
+    {
+        return trim((string) config('telegram.bot_token'));
     }
 
     public function adminChatId(): string
     {
-        return (string) config('telegram.admin_chat_id');
+        return trim((string) config('telegram.admin_chat_id'));
     }
 
     /**
@@ -134,7 +146,7 @@ class TelegramBotService
 
     private function post(string $method, array $payload = []): ?Response
     {
-        $token = config('telegram.bot_token');
+        $token = $this->botToken();
 
         if (blank($token)) {
             return null;
@@ -147,9 +159,9 @@ class TelegramBotService
     private function humanizeError(string $description): string
     {
         return match (true) {
-            str_contains($description, 'chat not found') => 'Chat de Telegram no encontrado. El TELEGRAM_ADMIN_CHAT_ID no es correcto: usa el ID numérico de @userinfobot (no tu número de teléfono). Escribe /start a tu bot antes.',
+            str_contains($description, 'chat not found') => 'Chat de Telegram no encontrado. TELEGRAM_ADMIN_CHAT_ID debe ser el Id de @userinfobot (no tu teléfono). Pulsa /start en tu bot.',
             str_contains($description, 'bot was blocked') => 'Has bloqueado el bot. Desbloquéalo en Telegram y pulsa /start.',
-            str_contains($description, 'Unauthorized') => 'Token del bot inválido. Revisa TELEGRAM_BOT_TOKEN en .env.',
+            str_contains($description, 'Unauthorized') => 'Token del bot inválido o revocado. En @BotFather: tu bot → API Token → Revoke → copia el token nuevo en Forge, luego en el servidor ejecuta: php artisan config:clear && php artisan config:cache && php artisan telegram:test',
             default => 'Telegram: '.$description,
         };
     }

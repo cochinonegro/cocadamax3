@@ -25,7 +25,7 @@ class ProgramaSolicitudTest extends TestCase
         $this->seed(RoleSeeder::class);
 
         config([
-            'telegram.bot_token' => 'test-token',
+            'telegram.bot_token' => '123456789:ABCDEFghijklmnopqrstuvwxyz123456',
             'telegram.admin_chat_id' => '123456789',
             'telegram.pedidos_minutes' => 30,
         ]);
