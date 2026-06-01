@@ -8,6 +8,7 @@ use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ToggleColumn;
+use Illuminate\Support\HtmlString;
 
 class ProgramasTableColumns
 {
@@ -18,6 +19,7 @@ class ProgramasTableColumns
         bool $withDownloadColumn = true,
         bool $copyDownloadUrlOnly = false,
         bool $clientProgramNameStyle = false,
+        bool $withSolicitarColumn = false,
     ): array {
         $prognameColumn = TextColumn::make('progname')
             ->label('Programa')
@@ -45,6 +47,21 @@ class ProgramasTableColumns
 
             $prognameColumn,
         ];
+
+        if ($withSolicitarColumn) {
+            $columns[] = TextColumn::make('solicitar')
+                ->label('Solicitar')
+                ->alignCenter()
+                ->html()
+                ->state(fn (): string => '')
+                ->formatStateUsing(
+                    fn ($state, Programas $record): HtmlString => new HtmlString(
+                        view('filament.clientes.partials.solicitar-programa-column', [
+                            'programaId' => $record->id,
+                        ])->render(),
+                    ),
+                );
+        }
 
         if ($withDownloadColumn) {
             $downloadColumn = TextColumn::make('descargar')

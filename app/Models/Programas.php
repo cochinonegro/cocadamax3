@@ -3,11 +3,14 @@
 namespace App\Models;
 
 use App\Support\PedidosVisibility;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
 class Programas extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'progname',
         'year_prog',

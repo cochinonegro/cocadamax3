@@ -164,6 +164,12 @@
             border-top: 1px solid rgb(63 63 70);
         }
 
+        #cliente-producto-detalle .cp-solicitar {
+            margin-top: 1.25rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgb(63 63 70);
+        }
+
         #cliente-producto-detalle .cp-full {
             margin-top: 1.25rem;
             padding-top: 1rem;
@@ -259,6 +265,10 @@
                 </div>
             @endif
         </div>
+    </div>
+
+    <div class="cp-solicitar">
+        @livewire('solicitar-programa-button', ['programaId' => $record->id, 'variant' => 'detail'], key('solicitar-detail-'.$record->id))
     </div>
 
     <div class="cp-full">

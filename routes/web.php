@@ -13,6 +13,9 @@ Route::get('/deploy-check', fn () => response()->json([
 Route::post('/registro', [WelcomeController::class, 'register'])->name('welcome.register');
 Route::post('/iniciar-sesion', [WelcomeController::class, 'login'])->name('welcome.login');
 
+Route::post('/telegram/webhook', \App\Http\Controllers\TelegramWebhookController::class)
+    ->name('telegram.webhook');
+
 Route::redirect('/login', '/admin/login')->name('login');
 
 // =============================================================================
