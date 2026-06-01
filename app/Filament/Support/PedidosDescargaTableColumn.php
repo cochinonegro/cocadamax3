@@ -4,7 +4,6 @@ namespace App\Filament\Support;
 
 use App\Models\Programas;
 use App\Support\PedidosDescargaHandler;
-use Filament\Actions\Action;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\TextColumn;
 use Livewire\Component;
@@ -22,17 +21,19 @@ class PedidosDescargaTableColumn
             ->color(fn (Programas $record): string => self::color($record))
             ->weight(FontWeight::Bold)
             ->disabledClick(fn (Programas $record): bool => ! self::hasDownloadUrl($record))
-            ->action(
-                Action::make('descargarPedido')
-                    ->action(function (Programas $record, Component $livewire): void {
-                        $url = PedidosDescargaHandler::consume($record);
+            ->action(function (Programas $record, Component $livewire): void {
+                if (! self::hasDownloadUrl($record)) {
+                    return;
+                }
 
-                        if ($url) {
-                            $livewire->js('window.open('.json_encode($url).', "_blank")');
-                        }
-                    })
-                    ->visible(fn (Programas $record): bool => self::hasDownloadUrl($record)),
-            );
+                $url = PedidosDescargaHandler::consume($record);
+
+                if (! $url) {
+                    return;
+                }
+
+                $livewire->js('window.open('.json_encode($url).', "_blank")');
+            });
     }
 
     public static function label(Programas $record): string
