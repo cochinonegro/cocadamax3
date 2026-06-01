@@ -676,7 +676,7 @@
   }
 }
 
-/* Clientes Programas — modal espera 30 s antes de ir a Pedidos */
+/* Clientes Programas — modal espera 20 s antes de ir a Pedidos */
 .solicitud-pedidos-countdown__timer {
   display: flex;
   flex-direction: column;
