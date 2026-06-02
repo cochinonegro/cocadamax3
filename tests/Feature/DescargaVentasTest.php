@@ -53,4 +53,31 @@ class DescargaVentasTest extends TestCase
         $this->assertSame(35.50, DescargaVentas::totalSemana());
         $this->assertSame(35.50, DescargaVentas::totalMes());
     }
+
+    public function test_montos_por_fecha_sums_paid_download_prices(): void
+    {
+        $programa = Programas::factory()->create(['show' => true]);
+        $user = User::factory()->create();
+        $hoy = now()->toDateString();
+
+        Descarga::query()->create([
+            'user_id' => $user->id,
+            'programas_id' => $programa->id,
+            'downloaded_at' => $hoy,
+            'precio' => 20,
+            'pagado' => true,
+        ]);
+
+        Descarga::query()->create([
+            'user_id' => $user->id,
+            'programas_id' => $programa->id,
+            'downloaded_at' => $hoy,
+            'precio' => 5,
+            'pagado' => true,
+        ]);
+
+        $montos = DescargaVentas::montosPorFecha(now()->startOfDay(), now()->endOfDay());
+
+        $this->assertSame(25.0, $montos[$hoy]);
+    }
 }

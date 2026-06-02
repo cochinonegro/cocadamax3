@@ -2,26 +2,26 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\Venta;
+use App\Support\DescargaVentas;
+use App\Support\DisplayTimezone;
 use Filament\Widgets\ChartWidget;
-use Illuminate\Support\Carbon;
 
 class VentasMesPasadoChart extends ChartWidget
 {
     protected static bool $isDiscovered = false;
 
-    protected ?string $heading = 'Ventas mes actual / mes pasado';
+    protected ?string $heading = 'Pedidos / ventas (€) — mes actual / mes pasado';
 
     protected int|string|array $columnSpan = 'full';
 
     protected function getData(): array
     {
-        $mesActual = now()->startOfMonth();
-        $mesPasado = now()->subMonth()->startOfMonth();
+        $mesActual = now(DisplayTimezone::name())->startOfMonth();
+        $mesPasado = $mesActual->copy()->subMonth()->startOfMonth();
         $diasEnGrafico = max($mesActual->daysInMonth, $mesPasado->daysInMonth);
 
-        $conteosActual = $this->conteosPorDiaDelMes($mesActual);
-        $conteosPasado = $this->conteosPorDiaDelMes($mesPasado);
+        $montosActual = DescargaVentas::montosPorDiaDelMes($mesActual);
+        $montosPasado = DescargaVentas::montosPorDiaDelMes($mesPasado);
 
         $etiquetas = [];
         $serieActual = [];
@@ -29,8 +29,8 @@ class VentasMesPasadoChart extends ChartWidget
 
         for ($dia = 1; $dia <= $diasEnGrafico; $dia++) {
             $etiquetas[] = (string) $dia;
-            $serieActual[] = $conteosActual[$dia] ?? 0;
-            $seriePasado[] = $conteosPasado[$dia] ?? 0;
+            $serieActual[] = round($montosActual[$dia] ?? 0, 2);
+            $seriePasado[] = round($montosPasado[$dia] ?? 0, 2);
         }
 
         return [
@@ -52,28 +52,6 @@ class VentasMesPasadoChart extends ChartWidget
             ],
             'labels' => $etiquetas,
         ];
-    }
-
-    /**
-     * @return array<int, int>
-     */
-    private function conteosPorDiaDelMes(Carbon $inicioMes): array
-    {
-        $fin = $inicioMes->copy()->endOfMonth();
-
-        $conteos = Venta::query()
-            ->whereBetween('fecha_venta', [$inicioMes->toDateString(), $fin->toDateString()])
-            ->selectRaw('DATE(fecha_venta) as dia, COUNT(*) as total')
-            ->groupByRaw('DATE(fecha_venta)')
-            ->pluck('total', 'dia');
-
-        $porDia = [];
-
-        foreach ($conteos as $fecha => $total) {
-            $porDia[Carbon::parse($fecha)->day] = (int) $total;
-        }
-
-        return $porDia;
     }
 
     protected function getType(): string
@@ -99,8 +77,9 @@ class VentasMesPasadoChart extends ChartWidget
                 ],
                 'y' => [
                     'beginAtZero' => true,
-                    'ticks' => [
-                        'stepSize' => 1,
+                    'title' => [
+                        'display' => true,
+                        'text' => '€',
                     ],
                 ],
             ],
