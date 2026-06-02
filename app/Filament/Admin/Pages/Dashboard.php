@@ -21,15 +21,18 @@ class Dashboard extends BaseDashboard
     public function getWidgets(): array
     {
         return [
-            VentasUltimos10DiasChart::class,
-            VentasMesPasadoChart::class,
             UserInfoWidget::class,
             QuickAccessWidget::class,
+            VentasUltimos10DiasChart::class,
+            VentasMesPasadoChart::class,
         ];
     }
 
     public function getColumns(): int|array
     {
-        return 2;
+        return [
+            'default' => 1,
+            'md' => 2,
+        ];
     }
 }

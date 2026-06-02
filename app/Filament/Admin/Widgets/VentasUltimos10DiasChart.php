@@ -12,9 +12,12 @@ class VentasUltimos10DiasChart extends ChartWidget
 
     protected ?string $heading = 'Ventas de los últimos 10 días';
 
-    protected static ?int $sort = 0;
+    protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = [
+        'default' => 'full',
+        'md' => 1,
+    ];
 
     protected function getData(): array
     {
