@@ -2,7 +2,6 @@
 
 namespace App\Filament\Admin\Pages;
 
-use App\Filament\Admin\Resources\Programas\ProgramasResource;
 use App\Filament\Admin\Widgets\QuickAccessWidget;
 use App\Filament\Admin\Widgets\UserInfoWidget;
 use App\Filament\Admin\Widgets\VentasMesPasadoChart;
@@ -15,14 +14,9 @@ class Dashboard extends BaseDashboard
 
     protected static ?string $title = 'Escritorio';
 
-    protected static ?int $navigationSort = 5;
+    protected static ?int $navigationSort = 1;
 
     protected static string|\BackedEnum|null $navigationIcon = 'heroicon-o-home';
-
-    public function mount(): void
-    {
-        $this->redirect(ProgramasResource::getUrl(), navigate: true);
-    }
 
     public function getWidgets(): array
     {

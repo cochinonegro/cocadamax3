@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Admin\Resources\Programas\ProgramasResource;
+use App\Filament\Admin\Pages\Dashboard;
 use Filament\Enums\ThemeMode;
 use Filament\Enums\UserMenuPosition;
 use Filament\Http\Middleware\Authenticate;
@@ -29,7 +29,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->brandName('CocadaMax Admin')
-            ->homeUrl(fn (): string => ProgramasResource::getUrl())
+            ->homeUrl(fn (): string => Dashboard::getUrl())
             ->colors([
                 'primary' => Color::Amber,
             ])
