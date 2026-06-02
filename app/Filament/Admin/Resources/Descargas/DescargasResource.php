@@ -66,6 +66,12 @@ class DescargasResource extends Resource
                             ->preload()
                             ->required(),
 
+                        TextInput::make('numero_pedido')
+                            ->label('ID-Pedido')
+                            ->numeric()
+                            ->minValue(1)
+                            ->disabled(),
+
                         DateTimePicker::make('downloaded_at')
                             ->label('Fecha y hora de descarga')
                             ->required()
@@ -121,7 +127,7 @@ class DescargasResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color('danger')
+                    ->color('sky')
                     ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
                     ->placeholder('—')
                     ->extraCellAttributes(['class' => 'descarga-programa-cell'])
@@ -134,7 +140,8 @@ class DescargasResource extends Resource
                     ->step('0.01')
                     ->rules(['nullable', 'numeric', 'min:0'])
                     ->suffix('€')
-                    ->alignCenter()
+                    ->inlineSuffix()
+                    ->alignEnd()
                     ->extraCellAttributes(['class' => 'descarga-precio-cell'])
                     ->extraHeaderAttributes(['class' => 'descarga-precio-cell'])
                     ->extraInputAttributes(['class' => 'descarga-precio-input']),
@@ -145,6 +152,17 @@ class DescargasResource extends Resource
                     ->onColor('success')
                     ->offColor('danger')
                     ->alignCenter(),
+
+                TextColumn::make('numero_pedido')
+                    ->label('ID-Pedido')
+                    ->badge()
+                    ->color('info')
+                    ->alignEnd()
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('—')
+                    ->extraCellAttributes(['class' => 'descarga-id-pedido-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-id-pedido-cell']),
             ])
             ->defaultSort('downloaded_at', 'desc')
             ->recordActions([

@@ -16,6 +16,7 @@ class DescargaRegistrar
         return Descarga::query()->create([
             'user_id' => $user?->id,
             'programas_id' => $programa->getKey(),
+            'numero_pedido' => $programa->numero_pedido,
             'downloaded_at' => $downloadedAt ?? now(),
         ]);
     }

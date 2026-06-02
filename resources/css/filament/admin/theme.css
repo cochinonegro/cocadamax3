@@ -1032,18 +1032,30 @@ html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pendiente {
 
 /* Admin Descargas — columnas compactas (programa + precio) */
 .descarga-programa-cell,
-.descarga-precio-cell {
+.descarga-precio-cell,
+.descarga-id-pedido-cell {
   width: 1%;
   white-space: nowrap;
   padding-inline: 0.375rem !important;
 }
 
+.descarga-precio-cell > .fi-ta-col {
+  justify-content: flex-end !important;
+}
+
 .descarga-precio-cell .fi-input-wrp {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   background: transparent;
   box-shadow: none;
   border: none;
-  max-width: none;
-  margin-inline: 0;
+  margin-inline-start: auto;
+}
+
+.descarga-precio-cell .fi-input-wrp-content-ctn {
+  flex: 0 0 auto;
+  width: auto;
 }
 
 .descarga-precio-cell .fi-input-wrp:focus-within {
@@ -1055,13 +1067,16 @@ html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pendiente {
 .descarga-precio-input {
   color: rgb(74 222 128);
   font-weight: 700;
-  text-align: center;
-  width: 2.75rem;
-  min-width: 0;
+  text-align: right;
+  width: auto;
+  min-width: 1.75rem;
+  max-width: 4.5rem;
+  field-sizing: content;
   padding: 0;
   background: transparent;
   border: none;
   box-shadow: none;
+  flex: 0 0 auto;
 }
 
 .descarga-precio-cell input:focus {
@@ -1073,6 +1088,7 @@ html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pendiente {
   color: rgb(134 239 172);
   font-weight: 600;
   padding-inline-start: 0.125rem;
+  flex: 0 0 auto;
 }
 
 /* Tabla Programas (clientes) — columna Solicitar */
