@@ -12,7 +12,12 @@ class VentasMesPasadoChart extends ChartWidget
 
     protected ?string $heading = 'Pedidos / ventas (€) — mes actual / mes pasado';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'default' => 1,
+        'md' => 1,
+    ];
+
+    protected ?string $maxHeight = '190px';
 
     protected function getData(): array
     {

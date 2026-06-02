@@ -84,7 +84,6 @@ class DescargaVentas
     private static function baseQuery()
     {
         return Descarga::query()
-            ->where('pagado', true)
             ->whereNotNull('precio');
     }
 }

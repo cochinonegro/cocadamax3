@@ -20,7 +20,7 @@ class DescargasVentasMesWidget extends StatsOverviewWidget
     {
         return [
             Stat::make('Total', DescargaVentas::formatEuro(DescargaVentas::totalMes()))
-                ->description('Suma de precios con Pago activo')
+                ->description('Suma de precios registrados en Descargas')
                 ->color('success'),
         ];
     }
