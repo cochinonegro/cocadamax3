@@ -66,6 +66,8 @@ class ProgramasResource extends Resource
                 withDownloadColumn: false,
                 clientProgramNameStyle: true,
                 withSolicitarColumn: true,
+                withProductPrice: true,
+                respectClientPriceSetting: true,
             ))
             ->filters([
                 SelectFilter::make('category')

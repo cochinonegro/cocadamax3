@@ -447,6 +447,21 @@
   transition: background-color 0.15s ease, color 0.15s ease;
 }
 
+.tienda-producto-card__meta {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.tienda-producto-card__price {
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: rgb(74 222 128);
+  white-space: nowrap;
+}
+
 .tienda-ver-mas-btn:hover {
   background: rgb(245 158 11 / 0.28);
   color: rgb(253 224 71);

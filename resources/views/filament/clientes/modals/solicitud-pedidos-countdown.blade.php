@@ -1,10 +1,10 @@
 <div
     class="solicitud-pedidos-countdown"
     x-data="{
-        seconds: 20,
+        seconds: 15,
         interval: null,
         init() {
-            this.seconds = 20;
+            this.seconds = 15;
             if (this.interval) {
                 clearInterval(this.interval);
             }

@@ -106,6 +106,14 @@ class ProgramasForm
                                     ->maxLength(255)
                                     ->dehydrateStateUsing(fn (?string $state): ?string => ProgramasTableColumns::downloadUrl($state))
                                     ->columnSpanFull(),
+
+                                TextInput::make('product_price')
+                                    ->label('Precio producto')
+                                    ->numeric()
+                                    ->minValue(0)
+                                    ->step(0.01)
+                                    ->prefix('€')
+                                    ->placeholder('20.00'),
                             ])
                             ->columns(2)
                             ->columnSpanFull(),

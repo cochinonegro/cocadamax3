@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class AppSetting extends Model
 {
     public const PEDIDOS_GLOBAL_OFF = 'pedidos_global_off';
+    public const CLIENTES_VIEW_PRICE = 'clientes_view_price';
 
     protected $primaryKey = 'key';
 

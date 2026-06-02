@@ -34,6 +34,7 @@ class Programas extends Model
         'video_instalador',
         'show_instalador',
         'url',
+        'product_price',
         'show',
         'show_until',
         'pedidos_visible_until',
@@ -49,6 +50,7 @@ class Programas extends Model
     protected $casts = [
         'show' => 'boolean',
         'show_instalador' => 'boolean',
+        'product_price' => 'decimal:2',
         'show_until' => 'datetime',
         'pedidos_visible_until' => 'datetime',
         'date_add' => 'date',
