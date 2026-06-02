@@ -96,13 +96,16 @@ class DescargasResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('Sin usuario')
+                    ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
                     ->weight(FontWeight::Bold),
 
                 TextColumn::make('downloaded_at')
                     ->label('Fecha')
                     ->formatStateUsing(
-                        fn (?Descarga $record): string => DisplayTimezone::formatDate($record?->downloaded_at),
+                        fn ($state): string => DisplayTimezone::formatDate($state),
                     )
+                    ->badge()
+                    ->color('warning')
                     ->sortable(),
 
                 TextColumn::make('downloaded_time')
@@ -130,7 +133,9 @@ class DescargasResource extends Resource
                     ->rules(['nullable', 'numeric', 'min:0'])
                     ->suffix('€')
                     ->alignCenter()
-                    ->extraCellAttributes(['class' => 'descarga-precio-cell']),
+                    ->extraCellAttributes(['class' => 'descarga-precio-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-precio-cell'])
+                    ->extraInputAttributes(['class' => 'descarga-precio-input']),
 
                 ToggleColumn::make('pagado')
                     ->label('Pago/NoPago')
