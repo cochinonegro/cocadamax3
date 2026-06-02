@@ -123,7 +123,9 @@ class DescargasResource extends Resource
                     ->badge()
                     ->color('danger')
                     ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->extraCellAttributes(['class' => 'descarga-programa-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-programa-cell']),
 
                 TextInputColumn::make('precio')
                     ->label('Precio')
