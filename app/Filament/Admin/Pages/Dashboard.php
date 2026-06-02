@@ -6,6 +6,10 @@ use App\Filament\Admin\Widgets\QuickAccessWidget;
 use App\Filament\Admin\Widgets\UserInfoWidget;
 use App\Filament\Admin\Widgets\VentasMesPasadoChart;
 use App\Filament\Admin\Widgets\VentasUltimos10DiasChart;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosTotalWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesCantidadWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesPasadoCantidadWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesImporteWidget;
 use Filament\Pages\Dashboard as BaseDashboard;
 
 class Dashboard extends BaseDashboard
@@ -25,6 +29,10 @@ class Dashboard extends BaseDashboard
             QuickAccessWidget::class,
             VentasUltimos10DiasChart::class,
             VentasMesPasadoChart::class,
+            PedidosTotalWidget::class,
+            PedidosVentasMesCantidadWidget::class,
+            PedidosVentasMesPasadoCantidadWidget::class,
+            PedidosVentasMesImporteWidget::class,
         ];
     }
 
