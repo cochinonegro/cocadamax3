@@ -41,6 +41,7 @@ class Dashboard extends BaseDashboard
         return [
             'default' => 1,
             'md' => 2,
+            'lg' => 4,
         ];
     }
 }

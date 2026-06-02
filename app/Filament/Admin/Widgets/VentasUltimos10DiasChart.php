@@ -18,6 +18,7 @@ class VentasUltimos10DiasChart extends ChartWidget
     protected int|string|array $columnSpan = [
         'default' => 1,
         'md' => 1,
+        'lg' => 2,
     ];
 
     protected ?string $maxHeight = '190px';
