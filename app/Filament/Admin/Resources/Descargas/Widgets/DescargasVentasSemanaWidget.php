@@ -20,7 +20,7 @@ class DescargasVentasSemanaWidget extends StatsOverviewWidget
     {
         return [
             Stat::make('Total', DescargaVentas::formatEuro(DescargaVentas::totalSemana()))
-                ->description('Suma de precios registrados en Descargas')
+                ->description('En Descargas')
                 ->color('success'),
         ];
     }
