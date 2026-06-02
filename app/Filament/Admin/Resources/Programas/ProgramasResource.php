@@ -46,6 +46,8 @@ class ProgramasResource extends Resource
             ->columns(ProgramasTableColumns::make(
                 withStatus: true,
                 copyDownloadUrlOnly: true,
+                withProductPrice: true,
+                lockProductPriceVisible: true,
             ))
             ->columnManager()
             ->reorderableColumns()

@@ -1,5 +1,9 @@
 @php
+    use App\Models\AppSetting;
+    use App\Filament\Support\ProgramasTableColumns;
     use App\Filament\Support\TiendaProgramas;
+
+    $showPrice = AppSetting::getBool(AppSetting::CLIENTES_VIEW_PRICE, false);
 @endphp
 
 <x-filament-panels::page>
@@ -43,7 +47,14 @@
                                     <p class="tienda-producto-card__desc is-empty">Sin descripción.</p>
                                 @endif
 
-                                <span class="tienda-ver-mas-btn">Ver más</span>
+                                <div class="tienda-producto-card__meta">
+                                    <span class="tienda-ver-mas-btn">Ver más</span>
+                                    @if ($showPrice && filled($programa->product_price))
+                                        <span class="tienda-producto-card__price">
+                                            {{ ProgramasTableColumns::formatEuro((float) $programa->product_price) }}
+                                        </span>
+                                    @endif
+                                </div>
                             </div>
                         </a>
 

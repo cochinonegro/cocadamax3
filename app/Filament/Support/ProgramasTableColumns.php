@@ -2,6 +2,7 @@
 
 namespace App\Filament\Support;
 
+use App\Models\AppSetting;
 use App\Models\Programas;
 use Filament\Support\Enums\FontWeight;
 use Filament\Tables\Columns\Column;
@@ -18,6 +19,9 @@ class ProgramasTableColumns
         bool $copyDownloadUrlOnly = false,
         bool $clientProgramNameStyle = false,
         bool $withSolicitarColumn = false,
+        bool $withProductPrice = false,
+        bool $respectClientPriceSetting = false,
+        bool $lockProductPriceVisible = false,
     ): array {
         $prognameColumn = TextColumn::make('progname')
             ->label('Programa')
@@ -79,6 +83,17 @@ class ProgramasTableColumns
         }
 
         $columns = array_merge($columns, [
+            TextColumn::make('product_price')
+                ->label('Precio')
+                ->badge()
+                ->color('success')
+                ->formatStateUsing(fn (?string $state): string => filled($state)
+                    ? self::formatEuro((float) $state)
+                    : '—')
+                ->sortable()
+                ->visible(fn (): bool => $withProductPrice && (! $respectClientPriceSetting
+                    || AppSetting::getBool(AppSetting::CLIENTES_VIEW_PRICE, false))),
+
             TextColumn::make('os_required')
                 ->label('Sistema')
                 ->badge()
@@ -194,17 +209,24 @@ class ProgramasTableColumns
             ]);
         }
 
-        return self::withToggleableColumns($columns);
+        return self::withToggleableColumns($columns, $lockProductPriceVisible);
     }
 
     /**
      * @param  array<int, Column>  $columns
      * @return array<int, Column>
      */
-    private static function withToggleableColumns(array $columns): array
+    private static function withToggleableColumns(array $columns, bool $lockProductPriceVisible = false): array
     {
-        return array_map(function (Column $column): Column {
+        return array_map(function (Column $column) use ($lockProductPriceVisible): Column {
             $hiddenByDefault = $column->isToggledHiddenByDefault();
+
+            if ($lockProductPriceVisible && $column->getName() === 'product_price') {
+                return $column->toggleable(
+                    condition: false,
+                    isToggledHiddenByDefault: false,
+                );
+            }
 
             return $column->toggleable(
                 condition: true,
@@ -241,5 +263,10 @@ class ProgramasTableColumns
         }
 
         return 'https://'.$url;
+    }
+
+    public static function formatEuro(float $amount): string
+    {
+        return number_format($amount, 2, ',', '.').' €';
     }
 }

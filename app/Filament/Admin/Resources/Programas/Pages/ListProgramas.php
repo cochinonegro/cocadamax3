@@ -7,7 +7,10 @@ use App\Filament\Concerns\HasInstallOffAction;
 use App\Filament\Concerns\HasPedidosOffAction;
 use App\Filament\Concerns\HasProgramasOsTabs;
 use App\Filament\Concerns\PersistsTableColumnsForAuthenticatedUser;
+use App\Models\AppSetting;
+use Filament\Actions\Action;
 use Filament\Actions\CreateAction;
+use Filament\Notifications\Notification;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProgramas extends ListRecords
@@ -28,6 +31,24 @@ class ListProgramas extends ListRecords
     {
         return [
             CreateAction::make(),
+            Action::make('viewPrice')
+                ->label('ViewPrice')
+                ->icon('heroicon-o-eye')
+                ->color('success')
+                ->action(function (): void {
+                    $isEnabled = AppSetting::getBool(AppSetting::CLIENTES_VIEW_PRICE, false);
+                    $next = ! $isEnabled;
+
+                    AppSetting::setBool(AppSetting::CLIENTES_VIEW_PRICE, $next);
+
+                    Notification::make()
+                        ->title('ViewPrice actualizado')
+                        ->body($next
+                            ? 'Precios visibles para Clientes y Tienda.'
+                            : 'Precios ocultos para Clientes y Tienda.')
+                        ->success()
+                        ->send();
+                }),
             $this->makeInstallOffAction(),
             $this->makePedidosOffAction(),
         ];

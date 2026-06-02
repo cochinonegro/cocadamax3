@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Models\Programas;
 use App\Models\User;
 use App\Support\PedidosDescargaHandler;
+use App\Support\PedidosVisibility;
 use Database\Seeders\RoleSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -34,7 +35,12 @@ class PedidosDescargaTest extends TestCase
             'pedidos_visible_until' => now()->addMinutes(30),
         ]);
 
+        PedidosVisibility::enableForMinutes($programa);
+        $programa->refresh();
+        $numeroPedido = $programa->numero_pedido;
+
         $this->assertTrue($programa->isVisibleInPedidos());
+        $this->assertNotNull($numeroPedido);
 
         $url = PedidosDescargaHandler::consume($programa);
 
@@ -43,6 +49,7 @@ class PedidosDescargaTest extends TestCase
         $this->assertDatabaseHas('descargas', [
             'user_id' => $user->id,
             'programas_id' => $programa->id,
+            'numero_pedido' => $numeroPedido,
         ]);
     }
 
@@ -66,8 +73,10 @@ class PedidosDescargaTest extends TestCase
         $programa = Programas::factory()->create([
             'show' => true,
             'url' => 'example.com/archivo.zip',
-            'pedidos_visible_until' => now()->addMinutes(30),
         ]);
+
+        PedidosVisibility::enableForMinutes($programa);
+        $numeroPedido = $programa->fresh()->numero_pedido;
 
         $response = $this->actingAs($user)->get(route('pedidos.descarga', $programa));
 
@@ -76,6 +85,7 @@ class PedidosDescargaTest extends TestCase
         $this->assertDatabaseHas('descargas', [
             'user_id' => $user->id,
             'programas_id' => $programa->id,
+            'numero_pedido' => $numeroPedido,
         ]);
     }
 }

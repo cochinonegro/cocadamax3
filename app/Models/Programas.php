@@ -34,9 +34,11 @@ class Programas extends Model
         'video_instalador',
         'show_instalador',
         'url',
+        'product_price',
         'show',
         'show_until',
         'pedidos_visible_until',
+        'numero_pedido',
         'company',
         'web_oficial',
         'required',
@@ -48,6 +50,7 @@ class Programas extends Model
     protected $casts = [
         'show' => 'boolean',
         'show_instalador' => 'boolean',
+        'product_price' => 'decimal:2',
         'show_until' => 'datetime',
         'pedidos_visible_until' => 'datetime',
         'date_add' => 'date',
@@ -145,10 +148,12 @@ class Programas extends Model
 
         $duplicate = $this->replicate([
             'pedidos_visible_until',
+            'numero_pedido',
         ]);
 
         $duplicate->os_required = $newOs;
         $duplicate->pedidos_visible_until = null;
+        $duplicate->numero_pedido = null;
         $duplicate->save();
 
         return $duplicate->fresh();
@@ -163,6 +168,7 @@ class Programas extends Model
     {
         $duplicate = $this->replicate([
             'pedidos_visible_until',
+            'numero_pedido',
         ]);
 
         $maxLength = 255;
@@ -170,6 +176,7 @@ class Programas extends Model
 
         $duplicate->progname = $baseName.$suffix;
         $duplicate->pedidos_visible_until = null;
+        $duplicate->numero_pedido = null;
         $duplicate->save();
 
         return $duplicate->fresh();

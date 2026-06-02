@@ -2,7 +2,8 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\Venta;
+use App\Support\DescargaVentas;
+use App\Support\DisplayTimezone;
 use Filament\Widgets\ChartWidget;
 use Illuminate\Support\Carbon;
 
@@ -10,36 +11,42 @@ class VentasUltimos10DiasChart extends ChartWidget
 {
     protected static bool $isDiscovered = false;
 
-    protected ?string $heading = 'Ventas de los últimos 10 días';
+    protected ?string $heading = 'Pedidos / ventas (€) — últimos 10 días';
 
-    protected static ?int $sort = 0;
+    protected static ?int $sort = 3;
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = [
+        'default' => 1,
+        'md' => 1,
+        'lg' => 2,
+    ];
+
+    protected ?string $maxHeight = '190px';
 
     protected function getData(): array
     {
-        $inicio = now()->subDays(9)->startOfDay();
+        $hoy = now(DisplayTimezone::name())->startOfDay();
+        $inicio = $hoy->copy()->subDays(9);
 
-        $conteos = Venta::query()
-            ->whereDate('fecha_venta', '>=', $inicio)
-            ->selectRaw('DATE(fecha_venta) as dia, COUNT(*) as total')
-            ->groupByRaw('DATE(fecha_venta)')
-            ->pluck('total', 'dia');
+        $montos = DescargaVentas::montosPorFecha(
+            $inicio,
+            $hoy->copy()->endOfDay(),
+        );
 
         $etiquetas = [];
         $datos = [];
 
         for ($i = 0; $i < 10; $i++) {
-            $fecha = Carbon::today()->subDays(9 - $i);
+            $fecha = $hoy->copy()->subDays(9 - $i);
             $clave = $fecha->toDateString();
             $etiquetas[] = $fecha->format('d/m');
-            $datos[] = (int) ($conteos[$clave] ?? 0);
+            $datos[] = round($montos[$clave] ?? 0, 2);
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Ventas',
+                    'label' => 'Importe (€)',
                     'data' => $datos,
                     'backgroundColor' => '#f59e0b',
                     'borderColor' => '#d97706',
@@ -53,5 +60,20 @@ class VentasUltimos10DiasChart extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'scales' => [
+                'y' => [
+                    'beginAtZero' => true,
+                    'title' => [
+                        'display' => true,
+                        'text' => '€',
+                    ],
+                ],
+            ],
+        ];
     }
 }

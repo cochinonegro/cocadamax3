@@ -95,7 +95,8 @@ class ProgramaSolicitudService
 
         $this->updateTelegramAfterResponse(
             $solicitud,
-            "✅ <b>ACEPTADA</b>\n\nEl programa «{$programa->progname}» está visible en Pedidos durante {$minutes} minutos.",
+            "✅ <b>ACEPTADA</b>\n\nEl programa «{$programa->progname}» está visible en Pedidos durante {$minutes} minutos."
+            .$this->formatPrecioAcordadoFooter($solicitud),
         );
     }
 
@@ -120,24 +121,36 @@ class ProgramaSolicitudService
 
     public function handleCallback(string $data, string $callbackQueryId): void
     {
-        if (! preg_match('/^ps:(\d+):(a|r)$/', $data, $matches)) {
-            $this->telegram->answerCallbackQuery($callbackQueryId, 'Acción no reconocida.');
+        if (preg_match('/^ps:(\d+):([ar])$/', $data, $matches)) {
+            $this->handleAcceptRejectCallback($matches, $callbackQueryId);
 
             return;
         }
 
-        $solicitud = ProgramaSolicitud::query()
-            ->with(['user', 'programa'])
-            ->find((int) $matches[1]);
+        if (preg_match('/^ps:(\d+):(\d+)$/', $data, $matches)) {
+            $this->handlePrecioPresetCallback($matches, $callbackQueryId);
+
+            return;
+        }
+
+        if (preg_match('/^ps:(\d+):o$/', $data, $matches)) {
+            $this->handlePrecioOtroCallback($matches, $callbackQueryId);
+
+            return;
+        }
+
+        $this->telegram->answerCallbackQuery($callbackQueryId, 'Acción no reconocida.');
+    }
+
+    /**
+     * @param  array<int, string>  $matches
+     */
+    private function handleAcceptRejectCallback(array $matches, string $callbackQueryId): void
+    {
+        $solicitud = $this->findPendingSolicitud((int) $matches[1]);
 
         if (! $solicitud) {
-            $this->telegram->answerCallbackQuery($callbackQueryId, 'Solicitud no encontrada.');
-
-            return;
-        }
-
-        if (! $solicitud->isPending()) {
-            $this->telegram->answerCallbackQuery($callbackQueryId, 'Esta solicitud ya fue gestionada.');
+            $this->telegram->answerCallbackQuery($callbackQueryId, 'Solicitud no encontrada o ya gestionada.');
 
             return;
         }
@@ -151,6 +164,116 @@ class ProgramaSolicitudService
 
         $this->reject($solicitud);
         $this->telegram->answerCallbackQuery($callbackQueryId, 'Rechazada.');
+    }
+
+    /**
+     * @param  array<int, string>  $matches
+     */
+    private function handlePrecioPresetCallback(array $matches, string $callbackQueryId): void
+    {
+        $solicitud = $this->findPendingSolicitud((int) $matches[1]);
+
+        if (! $solicitud) {
+            $this->telegram->answerCallbackQuery($callbackQueryId, 'Solicitud no encontrada o ya gestionada.');
+
+            return;
+        }
+
+        $precio = (float) $matches[2];
+
+        if (! in_array($precio, [20.0, 25.0, 30.0], true)) {
+            $this->telegram->answerCallbackQuery($callbackQueryId, 'Precio no válido.');
+
+            return;
+        }
+
+        $solicitud->update(['precio_acordado' => $precio]);
+        $this->refreshTelegramMessage($solicitud->fresh(['user', 'programa']));
+        $this->telegram->answerCallbackQuery(
+            $callbackQueryId,
+            'Precio: '.$this->formatPrecio($precio),
+        );
+    }
+
+    /**
+     * @param  array<int, string>  $matches
+     */
+    private function handlePrecioOtroCallback(array $matches, string $callbackQueryId): void
+    {
+        $solicitud = $this->findPendingSolicitud((int) $matches[1]);
+
+        if (! $solicitud) {
+            $this->telegram->answerCallbackQuery($callbackQueryId, 'Solicitud no encontrada o ya gestionada.');
+
+            return;
+        }
+
+        $this->telegram->answerCallbackQuery(
+            $callbackQueryId,
+            'Responde al mensaje de la solicitud con el monto (ej: 15 o 22.50).',
+            true,
+        );
+    }
+
+    private function findPendingSolicitud(int $id): ?ProgramaSolicitud
+    {
+        $solicitud = ProgramaSolicitud::query()
+            ->with(['user', 'programa'])
+            ->find($id);
+
+        if (! $solicitud?->isPending()) {
+            return null;
+        }
+
+        return $solicitud;
+    }
+
+    public function handleTelegramMessage(array $message): void
+    {
+        $chatId = (string) ($message['chat']['id'] ?? '');
+
+        if ($chatId !== $this->telegram->adminChatId()) {
+            return;
+        }
+
+        $text = trim((string) ($message['text'] ?? ''));
+        $replyToMessageId = $message['reply_to_message']['message_id'] ?? null;
+
+        if ($text === '' || $replyToMessageId === null) {
+            return;
+        }
+
+        if (! preg_match('/^\d+(?:[.,]\d{1,2})?$/', str_replace(['€', ' '], '', $text))) {
+            return;
+        }
+
+        $precio = (float) str_replace(',', '.', preg_replace('/[^\d.,]/', '', $text));
+
+        $solicitud = ProgramaSolicitud::query()
+            ->with(['user', 'programa'])
+            ->where('telegram_message_id', $replyToMessageId)
+            ->where('status', ProgramaSolicitudStatus::Pending)
+            ->first();
+
+        if (! $solicitud) {
+            return;
+        }
+
+        $solicitud->update(['precio_acordado' => $precio]);
+        $this->refreshTelegramMessage($solicitud->fresh(['user', 'programa']));
+
+        $this->telegram->sendMessage(
+            '✏️ Precio manual guardado: '.$this->formatPrecio($precio),
+        );
+    }
+
+    public function latestForUserAndPrograma(User $user, Programas $programa): ?ProgramaSolicitud
+    {
+        return ProgramaSolicitud::query()
+            ->where('user_id', $user->id)
+            ->where('programas_id', $programa->id)
+            ->latest('id')
+            ->first();
     }
 
     public function statusFor(User $user, Programas $programa): string
@@ -268,6 +391,16 @@ class ProgramaSolicitudService
             '<i>Solicitud #'.$solicitud->id.'</i>',
         ];
 
+        if (filled($solicitud->precio_acordado)) {
+            $lines[] = '';
+            $lines[] = '💰 <b>Precio acordado:</b> '.$this->formatPrecio((float) $solicitud->precio_acordado);
+        }
+
+        if ($solicitud->isPending()) {
+            $lines[] = '';
+            $lines[] = '<i>Elige un precio (20 / 25 / 30 € u Otro), luego Aceptar o Rechazar.</i>';
+        }
+
         return implode("\n", $lines);
     }
 
@@ -280,6 +413,14 @@ class ProgramaSolicitudService
 
         return [
             'inline_keyboard' => [
+                [
+                    ['text' => '20 €', 'callback_data' => "ps:{$id}:20"],
+                    ['text' => '25 €', 'callback_data' => "ps:{$id}:25"],
+                    ['text' => '30 €', 'callback_data' => "ps:{$id}:30"],
+                ],
+                [
+                    ['text' => 'Otro: precio manual', 'callback_data' => "ps:{$id}:o"],
+                ],
                 [
                     ['text' => '✅ Aceptar', 'callback_data' => "ps:{$id}:a"],
                     ['text' => '❌ Rechazar', 'callback_data' => "ps:{$id}:r"],
@@ -304,5 +445,33 @@ class ProgramaSolicitudService
             (int) $solicitud->telegram_message_id,
             $text,
         );
+    }
+
+    private function refreshTelegramMessage(ProgramaSolicitud $solicitud): void
+    {
+        if (blank($solicitud->telegram_chat_id) || blank($solicitud->telegram_message_id)) {
+            return;
+        }
+
+        $this->telegram->editMessageText(
+            (string) $solicitud->telegram_chat_id,
+            (int) $solicitud->telegram_message_id,
+            $this->buildTelegramMessage($solicitud),
+            $this->inlineKeyboard($solicitud),
+        );
+    }
+
+    private function formatPrecioAcordadoFooter(ProgramaSolicitud $solicitud): string
+    {
+        if (blank($solicitud->precio_acordado)) {
+            return '';
+        }
+
+        return "\n\n💰 <b>Precio acordado:</b> ".$this->formatPrecio((float) $solicitud->precio_acordado);
+    }
+
+    private function formatPrecio(float $precio): string
+    {
+        return number_format($precio, 2, ',', '.').' €';
     }
 }

@@ -2,50 +2,55 @@
 
 namespace App\Filament\Admin\Widgets;
 
-use App\Models\Venta;
+use App\Support\DescargaVentas;
+use App\Support\DisplayTimezone;
 use Filament\Widgets\ChartWidget;
 
 class VentasMesPasadoChart extends ChartWidget
 {
     protected static bool $isDiscovered = false;
 
-    protected static ?int $sort = 1;
+    protected ?string $heading = 'Pedidos / ventas (€) — mes actual / mes pasado';
 
-    protected int | string | array $columnSpan = 1;
+    protected int|string|array $columnSpan = [
+        'default' => 1,
+        'md' => 1,
+        'lg' => 2,
+    ];
 
-    public function getHeading(): ?string
-    {
-        $mes = now()->subMonth()->locale('es')->translatedFormat('F Y');
-
-        return "Ventas de {$mes}";
-    }
+    protected ?string $maxHeight = '190px';
 
     protected function getData(): array
     {
-        $inicio = now()->subMonth()->startOfMonth();
-        $fin = now()->subMonth()->endOfMonth();
+        $mesActual = now(DisplayTimezone::name())->startOfMonth();
+        $mesPasado = $mesActual->copy()->subMonth()->startOfMonth();
+        $diasEnGrafico = max($mesActual->daysInMonth, $mesPasado->daysInMonth);
 
-        $conteos = Venta::query()
-            ->whereBetween('fecha_venta', [$inicio->toDateString(), $fin->toDateString()])
-            ->selectRaw('DATE(fecha_venta) as dia, COUNT(*) as total')
-            ->groupByRaw('DATE(fecha_venta)')
-            ->pluck('total', 'dia');
+        $montosActual = DescargaVentas::montosPorDiaDelMes($mesActual);
+        $montosPasado = DescargaVentas::montosPorDiaDelMes($mesPasado);
 
         $etiquetas = [];
-        $datos = [];
+        $serieActual = [];
+        $seriePasado = [];
 
-        for ($dia = 1; $dia <= $inicio->daysInMonth; $dia++) {
-            $fecha = $inicio->copy()->day($dia);
-            $clave = $fecha->toDateString();
+        for ($dia = 1; $dia <= $diasEnGrafico; $dia++) {
             $etiquetas[] = (string) $dia;
-            $datos[] = (int) ($conteos[$clave] ?? 0);
+            $serieActual[] = round($montosActual[$dia] ?? 0, 2);
+            $seriePasado[] = round($montosPasado[$dia] ?? 0, 2);
         }
 
         return [
             'datasets' => [
                 [
-                    'label' => 'Ventas',
-                    'data' => $datos,
+                    'label' => 'Mes actual ('.$mesActual->locale('es')->translatedFormat('M Y').')',
+                    'data' => $serieActual,
+                    'backgroundColor' => '#f59e0b',
+                    'borderColor' => '#d97706',
+                    'borderWidth' => 1,
+                ],
+                [
+                    'label' => 'Mes pasado ('.$mesPasado->locale('es')->translatedFormat('M Y').')',
+                    'data' => $seriePasado,
                     'backgroundColor' => '#38bdf8',
                     'borderColor' => '#0ea5e9',
                     'borderWidth' => 1,
@@ -58,5 +63,32 @@ class VentasMesPasadoChart extends ChartWidget
     protected function getType(): string
     {
         return 'bar';
+    }
+
+    protected function getOptions(): array
+    {
+        return [
+            'plugins' => [
+                'legend' => [
+                    'display' => true,
+                    'position' => 'top',
+                ],
+            ],
+            'scales' => [
+                'x' => [
+                    'title' => [
+                        'display' => true,
+                        'text' => 'Día del mes',
+                    ],
+                ],
+                'y' => [
+                    'beginAtZero' => true,
+                    'title' => [
+                        'display' => true,
+                        'text' => '€',
+                    ],
+                ],
+            ],
+        ];
     }
 }

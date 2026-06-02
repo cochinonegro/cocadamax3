@@ -2,6 +2,10 @@
 
 namespace App\Filament\Admin\Resources\Pedidos\Pages;
 
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosTotalWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesCantidadWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesPasadoCantidadWidget;
+use App\Filament\Admin\Resources\Pedidos\Widgets\PedidosVentasMesImporteWidget;
 use App\Filament\Admin\Resources\Pedidos\PedidosResource;
 use App\Filament\Concerns\HasPedidosOffAction;
 use Filament\Resources\Pages\ListRecords;
@@ -17,6 +21,21 @@ class ListPedidos extends ListRecords
         return [
             $this->makePedidosOffAction(),
         ];
+    }
+
+    public function getHeaderWidgets(): array
+    {
+        return [
+            PedidosTotalWidget::class,
+            PedidosVentasMesCantidadWidget::class,
+            PedidosVentasMesPasadoCantidadWidget::class,
+            PedidosVentasMesImporteWidget::class,
+        ];
+    }
+
+    public function getHeaderWidgetsColumns(): int | array
+    {
+        return 4;
     }
 
     public function getSubheading(): ?string

@@ -78,23 +78,29 @@ class TelegramBotService
         return $result;
     }
 
-    public function editMessageText(string $chatId, int $messageId, string $text): void
+    public function editMessageText(string $chatId, int $messageId, string $text, ?array $replyMarkup = null): void
     {
-        $this->request('editMessageText', [
+        $payload = [
             'chat_id' => $chatId,
             'message_id' => $messageId,
             'text' => $text,
             'parse_mode' => 'HTML',
             'disable_web_page_preview' => true,
-        ]);
+        ];
+
+        if ($replyMarkup !== null) {
+            $payload['reply_markup'] = json_encode($replyMarkup, JSON_UNESCAPED_UNICODE);
+        }
+
+        $this->request('editMessageText', $payload);
     }
 
-    public function answerCallbackQuery(string $callbackQueryId, string $text): void
+    public function answerCallbackQuery(string $callbackQueryId, string $text, bool $showAlert = false): void
     {
         $this->request('answerCallbackQuery', [
             'callback_query_id' => $callbackQueryId,
             'text' => $text,
-            'show_alert' => mb_strlen($text) > 80,
+            'show_alert' => $showAlert || mb_strlen($text) > 80,
         ]);
     }
 
@@ -102,7 +108,7 @@ class TelegramBotService
     {
         $payload = [
             'url' => $url,
-            'allowed_updates' => json_encode(['callback_query']),
+            'allowed_updates' => json_encode(['callback_query', 'message']),
         ];
 
         if (filled($secretToken)) {

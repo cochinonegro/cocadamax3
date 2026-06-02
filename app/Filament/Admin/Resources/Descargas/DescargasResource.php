@@ -66,6 +66,12 @@ class DescargasResource extends Resource
                             ->preload()
                             ->required(),
 
+                        TextInput::make('numero_pedido')
+                            ->label('ID-Pedido')
+                            ->numeric()
+                            ->minValue(1)
+                            ->disabled(),
+
                         DateTimePicker::make('downloaded_at')
                             ->label('Fecha y hora de descarga')
                             ->required()
@@ -96,13 +102,16 @@ class DescargasResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->placeholder('Sin usuario')
+                    ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
                     ->weight(FontWeight::Bold),
 
                 TextColumn::make('downloaded_at')
                     ->label('Fecha')
                     ->formatStateUsing(
-                        fn (?Descarga $record): string => DisplayTimezone::formatDate($record?->downloaded_at),
+                        fn ($state): string => DisplayTimezone::formatDate($state),
                     )
+                    ->badge()
+                    ->color('warning')
                     ->sortable(),
 
                 TextColumn::make('downloaded_time')
@@ -118,9 +127,11 @@ class DescargasResource extends Resource
                     ->searchable()
                     ->sortable()
                     ->badge()
-                    ->color('danger')
+                    ->color('sky')
                     ->formatStateUsing(fn (?string $state): string => mb_strtoupper((string) $state))
-                    ->placeholder('—'),
+                    ->placeholder('—')
+                    ->extraCellAttributes(['class' => 'descarga-programa-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-programa-cell']),
 
                 TextInputColumn::make('precio')
                     ->label('Precio')
@@ -129,8 +140,11 @@ class DescargasResource extends Resource
                     ->step('0.01')
                     ->rules(['nullable', 'numeric', 'min:0'])
                     ->suffix('€')
-                    ->alignCenter()
-                    ->extraCellAttributes(['class' => 'descarga-precio-cell']),
+                    ->inlineSuffix()
+                    ->alignEnd()
+                    ->extraCellAttributes(['class' => 'descarga-precio-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-precio-cell'])
+                    ->extraInputAttributes(['class' => 'descarga-precio-input']),
 
                 ToggleColumn::make('pagado')
                     ->label('Pago/NoPago')
@@ -138,6 +152,17 @@ class DescargasResource extends Resource
                     ->onColor('success')
                     ->offColor('danger')
                     ->alignCenter(),
+
+                TextColumn::make('numero_pedido')
+                    ->label('ID-Pedido')
+                    ->badge()
+                    ->color('info')
+                    ->alignEnd()
+                    ->sortable()
+                    ->searchable()
+                    ->placeholder('—')
+                    ->extraCellAttributes(['class' => 'descarga-id-pedido-cell'])
+                    ->extraHeaderAttributes(['class' => 'descarga-id-pedido-cell']),
             ])
             ->defaultSort('downloaded_at', 'desc')
             ->recordActions([

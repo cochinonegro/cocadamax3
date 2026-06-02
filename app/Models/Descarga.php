@@ -10,6 +10,7 @@ class Descarga extends Model
     protected $fillable = [
         'user_id',
         'programas_id',
+        'numero_pedido',
         'downloaded_at',
         'precio',
         'pagado',

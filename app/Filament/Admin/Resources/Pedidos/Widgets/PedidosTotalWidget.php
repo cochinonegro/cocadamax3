@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Filament\Admin\Resources\Descargas\Widgets;
+namespace App\Filament\Admin\Resources\Pedidos\Widgets;
 
-use App\Support\DescargaVentas;
+use App\Models\Descarga;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
-class DescargasVentasMesWidget extends StatsOverviewWidget
+class PedidosTotalWidget extends StatsOverviewWidget
 {
     protected static bool $isDiscovered = false;
 
     protected ?string $pollingInterval = '10s';
 
-    protected ?string $heading = 'VENTAS MES';
+    protected ?string $heading = 'TOTAL PEDIDOS';
 
     protected int|string|array $columnSpan = 1;
 
     protected function getStats(): array
     {
         return [
-            Stat::make('Total', DescargaVentas::formatEuro(DescargaVentas::totalMes()))
-                ->description('En Descargas')
+            Stat::make('Total', (string) Descarga::query()->count())
+                ->description('Cantidad de pedidos (descargas) en total')
                 ->color('success'),
         ];
     }
 }
+

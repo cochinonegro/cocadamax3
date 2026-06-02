@@ -21,7 +21,7 @@ class DescargaVentasTest extends TestCase
         $this->seed(RoleSeeder::class);
     }
 
-    public function test_totals_sum_only_paid_downloads_in_period(): void
+    public function test_totals_sum_all_download_prices_in_period(): void
     {
         $programa = Programas::factory()->create(['show' => true]);
         $user = User::factory()->create();
@@ -50,7 +50,34 @@ class DescargaVentasTest extends TestCase
             'pagado' => false,
         ]);
 
-        $this->assertSame(35.50, DescargaVentas::totalSemana());
-        $this->assertSame(35.50, DescargaVentas::totalMes());
+        $this->assertSame(135.49, DescargaVentas::totalSemana());
+        $this->assertSame(135.49, DescargaVentas::totalMes());
+    }
+
+    public function test_montos_por_fecha_sums_download_prices(): void
+    {
+        $programa = Programas::factory()->create(['show' => true]);
+        $user = User::factory()->create();
+        $hoy = now()->toDateString();
+
+        Descarga::query()->create([
+            'user_id' => $user->id,
+            'programas_id' => $programa->id,
+            'downloaded_at' => $hoy,
+            'precio' => 20,
+            'pagado' => true,
+        ]);
+
+        Descarga::query()->create([
+            'user_id' => $user->id,
+            'programas_id' => $programa->id,
+            'downloaded_at' => $hoy,
+            'precio' => 5,
+            'pagado' => true,
+        ]);
+
+        $montos = DescargaVentas::montosPorFecha(now()->startOfDay(), now()->endOfDay());
+
+        $this->assertSame(25.0, $montos[$hoy]);
     }
 }
