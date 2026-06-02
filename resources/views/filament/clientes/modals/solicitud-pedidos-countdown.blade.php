@@ -26,7 +26,7 @@
     }"
 >
     <p class="mb-4 text-center text-sm text-gray-600 dark:text-gray-400">
-        Una vez te hayan confirmado aceptar la descarga dale al botón aquí abajo:
+        El administrador gestionará tu solicitud por Telegram. Cuando te confirme la aceptación, pulsa CONTINUAR:
     </p>
 
     <div class="solicitud-pedidos-countdown__timer">
@@ -40,6 +40,6 @@
         x-cloak
         class="solicitud-pedidos-countdown__ready"
     >
-        Ya puedes ir a Pedidos y descargar tu programa.
+        Ya puedes pulsar CONTINUAR para ver el resumen de tu solicitud.
     </p>
 </div>

@@ -1024,6 +1024,31 @@ html:not(.dark) #cliente-producto-detalle .cp-solicitar-estado--pendiente {
   color: rgb(74 222 128);
 }
 
+.solicitud-aceptada-precio__titulo {
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(74 222 128);
+}
+
+.solicitud-aceptada-precio__monto {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: rgb(245 158 11);
+}
+
+.solicitud-aceptada-precio__sin-precio,
+.solicitud-aceptada-precio__hint {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.875rem;
+  color: rgb(161 161 170);
+}
+
 /* Clientes Pedidos — miniatura del programa */
 .fi-ta-image img.rounded-md {
   max-height: 2.25rem;

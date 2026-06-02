@@ -30,7 +30,7 @@ class ProgramaSolicitudTableColumn
                     return;
                 }
 
-                $livewire->dispatch('solicitud-enviada')->self();
+                $livewire->dispatch('solicitud-enviada', programasId: $record->id)->self();
             });
     }
 

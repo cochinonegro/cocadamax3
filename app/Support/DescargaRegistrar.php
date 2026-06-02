@@ -5,6 +5,7 @@ namespace App\Support;
 use App\Models\Descarga;
 use App\Models\Programas;
 use App\Models\User;
+use App\Support\PrecioAcordadoPedido;
 use Illuminate\Support\Carbon;
 
 class DescargaRegistrar
@@ -17,6 +18,7 @@ class DescargaRegistrar
             'user_id' => $user?->id,
             'programas_id' => $programa->getKey(),
             'numero_pedido' => $programa->numero_pedido,
+            'precio' => PrecioAcordadoPedido::resolveForDescarga($programa, $user),
             'downloaded_at' => $downloadedAt ?? now(),
         ]);
     }

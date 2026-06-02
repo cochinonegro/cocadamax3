@@ -49,7 +49,7 @@ class ViewProgramas extends ViewRecord
             return;
         }
 
-        $this->abrirModalSolicitudPedidos();
+        $this->abrirModalSolicitudPedidos($record->id);
     }
 
     public function solicitarStatus(): string

@@ -31,7 +31,7 @@ class SolicitarProgramaButton extends Component
             return;
         }
 
-        $this->dispatch('solicitud-enviada');
+        $this->dispatch('solicitud-enviada', programasId: $this->programaId);
     }
 
     public function statusLabel(ProgramaSolicitudService $solicitudes): string

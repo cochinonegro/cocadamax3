@@ -14,6 +14,7 @@ class ProgramaSolicitud extends Model
         'user_id',
         'programas_id',
         'status',
+        'precio_acordado',
         'telegram_chat_id',
         'telegram_message_id',
         'responded_at',
@@ -23,6 +24,7 @@ class ProgramaSolicitud extends Model
     {
         return [
             'status' => ProgramaSolicitudStatus::class,
+            'precio_acordado' => 'decimal:2',
             'responded_at' => 'datetime',
             'telegram_message_id' => 'integer',
         ];
