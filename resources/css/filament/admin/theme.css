@@ -211,6 +211,226 @@ html:not(.dark) .fi-sc-tabs .fi-tabs:not(.fi-contained) {
   color: rgb(161 161 170);
 }
 
+/* Buscar programa — centrado, texto tipado grande y negrita */
+.fi-panel-clientes .invitado-buscar {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0.5rem 0 1rem;
+}
+
+.fi-panel-clientes .invitado-buscar__inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.55rem;
+  width: 100%;
+  max-width: 36rem;
+}
+
+.fi-panel-clientes .invitado-buscar__badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  align-self: center;
+  border-radius: 0.45rem;
+  background: #b45309;
+  color: #fff;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.35rem 0.7rem;
+}
+
+.fi-panel-clientes .invitado-buscar__badge-arrow {
+  font-size: 0.65rem;
+  line-height: 1;
+}
+
+.fi-panel-clientes .invitado-buscar__input {
+  width: 100%;
+  border: 1.5px solid #c2410c;
+  border-radius: 0.55rem;
+  background: #fff;
+  color: #1c1917;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  line-height: 1.35;
+  padding: 0.7rem 0.9rem;
+  outline: none;
+}
+
+.fi-panel-clientes .invitado-buscar__input::placeholder {
+  color: rgb(168 162 158);
+  font-size: 0.95rem;
+  font-weight: 400;
+}
+
+.fi-panel-clientes .invitado-buscar__input:focus {
+  border-color: #9a3412;
+  box-shadow: 0 0 0 3px rgb(194 65 12 / 0.18);
+}
+
+.dark .fi-panel-clientes .invitado-buscar__input {
+  background: rgb(39 39 42);
+  color: #fafafa;
+  border-color: #ea580c;
+}
+
+.dark .fi-panel-clientes .invitado-buscar__input::placeholder {
+  color: rgb(161 161 170);
+}
+
+/* Categorías colapsadas — perfil invitado (Windows / Mac) */
+.fi-panel-clientes .invitado-categorias-box {
+  margin: 0.35rem 0 0.75rem;
+}
+
+.fi-panel-clientes .invitado-categorias-accordion {
+  border: 1px solid rgb(214 211 209);
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.04);
+  overflow: hidden;
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__trigger {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 1rem;
+  border: 0;
+  background: #fff;
+  color: #1c1917;
+  cursor: pointer;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__trigger:hover {
+  background: rgb(250 250 249);
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__label {
+  letter-spacing: 0.01em;
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__chevron {
+  font-size: 0.7rem;
+  color: rgb(120 113 108);
+  transition: transform 0.18s ease;
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.fi-panel-clientes .invitado-categorias-accordion__panel {
+  padding: 0 0.85rem 0.9rem;
+  border-top: 1px solid rgb(231 229 228);
+}
+
+.fi-panel-clientes .invitado-categorias-grid {
+  display: grid;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+  gap: 0.55rem;
+  padding-top: 0.85rem;
+}
+
+@media (min-width: 640px) {
+  .fi-panel-clientes .invitado-categorias-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .fi-panel-clientes .invitado-categorias-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.fi-panel-clientes .invitado-categorias-grid__item {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  border: 1px solid rgb(214 211 209);
+  border-radius: 0.65rem;
+  background: #fff;
+  color: #1c1917;
+  padding: 0.7rem 0.85rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  cursor: pointer;
+  text-align: left;
+}
+
+.fi-panel-clientes .invitado-categorias-grid__item:hover {
+  border-color: rgb(168 162 158);
+  background: rgb(250 250 249);
+}
+
+.fi-panel-clientes .invitado-categorias-grid__item.is-active {
+  border-color: rgb(217 119 6);
+  background: rgb(255 251 235);
+  color: rgb(146 64 14);
+}
+
+.fi-panel-clientes .invitado-categorias-clear {
+  appearance: none;
+  margin-top: 0.75rem;
+  border: 0;
+  background: transparent;
+  color: rgb(185 28 28);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.fi-panel-clientes .invitado-ultimos-heading {
+  margin: 0.25rem 0 0.65rem;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: rgb(220 38 38);
+}
+
+.dark .fi-panel-clientes .invitado-categorias-accordion,
+.dark .fi-panel-clientes .invitado-categorias-accordion__trigger,
+.dark .fi-panel-clientes .invitado-categorias-grid__item {
+  background: rgb(39 39 42);
+  border-color: rgb(63 63 70);
+  color: #fafafa;
+}
+
+.dark .fi-panel-clientes .invitado-categorias-accordion__trigger:hover,
+.dark .fi-panel-clientes .invitado-categorias-grid__item:hover {
+  background: rgb(24 24 27);
+}
+
+.dark .fi-panel-clientes .invitado-categorias-accordion__panel {
+  border-top-color: rgb(63 63 70);
+}
+
+.dark .fi-panel-clientes .invitado-categorias-grid__item.is-active {
+  border-color: rgb(245 158 11);
+  background: rgb(69 26 3 / 0.45);
+  color: rgb(253 224 71);
+}
+
 /* Clientes Programas — mostrar Windows, Mac y Todos sin ocultar el tercer tab */
 .fi-panel-clientes .fi-resource-list-records-page .fi-tabs {
   flex-wrap: wrap;
