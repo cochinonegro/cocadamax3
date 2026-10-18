@@ -152,7 +152,7 @@ class ListProgramas extends ListRecords
             Action::make('ver_tienda')
                 ->label('VER TIENDA')
                 ->icon('heroicon-o-building-storefront')
-                ->color('primary')
+                ->color('success')
                 ->url(TiendaElegirOs::getUrl()),
         ];
     }
