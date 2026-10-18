@@ -64,7 +64,7 @@ class TiendaPresentation
     /** @return list<array{label: string, active: bool, done: bool}> */
     public static function steps(int $current): array
     {
-        $labels = ['Sistema', 'Categoría', 'Catálogo'];
+        $labels = ['Sistema', 'Búsqueda', 'Catálogo'];
 
         return collect($labels)
             ->map(fn (string $label, int $index): array => [

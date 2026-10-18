@@ -93,10 +93,13 @@ class ProgramaSolicitudService
         $solicitud->refresh();
         $programa = $solicitud->programa;
 
+        $pin = $programa->numero_pedido ?? $solicitud->id;
+
         $this->updateTelegramAfterResponse(
             $solicitud,
             "✅ <b>ACEPTADA</b>\n\nEl programa «{$programa->progname}» está visible en Pedidos durante {$minutes} minutos."
             .$this->formatPrecioAcordadoFooter($solicitud),
+            (string) $pin,
         );
     }
 
@@ -370,25 +373,33 @@ class ProgramaSolicitudService
         }
     }
 
-    private function buildTelegramMessage(ProgramaSolicitud $solicitud): string
+    private function buildTelegramMessage(ProgramaSolicitud $solicitud, ?string $pinOverride = null): string
     {
         $user = $solicitud->user;
         $programa = $solicitud->programa;
         $os = ProgramasTableColumns::osRequiredLabel($programa->os_required);
+        $pin = $this->resolvePin($solicitud, $pinOverride);
 
+        // Telegram HTML no admite font-family ni font-size (Arial/CSS).
+        // El PIN va arriba, en negrita y sin <code>/<pre> (esas fuentes se ven más pequeñas).
         $lines = [
+            '<b>PIN</b>',
+            '<b>'.$this->escapeTelegramText($pin).'</b>',
+            '',
+            '────────────────',
+            '',
             '📥 <b>Nueva solicitud de programa</b>',
             '',
-            '<b>Cliente:</b> '.e($user->name),
-            '<b>Correo:</b> '.e($user->email ?? '—'),
-            '<b>Teléfono:</b> '.e($user->phone ?? '—'),
+            '<b>Cliente:</b> '.$this->escapeTelegramText($user->name),
+            '<b>Correo:</b> '.$this->escapeTelegramText($user->email ?? '—'),
+            '<b>Teléfono:</b> '.$this->escapeTelegramText($user->phone ?? '—'),
             '',
-            '<b>Programa:</b> '.e($programa->progname),
+            '<b>Programa:</b> '.$this->escapeTelegramText($programa->progname),
             '<b>ID:</b> '.$programa->id,
-            '<b>Sistema:</b> '.e($os),
-            '<b>Tamaño:</b> '.e($programa->size ?? '—'),
+            '<b>Sistema:</b> '.$this->escapeTelegramText($os),
+            '<b>Tamaño:</b> '.$this->escapeTelegramText($programa->size ?? '—'),
             '',
-            '<i>Solicitud #'.$solicitud->id.'</i>',
+            '<b>Solicitud #'.$solicitud->id.'</b>',
         ];
 
         if (filled($solicitud->precio_acordado)) {
@@ -398,10 +409,30 @@ class ProgramaSolicitudService
 
         if ($solicitud->isPending()) {
             $lines[] = '';
-            $lines[] = '<i>Elige un precio (20 / 25 / 30 € u Otro), luego Aceptar o Rechazar.</i>';
+            $lines[] = 'Elige un precio (20 / 25 / 30 € u Otro), luego Aceptar o Rechazar.';
         }
 
         return implode("\n", $lines);
+    }
+
+    private function resolvePin(ProgramaSolicitud $solicitud, ?string $pinOverride = null): string
+    {
+        if (filled($pinOverride)) {
+            return (string) $pinOverride;
+        }
+
+        $solicitud->loadMissing('programa');
+
+        if (filled($solicitud->programa?->numero_pedido)) {
+            return (string) $solicitud->programa->numero_pedido;
+        }
+
+        return (string) $solicitud->id;
+    }
+
+    private function escapeTelegramText(?string $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
     }
 
     /**
@@ -429,7 +460,7 @@ class ProgramaSolicitudService
         ];
     }
 
-    private function updateTelegramAfterResponse(ProgramaSolicitud $solicitud, string $footer): void
+    private function updateTelegramAfterResponse(ProgramaSolicitud $solicitud, string $footer, ?string $pinOverride = null): void
     {
         if (blank($solicitud->telegram_chat_id) || blank($solicitud->telegram_message_id)) {
             return;
@@ -437,7 +468,7 @@ class ProgramaSolicitudService
 
         $solicitud->loadMissing(['user', 'programa']);
 
-        $text = $this->buildTelegramMessage($solicitud->fresh(['user', 'programa']))
+        $text = $this->buildTelegramMessage($solicitud->fresh(['user', 'programa']), $pinOverride)
             ."\n\n".$footer;
 
         $this->telegram->editMessageText(

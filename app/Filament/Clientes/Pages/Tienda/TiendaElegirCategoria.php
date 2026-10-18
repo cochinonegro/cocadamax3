@@ -13,7 +13,7 @@ class TiendaElegirCategoria extends Page
 
     protected static bool $shouldRegisterNavigation = false;
 
-    protected static ?string $title = 'Elige categoría';
+    protected static ?string $title = 'Búsqueda de programa';
 
     protected string $view = 'filament.clientes.tienda.elegir-categoria';
 
@@ -29,7 +29,8 @@ class TiendaElegirCategoria extends Page
 
     public function getHeading(): string
     {
-        return '¿Qué categoría te interesa?';
+        // El título visible está en la sección «BÚSQUEDA DE PROGRAMA» de la vista.
+        return '';
     }
 
     public function getSubheading(): ?string
@@ -61,6 +62,23 @@ class TiendaElegirCategoria extends Page
         $this->redirect(TiendaCatalogo::getUrl([
             'os' => $this->os,
             'category' => $category,
+        ]));
+    }
+
+    public function elegirCategoriaConSub(string $category, string $working): void
+    {
+        if (! TiendaProgramas::isValidCategory($category)) {
+            return;
+        }
+
+        if (! TiendaProgramas::isValidWorking($category, $working)) {
+            return;
+        }
+
+        $this->redirect(TiendaCatalogo::getUrl([
+            'os' => $this->os,
+            'category' => $category,
+            'working' => $working,
         ]));
     }
 }

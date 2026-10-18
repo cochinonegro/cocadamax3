@@ -516,3 +516,208 @@
 .tienda-catalogo__pagination .page-item span {
   border-radius: 0.5rem;
 }
+
+/* ——— Búsqueda de programa (categorías colapsables) ——— */
+
+.tienda-busqueda {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 40rem;
+  margin-inline: auto;
+  padding: 1.25rem 1.15rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(63 63 70 / 0.85);
+  background:
+    linear-gradient(180deg, rgb(39 39 42 / 0.55), rgb(24 24 27 / 0.72));
+  box-shadow: 0 12px 36px rgb(0 0 0 / 0.22);
+}
+
+.tienda-busqueda__header {
+  text-align: center;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgb(63 63 70 / 0.7);
+}
+
+.tienda-busqueda__title {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: clamp(1.5rem, 3.6vw, 2rem);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fafafa;
+}
+
+.tienda-busqueda__lead {
+  margin: 0.55rem 0 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: rgb(161 161 170);
+}
+
+.tienda-busqueda__list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.tienda-accordion {
+  border-radius: 0.85rem;
+  border: 1px solid rgb(82 82 91 / 0.75);
+  background: rgb(24 24 27 / 0.85);
+  overflow: hidden;
+}
+
+.tienda-accordion__trigger {
+  appearance: none;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.95rem 1rem;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.tienda-accordion__trigger:hover {
+  background: rgb(255 255 255 / 0.04);
+}
+
+.tienda-accordion__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.65rem;
+  background: rgb(255 255 255 / 0.08);
+  flex-shrink: 0;
+}
+
+.tienda-accordion__label {
+  flex: 1;
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.tienda-accordion--amber .tienda-accordion__icon {
+  background: rgb(245 158 11 / 0.18);
+  color: rgb(253 224 71);
+}
+
+.tienda-accordion--amber {
+  border-color: rgb(245 158 11 / 0.35);
+}
+
+.tienda-accordion--sky {
+  border-color: rgb(14 165 233 / 0.4);
+}
+
+.tienda-accordion--sky .tienda-accordion__icon {
+  background: rgb(14 165 233 / 0.18);
+  color: rgb(125 211 252);
+}
+
+.tienda-accordion--pink {
+  border-color: rgb(236 72 153 / 0.4);
+}
+
+.tienda-accordion--pink .tienda-accordion__icon {
+  background: rgb(236 72 153 / 0.18);
+  color: rgb(244 114 182);
+}
+
+.tienda-accordion--stone {
+  border-color: rgb(120 113 108 / 0.45);
+}
+
+.tienda-accordion--stone .tienda-accordion__icon {
+  background: rgb(120 113 108 / 0.22);
+  color: rgb(214 211 209);
+}
+
+.tienda-accordion--violet {
+  border-color: rgb(139 92 246 / 0.4);
+}
+
+.tienda-accordion--violet .tienda-accordion__icon {
+  background: rgb(139 92 246 / 0.18);
+  color: rgb(196 181 253);
+}
+
+.tienda-accordion--rose {
+  border-color: rgb(244 63 94 / 0.4);
+}
+
+.tienda-accordion--rose .tienda-accordion__icon {
+  background: rgb(244 63 94 / 0.18);
+  color: rgb(251 113 133);
+}
+
+.tienda-accordion--blue {
+  border-color: rgb(59 130 246 / 0.4);
+}
+
+.tienda-accordion--blue .tienda-accordion__icon {
+  background: rgb(59 130 246 / 0.18);
+  color: rgb(147 197 253);
+}
+
+.tienda-accordion--slate {
+  border-color: rgb(100 116 139 / 0.45);
+}
+
+.tienda-accordion--slate .tienda-accordion__icon {
+  background: rgb(100 116 139 / 0.2);
+  color: rgb(203 213 225);
+}
+
+.tienda-accordion__chevron {
+  font-size: 0.7rem;
+  color: rgb(161 161 170);
+  transition: transform 0.18s ease;
+}
+
+.tienda-accordion__chevron.is-open {
+  transform: rotate(180deg);
+}
+
+.tienda-accordion__panel {
+  padding: 0 1rem 1rem;
+  border-top: 1px solid rgb(63 63 70 / 0.65);
+}
+
+.tienda-accordion__subs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  padding-top: 0.9rem;
+}
+
+.tienda-accordion__cta {
+  appearance: none;
+  margin-top: 0.9rem;
+  width: 100%;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(245 158 11 / 0.45);
+  background: rgb(245 158 11 / 0.14);
+  color: rgb(253 224 71);
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  cursor: pointer;
+}
+
+.tienda-accordion__cta:hover {
+  background: rgb(245 158 11 / 0.22);
+}

@@ -10,7 +10,7 @@
 @endphp
 
 @once
-    <link rel="stylesheet" href="{{ asset('css/tienda.css') }}?v=1">
+    <link rel="stylesheet" href="{{ asset('css/tienda.css') }}?v=5">
 @endonce
 
 <div {{ $attributes->merge(['class' => 'tienda-shell']) }}>
