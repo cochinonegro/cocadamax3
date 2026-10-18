@@ -7,34 +7,34 @@
 
 /* 1. CONFIGURACIÓN DE COLORES */
 @theme {
-    --color-fondo-claro: #f3ebe0;
+    --color-fondo-claro: #e8f2fb;
     --color-fondo-oscuro: #09090b;
 
-    /* Superficies cálidas (modo claro) — referencia para utilidades custom */
-    --color-surface-cream: #faf6f1;
-    --color-surface-sand: #f3ebe0;
-    --color-surface-linen: #ebe3d6;
-    --color-surface-taupe: #ddd2c3;
-    --color-surface-cocoa: #2e261f;
+    /* Superficies azul claro (modo claro) */
+    --color-surface-cream: #f3f8fd;
+    --color-surface-sand: #e8f2fb;
+    --color-surface-linen: #dceaf7;
+    --color-surface-taupe: #c5d9ec;
+    --color-surface-cocoa: #1e3a5f;
 }
 
 /*
- * Modo claro Filament — beige, marrón suave y pasteles cálidos.
+ * Modo claro Filament — azul clarito.
  * Solo afecta cuando NO está activo .dark (el modo oscuro no cambia).
  */
 :root:not(.dark) {
-    --color-white: #faf6f1;
-    --color-gray-50: #f3ebe0;
-    --color-gray-100: #ebe3d6;
-    --color-gray-200: #ddd2c3;
-    --color-gray-300: #c9bba8;
-    --color-gray-400: #a8947e;
-    --color-gray-500: #8a7864;
-    --color-gray-600: #6f5f4e;
-    --color-gray-700: #574a3d;
-    --color-gray-800: #40362c;
-    --color-gray-900: #2e261f;
-    --color-gray-950: #1c1712;
+    --color-white: #f3f8fd;
+    --color-gray-50: #e8f2fb;
+    --color-gray-100: #dceaf7;
+    --color-gray-200: #c5d9ec;
+    --color-gray-300: #9bb8d4;
+    --color-gray-400: #6f93b8;
+    --color-gray-500: #4f7399;
+    --color-gray-600: #3b5a7a;
+    --color-gray-700: #2f4863;
+    --color-gray-800: #24384e;
+    --color-gray-900: #1e3a5f;
+    --color-gray-950: #12263d;
 }
 
 html:not(.dark) .fi-body {
