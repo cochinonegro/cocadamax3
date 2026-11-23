@@ -17,10 +17,114 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Programas — Bienvenida</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=instrument-sans:400,500,600,700" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('welcomePortal', (initialMode) => ({
+                mode: initialMode,
+                ventaStep: 'pin',
+                pin: '',
+                pinError: '',
+                formError: '',
+                formErrors: {},
+                sending: false,
+                saving: false,
+                successMessage: '',
+                venta: { name: '', phone: '', email: '', required_prog: '' },
+                urls: {
+                    verify: @js(route('welcome.venta-rapida.verificar')),
+                    store: @js(route('welcome.venta-rapida.store')),
+                },
+                startVentaRapida() {
+                    this.mode = 'venta';
+                    this.ventaStep = 'pin';
+                    this.pin = '';
+                    this.pinError = '';
+                    this.formError = '';
+                    this.formErrors = {};
+                    this.successMessage = '';
+                    this.sending = false;
+                },
+                async verifyPin() {
+                    this.pinError = '';
+                    this.sending = true;
+
+                    try {
+                        await this.postJson(this.urls.verify, { pin: String(this.pin || '').trim() });
+                        this.ventaStep = 'form';
+                    } catch (error) {
+                        this.pinError = error.message || 'El PIN no es correcto.';
+                    } finally {
+                        this.sending = false;
+                    }
+                },
+                async submitVenta() {
+                    this.formError = '';
+                    this.formErrors = {};
+                    this.saving = true;
+
+                    try {
+                        const data = await this.postJson(this.urls.store, this.venta);
+                        this.successMessage = data.message || 'Datos guardados.';
+                        this.ventaStep = 'done';
+                    } catch (error) {
+                        this.formError = error.message || 'No se pudieron guardar los datos.';
+                        this.formErrors = error.errors || {};
+                    } finally {
+                        this.saving = false;
+                    }
+                },
+                backHome() {
+                    this.mode = null;
+                    this.ventaStep = 'pin';
+                    this.pin = '';
+                    this.pinError = '';
+                    this.formError = '';
+                    this.formErrors = {};
+                    this.successMessage = '';
+                    this.venta = { name: '', phone: '', email: '', required_prog: '' };
+                },
+                async postJson(url, body) {
+                    const token = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content') ?? '';
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json',
+                            'X-CSRF-TOKEN': token,
+                            'X-Requested-With': 'XMLHttpRequest',
+                        },
+                        body: JSON.stringify(body),
+                    });
+
+                    let data = {};
+
+                    try {
+                        data = await response.json();
+                    } catch (e) {
+                        data = {};
+                    }
+
+                    if (! response.ok) {
+                        if (response.status === 429) {
+                            throw Object.assign(new Error('Demasiados intentos. Espera un momento y vuelve a intentarlo.'), { errors: {} });
+                        }
+
+                        const firstField = data.errors ? Object.values(data.errors).flat()[0] : null;
+                        throw Object.assign(new Error(firstField || data.message || 'No se pudo completar la acción.'), {
+                            errors: data.errors || {},
+                        });
+                    }
+
+                    return data;
+                },
+            }));
+        });
+    </script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
         tailwind.config = {
@@ -37,7 +141,7 @@
 <body class="min-h-screen bg-zinc-950 text-zinc-100 antialiased">
     <div
         class="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10 sm:px-6"
-        x-data="{ mode: @js($initialMode) }"
+        x-data="welcomePortal(@js($initialMode))"
     >
         <header class="mb-10 text-center">
             <p class="mb-2 text-sm font-medium uppercase tracking-[0.2em] text-amber-400">CocadaMax</p>
@@ -76,6 +180,15 @@
 
             <button
                 type="button"
+                x-on:click="startVentaRapida()"
+                class="w-full rounded-2xl border border-emerald-500/40 bg-emerald-500/10 px-6 py-5 text-left transition hover:border-emerald-400 hover:bg-emerald-500/20"
+            >
+                <span class="block text-lg font-semibold tracking-wide text-emerald-300">VENTA RAPIDA</span>
+                <span class="mt-1 block text-sm text-zinc-400">Registrar cliente con un PIN</span>
+            </button>
+
+            <button
+                type="button"
                 x-on:click="mode = 'login'"
                 class="w-full rounded-2xl border border-zinc-700 bg-zinc-900/70 px-6 py-5 text-left transition hover:border-zinc-500 hover:bg-zinc-900"
             >
@@ -83,6 +196,137 @@
                 <span class="mt-1 block text-sm text-zinc-400">Ya tengo cuenta</span>
             </button>
         </div>
+
+        {{-- Venta rápida --}}
+        <section
+            x-show="mode === 'venta'"
+            x-cloak
+            class="rounded-2xl border border-zinc-800 bg-zinc-900/70 p-6 shadow-xl"
+        >
+            <button
+                type="button"
+                x-on:click="backHome()"
+                class="mb-4 inline-flex items-center gap-1 text-sm text-zinc-400 transition hover:text-emerald-300"
+            >
+                ← Volver
+            </button>
+
+            <h2 class="mb-1 text-lg font-semibold text-white">VENTA RAPIDA</h2>
+
+            <div x-show="ventaStep === 'pin'" class="space-y-4">
+                <p class="text-sm text-zinc-400">Introduce el PIN de 4 cifras.</p>
+                <p x-show="pinError" x-text="pinError" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></p>
+
+                <form x-on:submit.prevent="verifyPin()" class="space-y-4">
+                    <div>
+                        <label for="venta_pin" class="mb-1 block text-sm font-medium text-zinc-300">PIN <span class="text-rose-400">*</span></label>
+                        <input
+                            id="venta_pin"
+                            x-model="pin"
+                            type="text"
+                            inputmode="numeric"
+                            maxlength="4"
+                            autocomplete="one-time-code"
+                            required
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-center text-lg tracking-[0.4em] text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="••••"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                        x-bind:disabled="sending || String(pin).length !== 4"
+                    >
+                        Continuar
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="ventaStep === 'form'" class="space-y-4">
+                <p class="mb-5 text-sm text-zinc-400">Completa los datos del cliente.</p>
+
+                <p x-show="formError && !Object.keys(formErrors).length" x-text="formError" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></p>
+
+                <form x-on:submit.prevent="submitVenta()" class="space-y-4">
+                    <div>
+                        <label for="venta_name" class="mb-1 block text-sm font-medium text-zinc-300">Nombre <span class="text-rose-400">*</span></label>
+                        <input
+                            id="venta_name"
+                            x-model="venta.name"
+                            type="text"
+                            required
+                            maxlength="255"
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="Nombre del cliente"
+                        >
+                        <p x-show="formErrors.name" x-text="(formErrors.name || [])[0]" class="mt-1 text-xs text-rose-300"></p>
+                    </div>
+
+                    <div>
+                        <label for="venta_phone" class="mb-1 block text-sm font-medium text-zinc-300">Teléfono <span class="text-rose-400">*</span></label>
+                        <input
+                            id="venta_phone"
+                            x-model="venta.phone"
+                            type="tel"
+                            required
+                            maxlength="30"
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="Ej: 612345678"
+                        >
+                        <p x-show="formErrors.phone" x-text="(formErrors.phone || [])[0]" class="mt-1 text-xs text-rose-300"></p>
+                    </div>
+
+                    <div>
+                        <label for="venta_email" class="mb-1 block text-sm font-medium text-zinc-300">Correo <span class="text-rose-400">*</span></label>
+                        <input
+                            id="venta_email"
+                            x-model="venta.email"
+                            type="email"
+                            required
+                            maxlength="255"
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="correo@ejemplo.com"
+                        >
+                        <p x-show="formErrors.email" x-text="(formErrors.email || [])[0]" class="mt-1 text-xs text-rose-300"></p>
+                    </div>
+
+                    <div>
+                        <label for="venta_programa" class="mb-1 block text-sm font-medium text-zinc-300">Programa solicitado <span class="text-rose-400">*</span></label>
+                        <input
+                            id="venta_programa"
+                            x-model="venta.required_prog"
+                            type="text"
+                            required
+                            maxlength="255"
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="Ej: Photoshop"
+                        >
+                        <p x-show="formErrors.required_prog" x-text="(formErrors.required_prog || [])[0]" class="mt-1 text-xs text-rose-300"></p>
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                        x-bind:disabled="saving"
+                    >
+                        <span x-show="!saving">Guardar cliente</span>
+                        <span x-show="saving">Guardando…</span>
+                    </button>
+                </form>
+            </div>
+
+            <div x-show="ventaStep === 'done'" class="space-y-4">
+                <p class="rounded-lg border border-green-500/30 bg-green-500/10 px-3 py-2 text-sm text-green-300" x-text="successMessage"></p>
+                <button
+                    type="button"
+                    x-on:click="backHome()"
+                    class="w-full rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-semibold text-zinc-200 transition hover:border-zinc-500"
+                >
+                    Volver al inicio
+                </button>
+            </div>
+        </section>
 
         {{-- Crear usuario --}}
         <section

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\PedidosDownloadController;
 use App\Http\Controllers\ProgramaDownloadController;
+use App\Http\Controllers\VentaRapidaController;
 use App\Http\Controllers\WelcomeController;
 use App\Support\DescargaRegistrar;
 use Illuminate\Support\Facades\Route;
@@ -9,11 +10,17 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/deploy-check', fn () => response()->json([
     'app' => 'cocadamax3',
-    'version' => 'guest-welcome-v5',
+    'version' => 'guest-welcome-v7-venta-rapida-pin-fijo',
     'time' => now()->toIso8601String(),
 ]))->name('deploy.check');
 Route::post('/registro', [WelcomeController::class, 'register'])->name('welcome.register');
 Route::post('/iniciar-sesion', [WelcomeController::class, 'login'])->name('welcome.login');
+Route::post('/venta-rapida/verificar', [VentaRapidaController::class, 'verify'])
+    ->middleware('throttle:12,1')
+    ->name('welcome.venta-rapida.verificar');
+Route::post('/venta-rapida', [VentaRapidaController::class, 'store'])
+    ->middleware('throttle:6,1')
+    ->name('welcome.venta-rapida.store');
 
 Route::post('/telegram/webhook', \App\Http\Controllers\TelegramWebhookController::class)
     ->name('telegram.webhook');
