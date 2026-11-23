@@ -136,7 +136,9 @@ class VentaRapidaTest extends TestCase
 
         $this->postJson(route('welcome.venta-rapida.lookup'), [
             'phone' => '600000000',
-        ])->assertNotFound();
+        ])
+            ->assertNotFound()
+            ->assertJsonPath('message', 'No estás en nuestra base de datos, por favor completa el formulario');
 
         $this->postJson(route('welcome.venta-rapida.lookup'), [
             'phone' => '612 345 678',

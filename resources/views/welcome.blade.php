@@ -87,7 +87,16 @@
                         this.compradoModal = true;
                     } catch (error) {
                         this.compradoModal = false;
-                        this.compradoError = error.message || 'Ese teléfono no está registrado.';
+
+                        if (error.status === 404) {
+                            this.venta.phone = this.compradoPhone;
+                            this.formError = error.message || 'No estás en nuestra base de datos, por favor completa el formulario';
+                            this.formErrors = {};
+                            this.ventaStep = 'form';
+                            return;
+                        }
+
+                        this.compradoError = error.message || 'No se pudo comprobar el teléfono.';
                     } finally {
                         this.lookingUp = false;
                     }
@@ -168,6 +177,7 @@
                         const firstField = data.errors ? Object.values(data.errors).flat()[0] : null;
                         throw Object.assign(new Error(firstField || data.message || 'No se pudo completar la acción.'), {
                             errors: data.errors || {},
+                            status: response.status,
                         });
                     }
 

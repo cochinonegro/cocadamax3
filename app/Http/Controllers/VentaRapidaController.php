@@ -56,7 +56,7 @@ class VentaRapidaController extends Controller
 
         if ($person === null) {
             return response()->json([
-                'message' => 'Ese teléfono no está registrado.',
+                'message' => 'No estás en nuestra base de datos, por favor completa el formulario',
             ], 404);
         }
 
