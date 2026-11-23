@@ -34,10 +34,18 @@
                 sending: false,
                 saving: false,
                 successMessage: '',
+                compradoPhone: '',
+                compradoPrograma: '',
+                compradoName: '',
+                compradoError: '',
+                compradoModal: false,
+                lookingUp: false,
                 venta: { name: '', phone: '', email: '', required_prog: '' },
                 urls: {
                     verify: @js(route('welcome.venta-rapida.verificar')),
                     store: @js(route('welcome.venta-rapida.store')),
+                    lookup: @js(route('welcome.venta-rapida.lookup')),
+                    comprado: @js(route('welcome.venta-rapida.comprado')),
                 },
                 startVentaRapida() {
                     this.mode = 'venta';
@@ -47,6 +55,12 @@
                     this.formError = '';
                     this.formErrors = {};
                     this.successMessage = '';
+                    this.compradoPhone = '';
+                    this.compradoPrograma = '';
+                    this.compradoName = '';
+                    this.compradoError = '';
+                    this.compradoModal = false;
+                    this.lookingUp = false;
                     this.sending = false;
                 },
                 async verifyPin() {
@@ -55,11 +69,42 @@
 
                     try {
                         await this.postJson(this.urls.verify, { pin: String(this.pin || '').trim() });
-                        this.ventaStep = 'form';
+                        this.ventaStep = 'choice';
                     } catch (error) {
                         this.pinError = error.message || 'El PIN no es correcto.';
                     } finally {
                         this.sending = false;
+                    }
+                },
+                async lookupComprado() {
+                    this.compradoError = '';
+                    this.lookingUp = true;
+
+                    try {
+                        const data = await this.postJson(this.urls.lookup, { phone: this.compradoPhone });
+                        this.compradoName = data.name || '';
+                        this.compradoPrograma = '';
+                        this.compradoModal = true;
+                    } catch (error) {
+                        this.compradoModal = false;
+                        this.compradoError = error.message || 'Ese teléfono no está registrado.';
+                    } finally {
+                        this.lookingUp = false;
+                    }
+                },
+                async submitComprado() {
+                    this.compradoError = '';
+                    this.saving = true;
+
+                    try {
+                        const data = await this.postJson(this.urls.comprado, { required_prog: this.compradoPrograma });
+                        this.successMessage = data.message || 'Listo. El aviso ya se envió.';
+                        this.compradoModal = false;
+                        this.ventaStep = 'done';
+                    } catch (error) {
+                        this.compradoError = error.message || 'No se pudo enviar el aviso.';
+                    } finally {
+                        this.saving = false;
                     }
                 },
                 async submitVenta() {
@@ -86,6 +131,12 @@
                     this.formError = '';
                     this.formErrors = {};
                     this.successMessage = '';
+                    this.compradoPhone = '';
+                    this.compradoPrograma = '';
+                    this.compradoName = '';
+                    this.compradoError = '';
+                    this.compradoModal = false;
+                    this.lookingUp = false;
                     this.venta = { name: '', phone: '', email: '', required_prog: '' };
                 },
                 async postJson(url, body) {
@@ -243,8 +294,73 @@
                 </form>
             </div>
 
+            <div x-show="ventaStep === 'choice'" class="space-y-4">
+                <p class="text-sm text-zinc-400">Elige cómo continuar.</p>
+
+                <button
+                    type="button"
+                    x-on:click="ventaStep = 'form'"
+                    class="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400"
+                >
+                    Completar datos
+                </button>
+
+                <button
+                    type="button"
+                    x-on:click="ventaStep = 'comprado'; compradoError = ''"
+                    class="w-full rounded-lg border border-emerald-500/40 bg-emerald-500/10 px-4 py-2.5 text-sm font-semibold tracking-wide text-emerald-300 transition hover:bg-emerald-500/20"
+                >
+                    YA HE COMPRADO
+                </button>
+            </div>
+
+            <div x-show="ventaStep === 'comprado'" class="space-y-4">
+                <p class="text-sm text-zinc-400">Escribe el teléfono con el que ya estás registrado.</p>
+                <p x-show="compradoError && !compradoModal" x-text="compradoError" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></p>
+
+                <form x-on:submit.prevent="lookupComprado()" class="space-y-4">
+                    <div>
+                        <label for="comprado_phone" class="mb-1 block text-sm font-medium text-zinc-300">Teléfono <span class="text-rose-400">*</span></label>
+                        <input
+                            id="comprado_phone"
+                            x-model="compradoPhone"
+                            type="tel"
+                            required
+                            maxlength="30"
+                            class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                            placeholder="Ej: 612345678"
+                        >
+                    </div>
+
+                    <button
+                        type="submit"
+                        class="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                        x-bind:disabled="lookingUp"
+                    >
+                        <span x-show="!lookingUp">Continuar</span>
+                        <span x-show="lookingUp">Buscando…</span>
+                    </button>
+                </form>
+
+                <button
+                    type="button"
+                    x-on:click="ventaStep = 'choice'"
+                    class="w-full text-sm text-zinc-400 underline-offset-2 transition hover:text-emerald-300 hover:underline"
+                >
+                    Volver a las opciones
+                </button>
+            </div>
+
             <div x-show="ventaStep === 'form'" class="space-y-4">
                 <p class="mb-5 text-sm text-zinc-400">Completa los datos del cliente.</p>
+
+                <button
+                    type="button"
+                    x-on:click="ventaStep = 'comprado'; compradoError = ''"
+                    class="w-full rounded-lg border border-emerald-500/40 px-4 py-2.5 text-sm font-semibold tracking-wide text-emerald-300 transition hover:bg-emerald-500/10"
+                >
+                    YA HE COMPRADO
+                </button>
 
                 <p x-show="formError && !Object.keys(formErrors).length" x-text="formError" class="rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></p>
 
@@ -314,6 +430,42 @@
                         <span x-show="saving">Guardando…</span>
                     </button>
                 </form>
+            </div>
+
+            <div
+                x-show="compradoModal"
+                x-cloak
+                class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 px-4"
+            >
+                <div class="w-full max-w-md rounded-2xl border border-zinc-700 bg-zinc-900 p-6 shadow-2xl" x-on:click.outside="compradoModal = false">
+                    <h3 class="text-lg font-semibold text-white">Correcto, ya estás. Qué programa quieres?</h3>
+                    <p class="mt-2 text-sm text-zinc-400" x-show="compradoName" x-text="compradoName"></p>
+                    <p x-show="compradoError" x-text="compradoError" class="mt-3 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-2 text-sm text-rose-300"></p>
+
+                    <form x-on:submit.prevent="submitComprado()" class="mt-5 space-y-4">
+                        <div>
+                            <label for="comprado_programa" class="mb-1 block text-sm font-medium text-zinc-300">Programa <span class="text-rose-400">*</span></label>
+                            <input
+                                id="comprado_programa"
+                                x-model="compradoPrograma"
+                                type="text"
+                                required
+                                maxlength="255"
+                                class="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-3 py-2 text-sm text-white outline-none transition focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30"
+                                placeholder="Ej: Photoshop"
+                            >
+                        </div>
+
+                        <button
+                            type="submit"
+                            class="w-full rounded-lg bg-emerald-500 px-4 py-2.5 text-sm font-semibold text-zinc-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-500"
+                            x-bind:disabled="saving"
+                        >
+                            <span x-show="!saving">Enviar</span>
+                            <span x-show="saving">Enviando…</span>
+                        </button>
+                    </form>
+                </div>
             </div>
 
             <div x-show="ventaStep === 'done'" class="space-y-4">

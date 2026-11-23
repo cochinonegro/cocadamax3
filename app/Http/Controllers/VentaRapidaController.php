@@ -30,6 +30,69 @@ class VentaRapidaController extends Controller
         ]);
     }
 
+    public function lookup(Request $request, VentaRapidaService $ventaRapida): JsonResponse
+    {
+        if (! $ventaRapida->isVerified($request)) {
+            return response()->json([
+                'message' => 'Introduce el PIN correcto para continuar.',
+            ], 403);
+        }
+
+        $data = $request->validate([
+            'phone' => ['required', 'string', 'max:30'],
+        ], [
+            'phone.required' => 'Escribe el teléfono.',
+        ]);
+
+        $digits = ClienteFormatting::phoneDigits($data['phone']);
+
+        if (strlen($digits) < 6) {
+            throw ValidationException::withMessages([
+                'phone' => 'Escribe un teléfono válido.',
+            ]);
+        }
+
+        $person = $ventaRapida->findRegistered($request, $digits);
+
+        if ($person === null) {
+            return response()->json([
+                'message' => 'Ese teléfono no está registrado.',
+            ], 404);
+        }
+
+        return response()->json([
+            'message' => 'Correcto, ya estás. Qué programa quieres?',
+            'name' => $person['name'],
+        ]);
+    }
+
+    public function comprado(Request $request, VentaRapidaService $ventaRapida): JsonResponse
+    {
+        if (! $ventaRapida->isVerified($request)) {
+            return response()->json([
+                'message' => 'Introduce el PIN correcto para continuar.',
+            ], 403);
+        }
+
+        $data = $request->validate([
+            'required_prog' => ['required', 'string', 'max:255'],
+        ], [
+            'required_prog.required' => 'Escribe el programa.',
+        ], [
+            'required_prog' => 'programa',
+        ]);
+
+        if (! $ventaRapida->notifyComprado($request, $data['required_prog'])) {
+            return response()->json([
+                'message' => 'Primero confirma un teléfono registrado.',
+            ], 422);
+        }
+
+        return response()->json([
+            'message' => 'Listo. El aviso ya se envió.',
+        ]);
+    }
+
     public function store(Request $request, VentaRapidaService $ventaRapida): JsonResponse
     {
         if (! $ventaRapida->isVerified($request)) {

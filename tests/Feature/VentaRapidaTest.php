@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Clientes;
+use App\Models\Venta;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
@@ -28,6 +29,8 @@ class VentaRapidaTest extends TestCase
             ->assertOk()
             ->assertSee('VENTA RAPIDA')
             ->assertSee('Introduce el PIN de 4 cifras.')
+            ->assertSee('YA HE COMPRADO')
+            ->assertSee('Correcto, ya estás. Qué programa quieres?')
             ->assertDontSee('Enviar otro PIN')
             ->assertSee('Ingresar por primera vez');
     }
@@ -66,6 +69,16 @@ class VentaRapidaTest extends TestCase
 
         $this->assertSame(1, Clientes::query()->count());
 
+        $cliente = Clientes::query()->first();
+
+        $this->assertDatabaseHas('ventas', [
+            'cliente_id' => $cliente->id,
+            'producto' => 'Photoshop',
+            'fecha_venta' => now()->toDateString(),
+        ]);
+
+        $this->assertSame(1, Venta::query()->count());
+
         Http::assertSentCount(1);
 
         Http::assertSent(function (Request $request) {
@@ -94,5 +107,59 @@ class VentaRapidaTest extends TestCase
         ])->assertForbidden();
 
         $this->assertSame(0, Clientes::query()->count());
+        $this->assertSame(0, Venta::query()->count());
+    }
+
+    public function test_ya_he_comprado_sends_telegram_when_phone_is_registered(): void
+    {
+        Http::fake([
+            'api.telegram.org/*' => Http::response([
+                'ok' => true,
+                'result' => ['message_id' => 77],
+            ]),
+        ]);
+
+        Clientes::query()->create([
+            'name' => 'Luis Vega',
+            'phone' => '612-345-678',
+            'email' => 'luis@example.com',
+            'date' => now()->toDateString(),
+        ]);
+
+        $this->postJson(route('welcome.venta-rapida.lookup'), [
+            'phone' => '612345678',
+        ])->assertForbidden();
+
+        $this->postJson(route('welcome.venta-rapida.verificar'), [
+            'pin' => '4053',
+        ])->assertOk();
+
+        $this->postJson(route('welcome.venta-rapida.lookup'), [
+            'phone' => '600000000',
+        ])->assertNotFound();
+
+        $this->postJson(route('welcome.venta-rapida.lookup'), [
+            'phone' => '612 345 678',
+        ])
+            ->assertOk()
+            ->assertJsonPath('name', 'Luis Vega')
+            ->assertJsonPath('message', 'Correcto, ya estás. Qué programa quieres?');
+
+        Http::assertNothingSent();
+
+        $this->postJson(route('welcome.venta-rapida.comprado'), [
+            'required_prog' => 'AutoCAD',
+        ])->assertOk();
+
+        Http::assertSentCount(1);
+        Http::assertSent(function (Request $request) {
+            $text = (string) $request['text'];
+
+            return str_contains($text, 'Cliente Luis Vega Tlf: 612-345-678, ya había comprado. Programa: AutoCAD')
+                && ! array_key_exists('reply_markup', $request->data());
+        });
+
+        $this->assertSame(1, Clientes::query()->count());
+        $this->assertSame(0, Venta::query()->count());
     }
 }

@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 Route::get('/deploy-check', fn () => response()->json([
     'app' => 'cocadamax3',
-    'version' => 'guest-welcome-v7-venta-rapida-pin-fijo',
+    'version' => 'guest-welcome-v8-ya-he-comprado',
     'time' => now()->toIso8601String(),
 ]))->name('deploy.check');
 Route::post('/registro', [WelcomeController::class, 'register'])->name('welcome.register');
@@ -21,6 +21,12 @@ Route::post('/venta-rapida/verificar', [VentaRapidaController::class, 'verify'])
 Route::post('/venta-rapida', [VentaRapidaController::class, 'store'])
     ->middleware('throttle:6,1')
     ->name('welcome.venta-rapida.store');
+Route::post('/venta-rapida/ya-he-comprado', [VentaRapidaController::class, 'lookup'])
+    ->middleware('throttle:12,1')
+    ->name('welcome.venta-rapida.lookup');
+Route::post('/venta-rapida/ya-he-comprado/programa', [VentaRapidaController::class, 'comprado'])
+    ->middleware('throttle:6,1')
+    ->name('welcome.venta-rapida.comprado');
 
 Route::post('/telegram/webhook', \App\Http\Controllers\TelegramWebhookController::class)
     ->name('telegram.webhook');
